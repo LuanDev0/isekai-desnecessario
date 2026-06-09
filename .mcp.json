@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx",
+      "args": ["-y", "mcp-obsidian"],
+      "env": {
+        "VAULT_PATH": "C:/Users/luana/Desktop/Projetin/Obsidian/Obsidian/Obsidiano Geral"
+      }
+    }
+  }
+}
