@@ -1,0 +1,141 @@
+<div class="grafico-page">
+
+  <!-- Header -->
+  <h1 class="page-title">Gráfico</h1>
+
+  <!-- Stats cards -->
+  <div class="stats-grid" *ngIf="perfil">
+    <div class="stat-card">
+      <span class="stat-label">Nível</span>
+      <span class="stat-value">{{ perfil.nivel }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Rank</span>
+      <span class="stat-value rank-value" [style.color]="rankColor">{{ perfil.rank }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">XP hoje</span>
+      <span class="stat-value">{{ perfil.xpHoje ?? 0 }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Moedas</span>
+      <span class="stat-value gold">{{ perfil.moedas }}</span>
+    </div>
+  </div>
+
+  <!-- Barra progresso nível -->
+  <div class="nivel-card" *ngIf="perfil">
+    <div class="nivel-header">
+      <span class="nivel-label">Progresso para o nível <strong>{{ perfil.nivel + 1 }}</strong></span>
+      <span class="nivel-pct">{{ xpPercent }}%</span>
+    </div>
+    <div class="nivel-bar-bg">
+      <div class="nivel-bar-fill" [style.width.%]="xpPercent"></div>
+    </div>
+    <div class="nivel-xp-info">
+      <span>{{ perfil.xp }} XP</span>
+      <span>{{ perfil.proximoNivelXp }} XP</span>
+    </div>
+  </div>
+
+  <!-- Gráfico XY -->
+  <div class="chart-card">
+
+    <!-- Tabs de período -->
+    <div class="periodo-tabs">
+      <button
+        *ngFor="let p of periodos"
+        class="tab-btn"
+        [class.ativo]="periodo === p.key"
+        (click)="periodo = p.key"
+      >{{ p.label }}</button>
+    </div>
+
+    <div class="chart-empty" *ngIf="pontos.length === 0">
+      <span>Nenhum dado ainda. Ganhe XP para aparecer aqui!</span>
+    </div>
+
+    <ng-container *ngIf="chartData as cd">
+      <div class="chart-wrapper">
+      <svg
+        [attr.viewBox]="'0 0 ' + vbW + ' ' + vbH"
+        class="line-chart"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#58a6ff" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#58a6ff" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Grid lines Y + labels Y -->
+        <ng-container *ngFor="let t of cd.yTickLines">
+          <line
+            [attr.x1]="padL" [attr.y1]="t.y"
+            [attr.x2]="padL + cw" [attr.y2]="t.y"
+            class="grid-line"
+          />
+          <text [attr.x]="padL - 5" [attr.y]="t.y + 3" class="axis-label y-label">{{ t.label }}</text>
+        </ng-container>
+
+        <!-- Eixo X (linha base) -->
+        <line
+          [attr.x1]="padL" [attr.y1]="padT + ch"
+          [attr.x2]="padL + cw" [attr.y2]="padT + ch"
+          class="axis-line"
+        />
+
+        <!-- Eixo Y (linha vertical) -->
+        <line
+          [attr.x1]="padL" [attr.y1]="padT"
+          [attr.x2]="padL" [attr.y2]="padT + ch"
+          class="axis-line"
+        />
+
+        <!-- Área preenchida -->
+        <path [attr.d]="cd.area" class="area-fill" />
+
+        <!-- Linha do gráfico -->
+        <polyline [attr.points]="cd.polyline" class="chart-line" />
+
+        <!-- Pontos (só quando não são muitos) -->
+        <ng-container *ngIf="cd.showDots">
+          <ng-container *ngFor="let c of cd.coords">
+            <circle
+              [attr.cx]="c.x" [attr.cy]="c.y" r="2.5"
+              class="dot"
+            />
+          </ng-container>
+        </ng-container>
+
+        <!-- Labels X -->
+        <text
+          *ngFor="let lbl of cd.xLabels"
+          [attr.x]="lbl.x" [attr.y]="padT + ch + 18"
+          class="axis-label x-label"
+        >{{ lbl.label }}</text>
+      </svg>
+      </div><!-- /chart-wrapper -->
+    </ng-container>
+  </div>
+
+  <!-- Resumo do período -->
+  <div class="resumo-grid" *ngIf="pontos.length > 0">
+    <div class="resumo-card">
+      <span class="resumo-label">Total XP</span>
+      <span class="resumo-valor">{{ totalXpPeriodo }}</span>
+    </div>
+    <div class="resumo-card">
+      <span class="resumo-label">Média por {{ labelPeriodo }}</span>
+      <span class="resumo-valor">{{ mediaXp }}</span>
+    </div>
+    <div class="resumo-card" *ngIf="melhorPonto">
+      <span class="resumo-label">Melhor {{ labelPeriodo }}</span>
+      <span class="resumo-valor">{{ melhorPonto.xp }}</span>
+      <span class="resumo-sub">{{ melhorPonto.label }}</span>
+    </div>
+  </div>
+
+  <div class="bottom-spacer"></div>
+</div>

@@ -1,0 +1,116 @@
+<div class="loja-page">
+
+  <!-- Header -->
+  <div class="loja-header">
+    <h1 class="page-title">Loja</h1>
+
+    <div class="header-right">
+
+      <!-- Lootbox -->
+      <button
+        class="lootbox-btn"
+        [class.disponivel]="lootboxDisponivel"
+        [class.abrindo]="lootboxAbrindo"
+        [class.ja-abriu]="lootboxJaAbriu && !lootboxDisponivel"
+        [disabled]="!lootboxDisponivel || lootboxAbrindo"
+        (click)="abrirLootbox()"
+        [title]="lootboxDisponivel ? 'Abrir lootbox gratuita!' : lootboxJaAbriu ? 'Já aberta hoje' : 'Ganhe 1000 XP hoje para desbloquear'"
+      >
+        <span class="lootbox-icon">{{ lootboxAbrindo ? '✨' : '📦' }}</span>
+        <div class="lootbox-info">
+          <span class="lootbox-label">
+            {{ lootboxAbrindo ? 'Abrindo...' : lootboxDisponivel ? 'Lootbox!' : lootboxJaAbriu ? 'Aberta hoje' : 'Lootbox' }}
+          </span>
+          <span class="lootbox-sub" *ngIf="!lootboxDisponivel && !lootboxJaAbriu">
+            ({{ lootboxXpHoje }}/1000 XP)
+          </span>
+        </div>
+        <div class="lootbox-progress" *ngIf="!lootboxDisponivel && !lootboxJaAbriu">
+          <div class="lootbox-progress-fill" [style.width.%]="(lootboxXpHoje / 1000) * 100"></div>
+        </div>
+      </button>
+
+      <!-- Moedas -->
+      <div class="moedas-badge" *ngIf="perfil">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/>
+          <text x="12" y="17" text-anchor="middle" font-size="11" font-weight="bold" fill="#7a5200">$</text>
+        </svg>
+        <span>{{ perfil.moedas }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal resultado da lootbox -->
+  <div class="lootbox-modal" *ngIf="lootboxResultado" (click)="fecharResultado()">
+    <div class="lootbox-card" (click)="$event.stopPropagation()">
+      <p class="lootbox-modal-titulo">🎉 Você ganhou!</p>
+      <div class="lootbox-recompensa-reveal">
+        <span class="lootbox-emoji-big">{{ lootboxResultado.recompensa.emoji }}</span>
+        <h3>{{ lootboxResultado.recompensa.nome }}</h3>
+        <p class="lootbox-desc" *ngIf="lootboxResultado.recompensa.descricao">
+          {{ lootboxResultado.recompensa.descricao }}
+        </p>
+        <span class="lootbox-chance">{{ lootboxResultado.chance }}% de chance</span>
+      </div>
+      <button class="btn-fechar-lootbox" (click)="fecharResultado()">Boa! Fechar</button>
+    </div>
+  </div>
+
+  <!-- Sem recompensas cadastradas -->
+  <div class="vazio" *ngIf="recompensas.length === 0">
+    <span class="vazio-icon">🎁</span>
+    <p>Nenhuma recompensa cadastrada ainda.</p>
+    <small>Vá em Configurações para adicionar!</small>
+  </div>
+
+  <!-- Grid de recompensas -->
+  <div class="recompensas-grid" *ngIf="recompensas.length > 0">
+    <div
+      class="recompensa-card"
+      *ngFor="let r of recompensas"
+      [class.sem-saldo]="!podeComprar(r)"
+      [class.bloqueado]="!requisitoCumprido(r)"
+      [class.sucesso]="feedbacks[r.id] === 'ok'"
+      [class.falhou]="feedbacks[r.id] === 'sem-moedas' || feedbacks[r.id] === 'erro' || feedbacks[r.id] === 'atributo'"
+    >
+      <div class="card-emoji">{{ r.emoji }}</div>
+      <div class="card-body">
+        <h3 class="card-nome">{{ r.nome }}</h3>
+        <p class="card-desc" *ngIf="r.descricao">{{ r.descricao }}</p>
+        <!-- Requisito de atributo -->
+        <div class="card-requisito" *ngIf="r.atributoId && r.pontosNecessarios > 0">
+          <span class="req-label" [class.cumprido]="requisitoCumprido(r)" [class.pendente]="!requisitoCumprido(r)">
+            {{ nomeAtributo(r.atributoId) }}
+            {{ pontosAtributo(r.atributoId) }}/{{ r.pontosNecessarios }} pts
+            {{ requisitoCumprido(r) ? '✓' : '🔒' }}
+          </span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-preco">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/>
+            <text x="12" y="17" text-anchor="middle" font-size="11" font-weight="bold" fill="#7a5200">$</text>
+          </svg>
+          <span>{{ r.preco }}</span>
+        </div>
+        <button
+          class="btn-resgatar"
+          [disabled]="!podeComprar(r) || !requisitoCumprido(r) || resgatando === r.id"
+          (click)="resgatar(r)"
+        >
+          <ng-container *ngIf="feedbacks[r.id] === 'ok'">✓ Resgatado!</ng-container>
+          <ng-container *ngIf="feedbacks[r.id] === 'sem-moedas'">Sem moedas</ng-container>
+          <ng-container *ngIf="feedbacks[r.id] === 'atributo'">Atributo baixo!</ng-container>
+          <ng-container *ngIf="feedbacks[r.id] === 'erro'">Erro!</ng-container>
+          <ng-container *ngIf="!feedbacks[r.id]">
+            {{ resgatando === r.id ? '...' : !requisitoCumprido(r) ? '🔒 Bloqueado' : podeComprar(r) ? 'Resgatar' : 'Sem saldo' }}
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-spacer"></div>
+</div>

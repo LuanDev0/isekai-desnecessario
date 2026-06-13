@@ -1,0 +1,66 @@
+<div class="page">
+  <h1 class="page-title">🗺️ Mundo</h1>
+
+  <div *ngIf="perfil">
+
+    <!-- Card do rank atual -->
+    <div class="rank-atual-card" [style.border-color]="rankAtual.cor">
+      <div class="rank-atual-top">
+        <span class="rank-icon">{{ rankAtual.icon }}</span>
+        <div class="rank-atual-info">
+          <span class="rank-label-sm">Rank Atual</span>
+          <span class="rank-nome" [style.color]="rankAtual.cor">{{ rankAtual.rank }}</span>
+          <span class="rank-nivel-info">Nível {{ nivel }}</span>
+        </div>
+        <div class="rank-xp">
+          <span class="xp-label">XP Total</span>
+          <span class="xp-valor">{{ xp }}</span>
+        </div>
+      </div>
+      <div class="rank-progress-row">
+        <div class="rank-bar-track">
+          <div class="rank-bar-fill" [style.width.%]="progressoRank" [style.background]="rankAtual.cor"></div>
+        </div>
+        <span class="rank-pct" [style.color]="rankAtual.cor">{{ progressoRank }}%</span>
+      </div>
+      <div class="rank-next-info" *ngIf="proximoRank">
+        <span>{{ niveisParaProximo }} nível(is) para <strong [style.color]="proximoRank.cor">{{ proximoRank.rank }}</strong> {{ proximoRank.icon }}</span>
+      </div>
+      <div class="rank-next-info" *ngIf="!proximoRank">
+        <span style="color:#f0c000">👑 Rank máximo atingido!</span>
+      </div>
+    </div>
+
+    <!-- Mapa de ranks -->
+    <div class="section-label">🗺️ Mapa de Progressão</div>
+
+    <div class="rank-map">
+      <div class="rank-node" *ngFor="let r of ranks; let i = index" [class]="status(r)">
+        <!-- Linha conectora antes do nó -->
+        <div class="connector" *ngIf="i > 0" [class]="status(r)"></div>
+
+        <!-- Nó do rank -->
+        <div class="node-circle" [style.border-color]="status(r) !== 'futuro' ? r.cor : '#30363d'"
+             [style.box-shadow]="status(r) === 'atual' ? '0 0 18px ' + r.cor + '88' : 'none'">
+          <span class="node-icon">{{ status(r) === 'futuro' ? '?' : r.icon }}</span>
+        </div>
+
+        <!-- Label do rank -->
+        <span class="node-label" [style.color]="status(r) !== 'futuro' ? r.cor : '#444c56'">
+          {{ r.rank }}
+        </span>
+
+        <!-- Badge "ATUAL" -->
+        <span class="node-badge" *ngIf="status(r) === 'atual'" [style.background]="r.cor">ATUAL</span>
+
+        <!-- Level range -->
+        <span class="node-range" *ngIf="status(r) !== 'futuro'">
+          Lv.{{ r.minNivel }}–{{ r.rank === 'SSS' ? '∞' : r.maxNivel }}
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom-spacer"></div>
+</div>

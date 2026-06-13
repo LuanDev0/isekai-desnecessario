@@ -1,0 +1,124 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">🧪 Laboratório</h1>
+    <button class="btn-novo" (click)="mostraForm = true" *ngIf="!mostraForm">+ Novo Experimento</button>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" *ngIf="msg">{{ msg }}</div>
+
+  <!-- Form novo experimento -->
+  <div class="form-card" *ngIf="mostraForm">
+    <h3 class="form-title">Novo Experimento</h3>
+    <div class="form-group">
+      <label>Título</label>
+      <input [(ngModel)]="novoTitulo" placeholder="Ex: Acordar às 6h" class="input"/>
+    </div>
+    <div class="form-group">
+      <label>Descrição (opcional)</label>
+      <textarea [(ngModel)]="novaDescricao" placeholder="Por que quer testar isso?" class="input textarea" rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Duração (dias): <strong>{{ novaDuracao }}</strong></label>
+      <input type="range" [(ngModel)]="novaDuracao" min="7" max="90" step="7" class="slider"/>
+      <div class="slider-labels">
+        <span>7</span><span>21</span><span>30</span><span>60</span><span>90</span>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" (click)="cancelarForm()">Cancelar</button>
+      <button class="btn-save" (click)="salvarNovo()">Iniciar Experimento</button>
+    </div>
+  </div>
+
+  <!-- Ativos -->
+  <section class="group" *ngIf="ativos.length">
+    <div class="section-label">
+      <span class="label-dot active"></span>
+      Em andamento ({{ ativos.length }})
+    </div>
+    <div class="exp-list">
+      <div class="exp-card" *ngFor="let e of ativos">
+        <div class="exp-header">
+          <div class="exp-info">
+            <span class="exp-titulo">{{ e.titulo }}</span>
+            <span class="exp-desc" *ngIf="e.descricao">{{ e.descricao }}</span>
+          </div>
+          <button class="btn-excluir" (click)="excluir(e)" title="Excluir">✕</button>
+        </div>
+
+        <!-- Progresso -->
+        <div class="progress-row">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" [style.width.%]="progresso(e)"></div>
+          </div>
+          <span class="progress-pct">{{ progresso(e) }}%</span>
+        </div>
+        <div class="progress-info">
+          <span>{{ e.dias.length }} / {{ e.duracaoDias }} dias</span>
+          <span class="dias-restantes">{{ diasRestantes(e) }} restantes</span>
+        </div>
+
+        <!-- Heatmap simples (últimos 21 quadradinhos) -->
+        <div class="heatmap">
+          <ng-container *ngFor="let d of [].constructor(e.duracaoDias); let i = index">
+            <div class="hm-cell" [class.done]="i < e.dias.length"></div>
+          </ng-container>
+        </div>
+
+        <!-- Ações -->
+        <div class="exp-actions">
+          <button class="btn-marcar" (click)="marcarHoje(e)" [disabled]="marcouHoje(e)">
+            {{ marcouHoje(e) ? '✅ Feito hoje' : '🔬 Marcar hoje' }}
+          </button>
+          <button class="btn-converter" (click)="converter(e)" title="Virar hábito permanente">
+            ⚗️ Virar Hábito
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Convertidos -->
+  <section class="group" *ngIf="convertidos.length">
+    <div class="section-label">
+      <span class="label-dot converted"></span>
+      Virou hábito ({{ convertidos.length }})
+    </div>
+    <div class="exp-list">
+      <div class="exp-card done-card" *ngFor="let e of convertidos">
+        <span class="exp-titulo">{{ e.titulo }}</span>
+        <span class="badge-converted">🏆 Hábito permanente</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Concluídos sem converter -->
+  <section class="group" *ngIf="concluidos.length">
+    <div class="section-label">
+      <span class="label-dot inactive"></span>
+      Concluídos ({{ concluidos.length }})
+    </div>
+    <div class="exp-list">
+      <div class="exp-card done-card" *ngFor="let e of concluidos">
+        <div class="exp-header">
+          <span class="exp-titulo">{{ e.titulo }}</span>
+          <button class="btn-converter" (click)="converter(e)">⚗️ Virar Hábito</button>
+        </div>
+        <div class="progress-info">
+          <span>Completou {{ e.dias.length }} de {{ e.duracaoDias }} dias</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!ativos.length && !concluidos.length && !convertidos.length && !mostraForm">
+    <span class="empty-icon">🧪</span>
+    <p>Nenhum experimento ainda.</p>
+    <p class="empty-sub">Teste um novo hábito por 21 dias antes de assumir para sempre!</p>
+    <button class="btn-novo" (click)="mostraForm = true">Iniciar Experimento</button>
+  </div>
+
+  <div class="bottom-spacer"></div>
+</div>

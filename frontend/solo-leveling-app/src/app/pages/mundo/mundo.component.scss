@@ -1,0 +1,200 @@
+$bg:      #0d1117;
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+
+.page {
+  padding: 24px 20px 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: $bg;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: $white;
+  margin: 0;
+}
+
+// Card rank atual
+.rank-atual-card {
+  background: $surface;
+  border: 1.5px solid;
+  border-radius: 14px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.3s;
+}
+
+.rank-atual-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rank-icon { font-size: 2.2rem; }
+
+.rank-atual-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rank-label-sm {
+  font-size: 0.62rem;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.rank-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.rank-nivel-info {
+  font-size: 0.78rem;
+  color: $muted;
+}
+
+.rank-xp {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.xp-label {
+  font-size: 0.6rem;
+  color: $muted;
+  text-transform: uppercase;
+}
+
+.xp-valor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $white;
+}
+
+.rank-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rank-bar-track {
+  flex: 1;
+  height: 8px;
+  background: $card;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rank-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s;
+}
+
+.rank-pct {
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 36px;
+  text-align: right;
+}
+
+.rank-next-info {
+  font-size: 0.82rem;
+  color: $muted;
+  strong { font-weight: 700; }
+}
+
+// Section label
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+// Mapa
+.rank-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 8px 0;
+}
+
+.rank-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+
+  &.futuro { opacity: 0.35; }
+}
+
+.connector {
+  width: 2px;
+  height: 28px;
+  background: #30363d;
+
+  &.passado { background: linear-gradient(#444, #444); }
+  &.atual   { background: linear-gradient(#444, transparent); }
+}
+
+.node-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: #161b22;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  transition: box-shadow 0.3s;
+}
+
+.node-label {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.node-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #000;
+  border-radius: 6px;
+  padding: 2px 8px;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+.node-range {
+  font-size: 0.62rem;
+  color: $muted;
+  margin-top: 1px;
+  margin-bottom: 2px;
+}
+
+.bottom-spacer { height: 20px; }

@@ -1,0 +1,466 @@
+// GitHub Primer Dark — https://primer.style/foundations/color
+$bg:      #0d1117;   // canvas.default
+$surface: #161b22;   // canvas.subtle
+$card:    #21262d;   // canvas.inset / border.default bg
+$border:  #30363d;   // border.default
+$blue:    #58a6ff;   // accent.fg
+$green:   #3fb950;   // success.fg
+$red:     #f85149;   // danger.fg
+$orange:  #d29922;   // attention.fg
+$purple:  #bc8cff;   // done.fg
+$white:   #e6edf3;   // fg.default
+$text:    #c9d1d9;   // fg.muted
+$muted:   #8b949e;   // fg.subtle
+
+.page {
+  padding: 24px 20px 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: $bg;
+  min-height: 100vh;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.date {
+  font-size: 0.8rem;
+  color: $muted;
+  font-weight: 500;
+}
+
+.time {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: $text;
+  letter-spacing: 1px;
+}
+
+.app-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: $white;
+  letter-spacing: 1px;
+}
+
+.profile {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.avatar {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: $card;
+  border: 2px solid $border;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.avatar-fallback {
+  position: absolute;
+  font-size: 2rem;
+  font-weight: 700;
+  color: $muted;
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.avatar:hover .avatar-overlay { opacity: 1; }
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.player-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: $white;
+}
+
+.player-title {
+  font-size: 1rem;
+  color: $muted;
+}
+
+.xp-track {
+  width: 200px;
+  height: 8px;
+  background: $card;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.xp-fill {
+  height: 100%;
+  background: $blue;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.xp-label {
+  font-size: 0.9rem;
+  color: $muted;
+  margin-top: 3px;
+}
+
+.coins-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 6px 10px;
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+}
+
+.coins-icon { width: 36px; height: 36px; }
+
+.coins-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $orange;
+}
+
+.rank-letter {
+  font-size: 5.5rem;
+  font-weight: 900;
+  line-height: 1;
+  font-family: 'Audiowide', sans-serif;
+
+  // ── Cores por rank ──────────────────────────────
+  &.rank-SSS { color: #ff1744; }
+  &.rank-SS  { color: #f44336; }
+  &.rank-S   { color: #e53935; }
+  &.rank-A   { color: #ff6f00; }
+  &.rank-B   { color: $purple;  }
+  &.rank-C   { color: $blue;    }
+  &.rank-D   { color: $green;   }
+  &.rank-E   { color: #78909c; }
+  &.rank-F   { color: #546e7a; }
+  &.rank-G   { color: #455a64; }
+  &.rank-H   { color: #37474f; }
+}
+
+.habitos-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 16px 14px;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 14px;
+
+  &.green  { color: $green; }
+  &.red    { color: $red; }
+  &.gold   { color: #ffd700; }
+  &.purple { color: $purple; }
+}
+
+.habit-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: $card; border-radius: 2px; }
+  &::-webkit-scrollbar-thumb { background: $border; border-radius: 2px; }
+}
+
+.habit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: filter 0.15s;
+
+  &:active { filter: brightness(0.8); }
+  &.green  { background: #1a4220; color: $green; }
+  &.red    { background: #3d1a1a; color: $red; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-4px); }
+  40%       { transform: translateX(4px); }
+  60%       { transform: translateX(-3px); }
+  80%       { transform: translateX(3px); }
+}
+
+.pill.punished {
+  animation: shake 0.4s ease;
+  background: #5a1e1e !important;
+}
+
+.habit-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.habit-name {
+  font-size: 0.95rem;
+  color: $text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.habit-reset {
+  font-size: 0.72rem;
+  color: $muted;
+}
+
+.indisponivel {
+  opacity: 0.45;
+
+  .pill:disabled {
+    cursor: not-allowed;
+    filter: grayscale(1);
+  }
+}
+
+.habit-xp {
+  font-size: 0.95rem;
+  font-weight: 700;
+  flex-shrink: 0;
+
+  &.green { color: $green; }
+  &.red   { color: $red; }
+}
+
+.empty {
+  font-size: 0.78rem;
+  color: $muted;
+  text-align: center;
+  padding: 8px 0;
+}
+
+// ── Extras row ────────────────────────────────────────────
+.extras-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ── Desafio do dia ────────────────────────────────────────
+.desafio-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: opacity 0.3s;
+
+  &.concluido {
+    background: rgba(63, 185, 80, 0.06);
+    border-color: rgba(63, 185, 80, 0.25);
+    opacity: 0.75;
+  }
+
+  &.recusado {
+    background: rgba(139, 148, 158, 0.05);
+    border-color: rgba(139, 148, 158, 0.15);
+    opacity: 0.6;
+  }
+}
+
+.desafio-emoji {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.desafio-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desafio-nome {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $white;
+}
+
+.desafio-xp {
+  font-size: 0.75rem;
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.desafio-btns {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+}
+
+.btn-desafio {
+  background: #ffd700;
+  color: #1a1200;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+
+  &.recusar {
+    background: transparent;
+    color: $muted;
+    border: 1px solid $border;
+    font-weight: 400;
+    &:hover { color: $red; border-color: $red; }
+  }
+
+  &:disabled { opacity: 0.7; }
+}
+
+.desafio-amanha {
+  font-size: 0.7rem;
+  color: $muted;
+  display: block;
+  margin-top: 2px;
+}
+
+.desafio-desc {
+  font-size: 0.75rem;
+  color: $muted;
+  text-align: center;
+  margin-top: 10px;
+  font-style: italic;
+
+  &.done { color: $green; }
+}
+
+// ── Diário de conquistas ──────────────────────────────────
+.diario-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: $border; border-radius: 4px; }
+}
+
+.diario-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  font-size: 0.78rem;
+
+  &.tipo-habito_bom  { border-left: 3px solid $green; }
+  &.tipo-habito_mau  { border-left: 3px solid $red; }
+  &.tipo-missao      { border-left: 3px solid $blue; }
+  &.tipo-nivel       { border-left: 3px solid #ffd700; background: rgba(255,215,0,0.05); }
+  &.tipo-recompensa  { border-left: 3px solid $purple; }
+  &.tipo-lootbox     { border-left: 3px solid $orange; }
+}
+
+.diario-emoji { font-size: 1rem; flex-shrink: 0; }
+
+.diario-msg {
+  flex: 1;
+  color: $text;
+  line-height: 1.3;
+}
+
+.diario-hora {
+  font-size: 0.68rem;
+  color: $muted;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

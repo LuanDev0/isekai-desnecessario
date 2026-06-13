@@ -1,0 +1,608 @@
+$bg:      #0d1117;
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$blue:    #58a6ff;
+$green:   #3fb950;
+$red:     #f85149;
+$purple:  #bc8cff;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+$gold:    #ffd700;
+
+:host { display: block; min-height: 100vh; background: $bg; }
+
+.status-page {
+  padding: 16px 16px 0;
+  color: $text;
+  font-family: 'Inter', sans-serif;
+}
+
+// ── Loading ─────────────────────────────────────────────
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 0;
+  color: $muted;
+  font-size: 0.9rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $border;
+  border-top-color: $blue;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Título ──────────────────────────────────────────────
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $white;
+  margin: 0 0 16px;
+}
+
+// ── Hero Card ────────────────────────────────────────────
+.hero-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.avatar-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #21262d;
+  border: 2px solid #30363d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #1f6feb 0%, #bc8cff 100%);
+}
+
+.avatar-placeholder {
+  background: linear-gradient(135deg, #1f6feb 0%, #bc8cff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hero-nome-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.hero-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-nome {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: $white;
+  margin: 0;
+}
+
+.hero-titulo {
+  font-size: 0.78rem;
+  color: $muted;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.xp-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.xp-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: $muted;
+}
+
+.xp-bar-track {
+  height: 8px;
+  background: $card;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid $border;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1f6feb, $blue);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.xp-falta {
+  font-size: 0.68rem;
+  color: $muted;
+  text-align: right;
+}
+
+// ── Quick Stats ──────────────────────────────────────────
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.qs-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.qs-icon { font-size: 1.3rem; }
+.qs-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $white;
+  &.gold { color: $gold; }
+  &.blue { color: $blue; }
+}
+.qs-label {
+  font-size: 0.6rem;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+// ── Sections ─────────────────────────────────────────────
+.section {
+  margin-bottom: 14px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px;
+
+  svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+// ── Resumo de atributos ───────────────────────────────────
+.atrib-resumo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 7px 12px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.ar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ar-label {
+  font-size: 0.65rem;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ar-valor {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $white;
+}
+
+.ar-sep {
+  color: $border;
+  font-size: 0.8rem;
+}
+
+// ── Atributos ────────────────────────────────────────────
+.attr-list {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.attr-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.attr-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.attr-emoji {
+  font-size: 1rem;
+  width: 22px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.attr-badge {
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.attr-habitos {
+  font-size: 0.65rem;
+  color: $muted;
+  flex-shrink: 0;
+}
+
+.attr-nome {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $text;
+  flex: 1;
+}
+
+.attr-valor {
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: right;
+}
+
+.attr-bar-track {
+  height: 6px;
+  background: $card;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.attr-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.7s ease;
+  opacity: 0.85;
+}
+
+.attr-desc {
+  font-size: 0.65rem;
+  color: $muted;
+}
+
+// ── Section header com toggle ────────────────────────────
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+
+  .section-title { margin: 0; flex-shrink: 0; }
+}
+
+.section-header-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px;
+}
+
+.meta-top, .meta-bot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+}
+
+.meta-label {
+  color: $muted;
+  flex: 1;
+}
+
+.meta-valor {
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+.vista-toggle {
+  display: flex;
+  gap: 4px;
+
+  button {
+    background: $card;
+    border: 1px solid $border;
+    border-radius: 6px;
+    padding: 5px 7px;
+    cursor: pointer;
+    color: $muted;
+    display: flex;
+    align-items: center;
+    transition: all 0.15s;
+
+    svg { width: 14px; height: 14px; }
+
+    &.ativo {
+      background: rgba(88, 166, 255, 0.15);
+      border-color: $blue;
+      color: $blue;
+    }
+
+    &:hover:not(.ativo) { border-color: $muted; color: $text; }
+  }
+}
+
+// ── Radar Layout (cards esquerda | radar direita) ────────
+.radar-layout {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 12px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+// ── Wrapper com título + grade ────────────────────────────
+.mini-cards-col-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mc-titulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+// ── Grade 2×3 de mini cards ───────────────────────────────
+.mini-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+
+// ── Radar SVG (lado direito, ocupa o restante) ────────────
+.radar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.radar-svg {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  display: block;
+}
+
+// ── Legenda fantasma ──────────────────────────────────────
+.radar-legenda {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  color: $muted;
+}
+
+.leg-line {
+  width: 20px;
+  height: 2px;
+  background: #58a6ff;
+  border-radius: 1px;
+
+  &.dashed {
+    background: none;
+    border-top: 2px dashed rgba(139,148,158,0.5);
+  }
+}
+
+// ── Mini Cards ────────────────────────────────────────────
+.mini-card {
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 28px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.2s;
+
+  &.card-top {
+    border-color: rgba(255, 215, 0, 0.5);
+    background: rgba(255, 215, 0, 0.05);
+  }
+
+  &.card-bot {
+    border-color: rgba(248, 81, 73, 0.4);
+    background: rgba(248, 81, 73, 0.04);
+  }
+}
+
+.mc-top {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mc-emoji {
+  font-size: 1.1rem;
+}
+
+.mc-badge {
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.mc-valor {
+  font-weight: 700;
+  line-height: 1.1;
+  display: block;
+}
+
+.mc-nome {
+  font-size: 0.68rem;
+  color: $muted;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mc-bar-track {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.7s ease;
+  opacity: 0.9;
+}
+
+// ── Activity Grid ────────────────────────────────────────
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.act-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+
+  &.green  { border-color: rgba(63, 185, 80, 0.25);  }
+  &.blue   { border-color: rgba(88, 166, 255, 0.25); }
+  &.purple { border-color: rgba(188, 140, 255, 0.25);}
+  &.gold   { border-color: rgba(255, 215, 0, 0.25);  }
+}
+
+.act-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: $white;
+  line-height: 1;
+
+  .green  & { color: $green;  }
+  .blue   & { color: $blue;   }
+  .purple & { color: $purple; }
+  .gold   & { color: $gold;   }
+}
+
+.act-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text;
+}
+
+.act-sub {
+  font-size: 0.68rem;
+  color: $muted;
+}
+
+.bottom-spacer { height: 80px; }

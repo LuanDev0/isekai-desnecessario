@@ -1,0 +1,95 @@
+<div class="inv-page">
+
+  <h1 class="page-title">Inventário</h1>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-label">Comprados</span>
+      <span class="stat-value">{{ totalComprado }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Usados</span>
+      <span class="stat-value">{{ totalUsado }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Disponíveis</span>
+      <span class="stat-value highlight">{{ disponiveis.length }}</span>
+    </div>
+    <div class="stat-card favorito-card" *ngIf="favorito">
+      <span class="stat-label">Favorito</span>
+      <span class="stat-value fav-nome">{{ favorito.nome }}</span>
+    </div>
+  </div>
+
+  <!-- Abas -->
+  <div class="abas">
+    <button class="aba-btn" [class.ativa]="aba === 'disponiveis'" (click)="aba = 'disponiveis'">
+      Disponíveis <span class="badge">{{ disponiveis.length }}</span>
+    </button>
+    <button class="aba-btn" [class.ativa]="aba === 'usados'" (click)="aba = 'usados'">
+      Usados <span class="badge muted">{{ usados.length }}</span>
+    </button>
+  </div>
+
+  <!-- Vazio -->
+  <div class="vazio" *ngIf="pilhas.length === 0">
+    <span class="vazio-icon">{{ aba === 'disponiveis' ? '🎒' : '✅' }}</span>
+    <p *ngIf="aba === 'disponiveis'">Nenhum item disponível.<br><small>Compre recompensas na Loja!</small></p>
+    <p *ngIf="aba === 'usados'">Nenhum item usado ainda.</p>
+  </div>
+
+  <!-- Grid de pilhas -->
+  <div class="grid" *ngIf="pilhas.length > 0">
+    <div
+      class="item-card"
+      *ngFor="let p of pilhas"
+      [class.usado]="aba === 'usados'"
+      [class.flash-ok]="feedbacks[p.itens[0].id] === 'ok'"
+    >
+      <!-- Emoji + badge quantidade -->
+      <div class="item-emoji-wrap">
+        <span class="item-emoji">{{ p.emoji }}</span>
+        <span class="qtd-badge" *ngIf="p.quantidade > 1">×{{ p.quantidade }}</span>
+      </div>
+
+      <div class="item-body">
+        <h3 class="item-nome">{{ p.nome }}</h3>
+        <p class="item-desc" *ngIf="p.descricao">{{ p.descricao }}</p>
+
+        <!-- Data compra / uso -->
+        <div class="item-meta">
+          <span *ngIf="aba === 'disponiveis'">🛒 {{ fmtData(p.ultimaCompra) }}</span>
+          <span *ngIf="aba === 'usados' && p.dataUso">✅ {{ fmtData(p.dataUso!) }}</span>
+        </div>
+
+        <!-- Preço -->
+        <div class="item-preco">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/>
+            <text x="12" y="17" text-anchor="middle" font-size="11" font-weight="bold" fill="#7a5200">$</text>
+          </svg>
+          <span>{{ p.preco }}</span>
+        </div>
+      </div>
+
+      <!-- Botão usar -->
+      <button
+        *ngIf="aba === 'disponiveis'"
+        class="btn-usar"
+        [disabled]="usando !== null"
+        (click)="usar(p)"
+      >
+        <ng-container *ngIf="feedbacks[p.itens[0].id] === 'ok'">✓ Usado!</ng-container>
+        <ng-container *ngIf="feedbacks[p.itens[0].id] === 'erro'">Erro!</ng-container>
+        <ng-container *ngIf="!feedbacks[p.itens[0].id]">
+          {{ usando === p.itens[0].id ? '...' : 'Usar' }}
+        </ng-container>
+      </button>
+
+      <div *ngIf="aba === 'usados'" class="usado-tag">Usado</div>
+    </div>
+  </div>
+
+  <div class="bottom-spacer"></div>
+</div>

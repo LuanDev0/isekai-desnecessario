@@ -1,0 +1,244 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SoloLeveling.API.Data;
+using SoloLeveling.API.Models;
+using SoloLeveling.API.Services;
+
+namespace SoloLeveling.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class PerfilController(AppDbContext db, XpService xpService) : ControllerBase
+{
+    [HttpGet]
+    public async Task<IActionResult> GetAll() =>
+        Ok(await db.Perfis.ToListAsync());
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetOrCreate()
+    {
+        var perfil = await db.Perfis.FirstOrDefaultAsync();
+
+        if (perfil is null)
+        {
+            perfil = new Perfil
+            {
+                Nome = "Jogador",
+                Titulo = "Iniciante",
+                Rank = "F",
+                Nivel = 1,
+                Xp = 0,
+                ProximoNivelXp = 100,
+                Moedas = 0,
+            };
+            db.Perfis.Add(perfil);
+            await db.SaveChangesAsync();
+        }
+
+        return Ok(perfil);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        return perfil is null ? NotFound() : Ok(perfil);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(Perfil perfil)
+    {
+        db.Perfis.Add(perfil);
+        await db.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, Perfil perfil)
+    {
+        if (id != perfil.Id) return BadRequest();
+        db.Entry(perfil).State = EntityState.Modified;
+        await db.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+        db.Perfis.Remove(perfil);
+        await db.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPost("{id}/xp")]
+    public async Task<IActionResult> AdicionarXp(int id, [FromQuery] int quantidade)
+    {
+        await xpService.AdicionarXp(id, quantidade);
+        return Ok(await db.Perfis.FindAsync(id));
+    }
+
+    [HttpPost("{id}/reset")]
+    public async Task<IActionResult> Reset(int id)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+
+        perfil.Nome = "Herói";
+        perfil.Xp = 0;
+        perfil.Moedas = 0;
+        perfil.Nivel = 1;
+        perfil.ProximoNivelXp = 100;
+        perfil.Rank = "F";
+        perfil.Titulo = "Iniciante";
+        perfil.FotoUrl = null;
+
+        db.BonsHabitos.RemoveRange(db.BonsHabitos.Where(h => h.PerfilId == id));
+        db.MausHabitos.RemoveRange(db.MausHabitos.Where(h => h.PerfilId == id));
+        db.Missoes.RemoveRange(db.Missoes.Where(m => m.PerfilId == id));
+
+        await db.SaveChangesAsync();
+        return Ok(perfil);
+    }
+
+    [HttpPost("{id}/foto")]
+    public async Task<IActionResult> UploadFoto(int id, IFormFile arquivo)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+
+        var extensoesPermitidas = new[] { ".jpg", ".jpeg", ".jfif", ".png", ".webp", ".gif" };
+        var ext = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
+        if (!extensoesPermitidas.Contains(ext))
+            return BadRequest("Formato inválido. Use JPG, JFIF, PNG, GIF ou WebP.");
+
+        // JFIF é JPEG — salva como .jpg para compatibilidade com browsers
+        if (ext == ".jfif") ext = ".jpg";
+
+        if (arquivo.Length > 5 * 1024 * 1024)
+            return BadRequest("Arquivo muito grande. Máximo 5MB.");
+
+        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        Directory.CreateDirectory(uploadsDir);
+
+        // Remove foto antiga se existir
+        if (!string.IsNullOrEmpty(perfil.FotoUrl))
+        {
+            var fotoAntiga = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", perfil.FotoUrl.TrimStart('/'));
+            if (System.IO.File.Exists(fotoAntiga))
+                System.IO.File.Delete(fotoAntiga);
+        }
+
+        var nomeArquivo = $"perfil_{id}_{Guid.NewGuid():N}{ext}";
+        var caminho = Path.Combine(uploadsDir, nomeArquivo);
+
+        using (var stream = new FileStream(caminho, FileMode.Create))
+            await arquivo.CopyToAsync(stream);
+
+        perfil.FotoUrl = $"/uploads/{nomeArquivo}";
+        await db.SaveChangesAsync();
+
+        return Ok(perfil);
+    }
+
+    // ── Desafio do dia ────────────────────────────────────────────────
+
+    [HttpPost("{id}/desafio/recusar")]
+    public async Task<IActionResult> RecusarDesafio(int id)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+        perfil.DesafioRecusadoEm = DateTime.Now;
+        await db.SaveChangesAsync();
+        return Ok(perfil);
+    }
+
+    [HttpPost("{id}/desafio/concluir")]
+    public async Task<IActionResult> ConcluirDesafio(int id)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+        perfil.DesafioConcluídoEm = DateTime.Now;
+        await db.SaveChangesAsync();
+        return Ok(perfil);
+    }
+
+    // ── Lootbox ──────────────────────────────────────────────────────
+
+    [HttpGet("{id}/lootbox/status")]
+    public async Task<IActionResult> LootboxStatus(int id)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+
+        // Reseta XpHoje se for um dia novo
+        if (perfil.DataXpHoje?.Date != DateTime.Today)
+        {
+            perfil.XpHoje     = 0;
+            perfil.DataXpHoje = DateTime.Today;
+            await db.SaveChangesAsync();
+        }
+
+        bool xpSuficiente  = perfil.XpHoje >= 1000;
+        bool naoPegouHoje  = perfil.UltimaLootbox?.Date != DateTime.Today;
+        bool disponivel    = xpSuficiente && naoPegouHoje;
+
+        return Ok(new
+        {
+            disponivel,
+            xpHoje      = perfil.XpHoje,
+            xpNecessario = 1000,
+            jaAbriuHoje  = !naoPegouHoje
+        });
+    }
+
+    [HttpPost("{id}/lootbox/abrir")]
+    public async Task<IActionResult> AbrirLootbox(int id)
+    {
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+
+        if (perfil.DataXpHoje?.Date != DateTime.Today)
+        { perfil.XpHoje = 0; perfil.DataXpHoje = DateTime.Today; }
+
+        if (perfil.XpHoje < 1000)
+            return BadRequest("XP insuficiente. Ganhe 1000 XP hoje para abrir a lootbox.");
+
+        if (perfil.UltimaLootbox?.Date == DateTime.Today)
+            return BadRequest("Lootbox já aberta hoje. Volte amanhã!");
+
+        var recompensas = await db.Recompensas
+            .Where(r => r.PerfilId == id && r.Ativa)
+            .ToListAsync();
+
+        if (recompensas.Count == 0)
+            return BadRequest("Nenhuma recompensa cadastrada.");
+
+        // Seleção ponderada: peso = precoMaximo - preco + 1 (mais barato = mais chance)
+        int precoMax   = recompensas.Max(r => r.Preco);
+        var pesos      = recompensas.Select(r => new { r, peso = precoMax - r.Preco + 1 }).ToList();
+        int totalPeso  = pesos.Sum(p => p.peso);
+        int roll       = Random.Shared.Next(totalPeso);
+        int acumulado  = 0;
+        Recompensa? ganhador = null;
+
+        foreach (var p in pesos)
+        {
+            acumulado += p.peso;
+            if (roll < acumulado) { ganhador = p.r; break; }
+        }
+
+        perfil.UltimaLootbox = DateTime.Now;
+
+        db.DiarioAcoes.Add(new SoloLeveling.API.Models.DiarioAcao { PerfilId = id, Emoji = "📦", Tipo = "lootbox",
+            Mensagem = $"Abriu lootbox e ganhou \"{ganhador!.Nome}\"" });
+
+        await db.SaveChangesAsync();
+
+        int pesoGanhador  = precoMax - ganhador!.Preco + 1;
+        double chance     = Math.Round((double)pesoGanhador / totalPeso * 100, 1);
+
+        return Ok(new { recompensa = ganhador, chance });
+    }
+}

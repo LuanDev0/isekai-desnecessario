@@ -1,0 +1,339 @@
+$bg:      #0d1117;
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$blue:    #58a6ff;
+$green:   #3fb950;
+$orange:  #d29922;
+$purple:  #bc8cff;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+
+.page {
+  padding: 24px 20px 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: $bg;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: $white;
+  margin: 0;
+}
+
+.btn-novo {
+  background: $blue;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.85; }
+}
+
+// Toast
+.toast {
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  color: $white;
+  text-align: center;
+}
+
+// Form
+.form-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $white;
+  margin: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  label {
+    font-size: 0.75rem;
+    color: $muted;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.input {
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 7px;
+  color: $white;
+  font-size: 0.9rem;
+  padding: 9px 12px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+  &:focus { border-color: $blue; }
+}
+
+.textarea { resize: none; }
+
+.slider {
+  width: 100%;
+  accent-color: $blue;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: $muted;
+  padding: 0 2px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  background: none;
+  border: 1px solid $border;
+  border-radius: 7px;
+  color: $muted;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  &:hover { color: $text; }
+}
+
+.btn-save {
+  background: $green;
+  border: none;
+  border-radius: 7px;
+  color: #000;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  &:hover { opacity: 0.85; }
+}
+
+// Section labels
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.label-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  &.active    { background: $green; }
+  &.converted { background: $orange; }
+  &.inactive  { background: $muted; }
+}
+
+// Exp list
+.exp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exp-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.done-card { opacity: 0.7; }
+
+.exp-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.exp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.exp-titulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $white;
+}
+
+.exp-desc {
+  font-size: 0.78rem;
+  color: $muted;
+}
+
+.btn-excluir {
+  background: none;
+  border: none;
+  color: $muted;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  &:hover { color: #f85149; background: #f8514920; }
+}
+
+// Progress
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar-track {
+  flex: 1;
+  height: 6px;
+  background: $card;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: $blue;
+  border-radius: 4px;
+  transition: width 0.4s;
+}
+
+.progress-pct {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $blue;
+  min-width: 32px;
+  text-align: right;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: $muted;
+}
+
+.dias-restantes { color: $orange; }
+
+// Heatmap
+.heatmap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.hm-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: $card;
+  border: 1px solid $border;
+  &.done { background: $blue; border-color: $blue; }
+}
+
+// Actions
+.exp-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-marcar {
+  flex: 1;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 7px;
+  color: $text;
+  padding: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:not([disabled]):hover { background: $blue; color: #000; border-color: $blue; }
+  &[disabled] { color: $green; cursor: default; }
+}
+
+.btn-converter {
+  background: none;
+  border: 1px solid $orange;
+  border-radius: 7px;
+  color: $orange;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { background: $orange; color: #000; }
+}
+
+.badge-converted {
+  font-size: 0.8rem;
+  color: $orange;
+  font-weight: 600;
+}
+
+// Empty state
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-icon { font-size: 3rem; }
+
+p { color: $text; font-size: 0.95rem; margin: 0; }
+
+.empty-sub { color: $muted; font-size: 0.82rem; max-width: 280px; }
+
+.group { display: flex; flex-direction: column; }
+.bottom-spacer { height: 20px; }

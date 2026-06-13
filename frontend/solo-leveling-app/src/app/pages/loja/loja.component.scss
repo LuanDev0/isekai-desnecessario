@@ -1,0 +1,415 @@
+$bg:      #0d1117;
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$blue:    #58a6ff;
+$green:   #3fb950;
+$red:     #f85149;
+$orange:  #d29922;
+$purple:  #bc8cff;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $bg;
+}
+
+.loja-page {
+  padding: 16px 16px 0;
+  color: $text;
+  font-family: 'Inter', sans-serif;
+}
+
+// ── Header ────────────────────────────────────────────
+.loja-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $white;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.moedas-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffd700;
+
+  svg { width: 20px; height: 20px; }
+}
+
+// ── Lootbox button ────────────────────────────────────
+.lootbox-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+
+  &.disponivel {
+    border-color: $purple;
+    background: #1a0d2e;
+    animation: pulse-lootbox 2s infinite;
+
+    .lootbox-label { color: $purple; }
+    .lootbox-icon  { animation: float 1.5s ease-in-out infinite; }
+  }
+
+  &.abrindo {
+    border-color: $orange;
+    background: #2a1a00;
+    cursor: wait;
+    .lootbox-icon { animation: spin 0.6s linear infinite; }
+  }
+
+  &.ja-abriu {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:disabled { cursor: not-allowed; }
+}
+
+.lootbox-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lootbox-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lootbox-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.lootbox-sub {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $muted;
+}
+
+.lootbox-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: $border;
+}
+
+.lootbox-progress-fill {
+  height: 100%;
+  background: $purple;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+// ── Modal resultado ────────────────────────────────────
+.lootbox-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.lootbox-card {
+  background: $surface;
+  border: 1px solid $purple;
+  border-radius: 16px;
+  padding: 32px 28px;
+  text-align: center;
+  max-width: 300px;
+  width: 90%;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lootbox-modal-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $white;
+  margin: 0 0 20px;
+}
+
+.lootbox-recompensa-reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.lootbox-emoji-big {
+  font-size: 3.5rem;
+  line-height: 1;
+  animation: popIn 0.4s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.lootbox-recompensa-reveal h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $white;
+  margin: 0;
+}
+
+.lootbox-desc {
+  font-size: 0.82rem;
+  color: $muted;
+  margin: 0;
+}
+
+.lootbox-chance {
+  font-size: 0.75rem;
+  color: $purple;
+  background: #1a0d2e;
+  border: 1px solid #3d1f6e;
+  border-radius: 12px;
+  padding: 2px 10px;
+  margin-top: 4px;
+}
+
+.btn-fechar-lootbox {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: $purple;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}
+
+// ── Animações ─────────────────────────────────────────
+@keyframes pulse-lootbox {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(188,140,255,0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(188,140,255,0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-3px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+// ── Vazio ─────────────────────────────────────────────
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 60px 0;
+  color: $muted;
+
+  .vazio-icon { font-size: 3rem; }
+  p    { margin: 0; font-size: 1rem; }
+  small { font-size: 0.82rem; }
+}
+
+// ── Grid ──────────────────────────────────────────────
+.recompensas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+// ── Card ──────────────────────────────────────────────
+.recompensa-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 16px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s, transform 0.15s;
+
+  &:hover:not(.sem-saldo) {
+    border-color: $blue;
+    transform: translateY(-2px);
+  }
+
+  &.sem-saldo {
+    opacity: 0.55;
+    filter: grayscale(0.4);
+  }
+
+  &.bloqueado {
+    opacity: 0.6;
+    border-color: #3d3d3d;
+  }
+
+  &.sucesso {
+    border-color: $green !important;
+    animation: pulse-green 0.4s ease;
+  }
+
+  &.falhou {
+    border-color: $red !important;
+    animation: shake 0.4s ease;
+  }
+}
+
+.card-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-nome {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $white;
+  margin: 0;
+  text-align: center;
+}
+
+.card-desc {
+  font-size: 0.75rem;
+  color: $muted;
+  margin: 0;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.card-requisito {
+  margin-top: 6px;
+  text-align: center;
+}
+
+.req-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+
+  &.cumprido {
+    color: #3fb950;
+    background: rgba(63, 185, 80, 0.12);
+  }
+
+  &.pendente {
+    color: #d29922;
+    background: rgba(210, 153, 34, 0.12);
+  }
+}
+
+.card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-preco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffd700;
+
+  svg { width: 16px; height: 16px; }
+}
+
+.btn-resgatar {
+  width: 100%;
+  padding: 7px 0;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #0c1a2e;
+  color: $blue;
+  border: 1px solid #1a3a5e;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) { background: #102038; }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: $card;
+    color: $muted;
+    border-color: $border;
+  }
+}
+
+// ── Animações ─────────────────────────────────────────
+@keyframes pulse-green {
+  0%   { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(63, 185, 80, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px); }
+  60%       { transform: translateX(-3px); }
+  80%       { transform: translateX(3px); }
+}
+
+.bottom-spacer { height: 80px; }

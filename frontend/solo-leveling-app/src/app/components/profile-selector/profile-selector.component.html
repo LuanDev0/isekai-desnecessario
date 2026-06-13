@@ -1,0 +1,48 @@
+<div class="profile-selector">
+  <!-- Botão trigger -->
+  <button class="trigger" (click)="aberto = !aberto">
+    <div class="mini-avatar">
+      <img *ngIf="atual && fotoUrl(atual)" [src]="fotoUrl(atual)" alt="avatar" />
+      <span *ngIf="!atual || !fotoUrl(atual)">{{ atual ? inicial(atual.nome) : '?' }}</span>
+    </div>
+    <div class="trigger-info">
+      <span class="trigger-nome">{{ atual?.nome ?? 'Selecionar' }}</span>
+      <span class="trigger-rank" *ngIf="atual">{{ atual.rank }} · Nv {{ atual.nivel }}</span>
+    </div>
+    <svg class="chevron" [class.open]="aberto" viewBox="0 0 24 24" fill="none">
+      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Dropdown -->
+  <div class="dropdown" *ngIf="aberto">
+    <p class="dropdown-label">Perfis</p>
+    <button
+      class="dropdown-item"
+      *ngFor="let p of perfis"
+      [class.ativo]="p.id === atual?.id"
+      (click)="trocar(p)"
+    >
+      <div class="mini-avatar sm">
+        <img *ngIf="fotoUrl(p)" [src]="fotoUrl(p)" alt="avatar" />
+        <span *ngIf="!fotoUrl(p)">{{ inicial(p.nome) }}</span>
+      </div>
+      <div class="item-info">
+        <span class="item-nome">{{ p.nome }}</span>
+        <span class="item-rank">{{ p.rank }} · Nv {{ p.nivel }}</span>
+      </div>
+      <svg *ngIf="p.id === atual?.id" class="check" viewBox="0 0 24 24" fill="none">
+        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <div class="dropdown-divider"></div>
+    <button class="dropdown-item new" (click)="irParaCadastro()">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Novo perfil
+    </button>
+  </div>
+</div>

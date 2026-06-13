@@ -1,0 +1,220 @@
+<div class="status-page">
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="carregando">
+    <div class="spinner"></div>
+    <span>Carregando status...</span>
+  </div>
+
+  <ng-container *ngIf="!carregando && perfil">
+
+    <!-- Título -->
+    <h1 class="page-title">Status</h1>
+
+    <!-- ── Hero Card ─────────────────────────────────── -->
+    <div class="hero-card">
+      <div class="avatar-wrap">
+        <img *ngIf="fotoUrl" [src]="fotoUrl" class="avatar-img" alt="avatar" />
+        <span *ngIf="!fotoUrl" class="avatar-placeholder">{{ perfil.nome.charAt(0).toUpperCase() }}</span>
+      </div>
+
+      <div class="hero-info">
+        <div class="hero-nome-row">
+          <h2 class="hero-nome">{{ perfil.nome }}</h2>
+          <span class="rank-badge" [style.background]="rankCor" [style.color]="'#0d1117'">{{ rankLabel }}</span>
+        </div>
+        <span class="hero-titulo">{{ perfil.titulo }}</span>
+
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-labels">
+            <span>Nível {{ perfil.nivel }}</span>
+            <span>{{ xpPercent }}%</span>
+            <span>Nível {{ perfil.nivel + 1 }}</span>
+          </div>
+          <div class="xp-bar-track">
+            <div class="xp-bar-fill" [style.width.%]="xpPercent"></div>
+          </div>
+          <span class="xp-falta">{{ xpParaProximo }} XP para o próximo nível</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Stats rápidos ──────────────────────────────── -->
+    <div class="quick-stats">
+      <div class="qs-card">
+        <span class="qs-icon">⚔️</span>
+        <span class="qs-value">{{ perfil.nivel }}</span>
+        <span class="qs-label">Nível</span>
+      </div>
+      <div class="qs-card">
+        <span class="qs-icon">🏆</span>
+        <span class="qs-value" [style.color]="rankCor">{{ rankLabel }}</span>
+        <span class="qs-label">Rank</span>
+      </div>
+      <div class="qs-card">
+        <span class="qs-icon">💰</span>
+        <span class="qs-value gold">{{ perfil.moedas }}</span>
+        <span class="qs-label">Moedas</span>
+      </div>
+      <div class="qs-card">
+        <span class="qs-icon">⚡</span>
+        <span class="qs-value blue">{{ perfil.xp }}</span>
+        <span class="qs-label">XP Total</span>
+      </div>
+    </div>
+
+    <!-- ── Atributos RPG ──────────────────────────────── -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          Atributos
+        </h2>
+        <div class="vista-toggle">
+          <button [class.ativo]="!vistaRadar" (click)="vistaRadar = false" title="Barras">
+            <svg viewBox="0 0 16 16" fill="currentColor"><rect x="0" y="2" width="16" height="2.5" rx="1"/><rect x="0" y="7" width="12" height="2.5" rx="1"/><rect x="0" y="12" width="9" height="2.5" rx="1"/></svg>
+          </button>
+          <button [class.ativo]="vistaRadar" (click)="vistaRadar = true" title="Radar">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="8,1 15,5.5 15,10.5 8,15 1,10.5 1,5.5"/><polygon points="8,4 12,6.5 12,9.5 8,12 4,9.5 4,6.5"/><line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="5.5" x2="15" y2="10.5"/><line x1="15" y1="5.5" x2="1" y2="10.5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista: Barras -->
+      <div class="attr-list" *ngIf="!vistaRadar">
+        <div class="attr-row" *ngFor="let a of atributosDisplay">
+          <div class="attr-header">
+            <span class="attr-emoji">{{ a.emoji }}</span>
+            <span class="attr-nome">{{ a.nome }}</span>
+            <span class="attr-badge" *ngIf="badgeCard(a)">{{ badgeCard(a) }}</span>
+            <span class="attr-habitos" *ngIf="a.habitos > 0">({{ a.habitos }} hábito{{ a.habitos > 1 ? 's' : '' }})</span>
+            <span class="attr-valor" [style.color]="a.cor">{{ a.valor }}</span>
+          </div>
+          <div class="attr-bar-track">
+            <div class="attr-bar-fill"
+                 [style.width.%]="(a.valor / maxAtributo) * 100"
+                 [style.background]="a.cor">
+            </div>
+          </div>
+          <span class="attr-desc">{{ a.desc }}{{ a.habitos === 0 ? ' — nenhum hábito vinculado' : '' }}</span>
+        </div>
+      </div>
+
+      <!-- Vista: Radar — cards esquerda | radar direita -->
+      <div class="radar-layout" *ngIf="vistaRadar">
+
+        <!-- Grade 2×3 de cards à esquerda -->
+        <div class="mini-cards-col-wrap">
+          <span class="mc-titulo">⚔️ Atributos</span>
+          <div class="mini-cards-grid">
+          <div class="mini-card"
+               *ngFor="let a of atributosDisplay"
+               [class.card-top]="badgeCard(a) === '👑'"
+               [class.card-bot]="badgeCard(a) === '💀'"
+               [style.opacity]="mcOpacity(a.valor)">
+            <div class="mc-top">
+              <span class="mc-emoji">{{ a.emoji }}</span>
+              <span class="mc-badge" *ngIf="badgeCard(a)">{{ badgeCard(a) }}</span>
+            </div>
+            <span class="mc-valor" [style.color]="a.cor" [style.font-size]="mcValorSize(a.valor)">{{ a.valor }}</span>
+            <span class="mc-nome">{{ a.nome }}</span>
+            <div class="mc-bar-track">
+              <div class="mc-bar-fill"
+                   [style.width.%]="(a.valor / maxAtributo) * 100"
+                   [style.background]="a.cor"></div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <!-- Radar SVG à direita -->
+        <div class="radar-wrap">
+          <svg viewBox="0 0 300 330" class="radar-svg">
+
+            <polygon *ngFor="let r of [0.2, 0.4, 0.6, 0.8, 1.0]"
+              [attr.points]="hexGrid(r)"
+              fill="none" stroke="#30363d" stroke-width="1"/>
+
+            <line *ngFor="let a of atributosDisplay; let i = index"
+              [attr.x1]="CX" [attr.y1]="CY"
+              [attr.x2]="eixoFim(i).x" [attr.y2]="eixoFim(i).y"
+              stroke="#30363d" stroke-width="1"/>
+
+            <polygon *ngIf="temFantasma"
+              [attr.points]="radarFantasma"
+              fill="rgba(139,148,158,0.08)"
+              stroke="rgba(139,148,158,0.4)"
+              stroke-width="1.5"
+              stroke-dasharray="4,3"
+              stroke-linejoin="round"/>
+
+            <polygon
+              [attr.points]="radarPoligono"
+              fill="rgba(88,166,255,0.15)"
+              stroke="#58a6ff"
+              stroke-width="2"
+              stroke-linejoin="round"/>
+
+            <circle *ngFor="let a of atributosDisplay; let i = index"
+              [attr.cx]="radarPonto(i, a.valor).x"
+              [attr.cy]="radarPonto(i, a.valor).y"
+              r="4"
+              [attr.fill]="a.cor"
+              stroke="#0d1117" stroke-width="1.5"/>
+
+            <g *ngFor="let a of atributosDisplay; let i = index">
+              <text [attr.x]="labelPos(i).x" [attr.y]="labelPos(i).y - 6"
+                text-anchor="middle" dominant-baseline="middle" font-size="18">{{ a.emoji }}</text>
+              <text [attr.x]="labelPos(i).x" [attr.y]="labelPos(i).y + 11"
+                text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#8b949e">{{ a.nome }}</text>
+              <text [attr.x]="labelPos(i).x" [attr.y]="labelPos(i).y + 22"
+                text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700"
+                [attr.fill]="a.cor">{{ a.valor }}</text>
+            </g>
+
+          </svg>
+
+          <div class="radar-legenda" *ngIf="temFantasma">
+            <span class="leg-item"><span class="leg-line"></span> Atual</span>
+            <span class="leg-item"><span class="leg-line dashed"></span> Anterior</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Resumo de Atividade ────────────────────────── -->
+    <section class="section">
+      <h2 class="section-title">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Atividade
+      </h2>
+
+      <div class="activity-grid">
+        <div class="act-card green">
+          <span class="act-value">{{ bonsHabitos.length }}</span>
+          <span class="act-label">Bons Hábitos</span>
+          <span class="act-sub">cadastrados</span>
+        </div>
+        <div class="act-card blue">
+          <span class="act-value">{{ melhorStreakBom }}</span>
+          <span class="act-label">Maior Streak</span>
+          <span class="act-sub">bons hábitos 🔥</span>
+        </div>
+        <div class="act-card purple">
+          <span class="act-value">{{ missoesConcluidas }}</span>
+          <span class="act-label">Missões</span>
+          <span class="act-sub">concluídas ✓</span>
+        </div>
+        <div class="act-card gold">
+          <span class="act-value">{{ inventario.length }}</span>
+          <span class="act-label">Itens</span>
+          <span class="act-sub">no inventário 🎒</span>
+        </div>
+      </div>
+    </section>
+
+  </ng-container>
+
+  <div class="bottom-spacer"></div>
+</div>

@@ -1,0 +1,462 @@
+<div class="config-page">
+  <h1 class="page-title">Configurações</h1>
+
+  <!-- ── BOM HÁBITO ──────────────────────────────── -->
+  <section class="card">
+    <div class="secao-header" (click)="secaoBons = !secaoBons">
+      <h2 class="card-title"><span class="badge good">+XP</span> Bons Hábitos</h2>
+      <svg class="chevron" [class.open]="secaoBons" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <ng-container *ngIf="secaoBons">
+      <div class="list-header" (click)="abertoBons = !abertoBons">
+        <span>Cadastrados ({{ bonsHabitos.length }})</span>
+        <svg class="chevron" [class.open]="abertoBons" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <ng-container *ngIf="abertoBons">
+        <ul class="item-list" *ngIf="bonsHabitos.length > 0">
+          <ng-container *ngFor="let h of bonsHabitos">
+            <li class="item-row" *ngIf="editandoBomId !== h.id">
+              <div class="item-info">
+                <span class="item-nome">{{ h.habito }}</span>
+                <span class="item-meta">+{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
+              </div>
+              <div class="item-actions">
+                <button class="btn-icon edit" (click)="iniciarEdicaoBom(h)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="btn-icon delete" (click)="excluirBom(h.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </li>
+            <li class="item-edit" *ngIf="editandoBomId === h.id">
+              <div class="edit-row">
+                <div class="edit-field edit-field-grow">
+                  <label class="edit-label">Nome do hábito</label>
+                  <input type="text" [(ngModel)]="editBom.habito" placeholder="Ex: Ler 10 páginas" />
+                </div>
+                <div class="edit-field edit-field-xp">
+                  <label class="edit-label">XP ganho</label>
+                  <input type="number" [(ngModel)]="editBom.xp" placeholder="50" min="1" max="9999" />
+                </div>
+                <div class="edit-field edit-field-freq">
+                  <label class="edit-label">Frequência</label>
+                  <select [(ngModel)]="editBom.frequencia">
+                    <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+                  </select>
+                </div>
+              </div>
+              <div class="edit-row" style="margin-top:8px">
+                <div class="edit-field edit-field-grow">
+                  <label class="edit-label">Atributo</label>
+                  <select [(ngModel)]="editBom.atributoId">
+                    <option [ngValue]="null" disabled>Selecione...</option>
+                    <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+                  </select>
+                </div>
+              </div>
+              <p class="feedback warn" *ngIf="feedbackBom && feedbackBomTipo === 'warn'" style="margin:6px 0 0">{{ feedbackBom }}</p>
+              <div class="edit-btns">
+                <button class="btn-confirm" (click)="salvarEdicaoBom()">Salvar</button>
+                <button class="btn-cancel"  (click)="editandoBomId = null">Cancelar</button>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+        <p class="empty-list" *ngIf="bonsHabitos.length === 0">Nenhum hábito cadastrado.</p>
+      </ng-container>
+
+      <div class="divider"></div>
+      <h3 class="sub-title">Novo Bom Hábito</h3>
+      <div class="field"><label>Nome</label>
+        <input type="text" [(ngModel)]="novoBom.habito" placeholder="Ex: Ler 10 páginas" />
+      </div>
+      <div class="row">
+        <div class="field"><label>XP</label>
+          <input type="number" [(ngModel)]="novoBom.xp" min="1" />
+        </div>
+        <div class="field"><label>Frequência</label>
+          <select [(ngModel)]="novoBom.frequencia">
+            <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Atributo</label>
+        <select [(ngModel)]="novoBom.atributoId">
+          <option [ngValue]="null" disabled>Selecione...</option>
+          <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+        </select>
+      </div>
+      <button class="btn-salvar" (click)="salvarBomHabito()">Cadastrar</button>
+      <p class="feedback" [class]="'feedback ' + feedbackBomTipo" *ngIf="feedbackBom">{{ feedbackBom }}</p>
+    </ng-container>
+  </section>
+
+  <!-- ── MAU HÁBITO ──────────────────────────────── -->
+  <section class="card">
+    <div class="secao-header" (click)="secaoMaus = !secaoMaus">
+      <h2 class="card-title"><span class="badge bad">-XP</span> Maus Hábitos</h2>
+      <svg class="chevron" [class.open]="secaoMaus" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <ng-container *ngIf="secaoMaus">
+      <div class="list-header" (click)="abertoMaus = !abertoMaus">
+        <span>Cadastrados ({{ mausHabitos.length }})</span>
+        <svg class="chevron" [class.open]="abertoMaus" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <ng-container *ngIf="abertoMaus">
+        <ul class="item-list" *ngIf="mausHabitos.length > 0">
+          <ng-container *ngFor="let h of mausHabitos">
+            <li class="item-row" *ngIf="editandoMauId !== h.id">
+              <div class="item-info">
+                <span class="item-nome">{{ h.habito }}</span>
+                <span class="item-meta red">-{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
+              </div>
+              <div class="item-actions">
+                <button class="btn-icon edit" (click)="iniciarEdicaoMau(h)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="btn-icon delete" (click)="excluirMau(h.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </li>
+            <li class="item-edit" *ngIf="editandoMauId === h.id">
+              <div class="edit-row">
+                <div class="edit-field edit-field-grow">
+                  <label class="edit-label">Nome do hábito</label>
+                  <input type="text" [(ngModel)]="editMau.habito" placeholder="Ex: Fumar" />
+                </div>
+                <div class="edit-field edit-field-xp">
+                  <label class="edit-label">XP perdido</label>
+                  <input type="number" [(ngModel)]="editMau.xp" placeholder="30" min="1" max="9999" />
+                </div>
+                <div class="edit-field edit-field-freq">
+                  <label class="edit-label">Frequência</label>
+                  <select [(ngModel)]="editMau.frequencia">
+                    <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+                  </select>
+                </div>
+              </div>
+              <div class="edit-row" style="margin-top:8px">
+                <div class="edit-field edit-field-grow">
+                  <label class="edit-label">Atributo</label>
+                  <select [(ngModel)]="editMau.atributoId">
+                    <option [ngValue]="null" disabled>Selecione...</option>
+                    <option *ngFor="let a of atributos" [ngValue]="a.id">− {{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+                  </select>
+                </div>
+              </div>
+              <p class="feedback warn" *ngIf="feedbackMau && feedbackMauTipo === 'warn'" style="margin:6px 0 0">{{ feedbackMau }}</p>
+              <div class="edit-btns">
+                <button class="btn-confirm" (click)="salvarEdicaoMau()">Salvar</button>
+                <button class="btn-cancel"  (click)="editandoMauId = null">Cancelar</button>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+        <p class="empty-list" *ngIf="mausHabitos.length === 0">Nenhum hábito cadastrado.</p>
+      </ng-container>
+
+      <div class="divider"></div>
+      <h3 class="sub-title">Novo Mau Hábito</h3>
+      <div class="field"><label>Nome</label>
+        <input type="text" [(ngModel)]="novoMau.habito" placeholder="Ex: Pular treino" />
+      </div>
+      <div class="row">
+        <div class="field"><label>XP penalidade</label>
+          <input type="number" [(ngModel)]="novoMau.xp" min="1" />
+        </div>
+        <div class="field"><label>Frequência</label>
+          <select [(ngModel)]="novoMau.frequencia">
+            <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Atributo</label>
+        <select [(ngModel)]="novoMau.atributoId">
+          <option [ngValue]="null" disabled>Selecione...</option>
+          <option *ngFor="let a of atributos" [ngValue]="a.id">− {{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+        </select>
+      </div>
+      <button class="btn-salvar" (click)="salvarMauHabito()">Cadastrar</button>
+      <p class="feedback" [class]="'feedback ' + feedbackMauTipo" *ngIf="feedbackMau">{{ feedbackMau }}</p>
+    </ng-container>
+  </section>
+
+  <!-- ── MISSÕES ─────────────────────────────────── -->
+  <section class="card">
+    <div class="secao-header" (click)="secaoMiss = !secaoMiss">
+      <h2 class="card-title"><span class="badge quest">⚔</span> Missões</h2>
+      <svg class="chevron" [class.open]="secaoMiss" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <ng-container *ngIf="secaoMiss">
+      <div class="list-header" (click)="abertoMiss = !abertoMiss">
+        <span>Cadastradas ({{ missoes.length }})</span>
+        <svg class="chevron" [class.open]="abertoMiss" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <ng-container *ngIf="abertoMiss">
+        <ul class="item-list" *ngIf="missoes.length > 0">
+          <ng-container *ngFor="let m of missoes">
+            <li class="item-row" *ngIf="editandoMissId !== m.id">
+              <div class="item-info">
+                <span class="item-nome">{{ m.titulo }}</span>
+                <span class="item-meta">{{ nomeTipo(m.tipoId) }} · +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} moedas</span>
+              </div>
+              <div class="item-actions">
+                <button class="btn-icon edit" (click)="iniciarEdicaoMiss(m)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="btn-icon delete" (click)="excluirMissao(m.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </li>
+            <li class="item-edit" *ngIf="editandoMissId === m.id">
+              <div class="edit-row">
+                <div class="edit-field edit-field-grow">
+                  <label class="edit-label">Título da missão</label>
+                  <input type="text" [(ngModel)]="editMiss.titulo" placeholder="Título" />
+                </div>
+                <div class="edit-field" style="flex:0 0 130px">
+                  <label class="edit-label">Tipo</label>
+                  <select [(ngModel)]="editMiss.tipoId">
+                    <option *ngFor="let t of tiposMissao" [ngValue]="t.id">{{ t.nome }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="edit-row edit-rewards" style="margin-top:8px">
+                <div class="reward-field">
+                  <label class="reward-label">XP</label>
+                  <input type="number" [(ngModel)]="editMiss.recompensaXp" min="0" class="input-reward" />
+                </div>
+                <div class="reward-field">
+                  <label class="reward-label">Moedas</label>
+                  <input type="number" [(ngModel)]="editMiss.recompensaMoedas" min="0" class="input-reward" />
+                </div>
+              </div>
+              <div class="edit-row" style="margin-top:8px">
+                <div class="reward-field" style="flex:1">
+                  <label class="reward-label">Atributo</label>
+                  <select [(ngModel)]="editMiss.atributoId" class="input-grow">
+                    <option [ngValue]="null" disabled>Selecione...</option>
+                    <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="edit-row edit-status" *ngIf="m.concluida" style="margin-top:8px">
+                <label class="checkbox-label">
+                  <input type="checkbox" [(ngModel)]="editMiss.concluida" />
+                  <span class="checkbox-text">Missão concluída — desmarcar para reativar</span>
+                </label>
+              </div>
+              <p class="feedback warn" *ngIf="feedbackMiss && feedbackMissTipo === 'warn'" style="margin:6px 0 0">{{ feedbackMiss }}</p>
+              <div class="edit-btns">
+                <button class="btn-confirm" (click)="salvarEdicaoMiss()">Salvar</button>
+                <button class="btn-cancel"  (click)="editandoMissId = null">Cancelar</button>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+        <p class="empty-list" *ngIf="missoes.length === 0">Nenhuma missão cadastrada.</p>
+      </ng-container>
+
+      <div class="divider"></div>
+      <h3 class="sub-title">Nova Missão</h3>
+      <div class="field"><label>Título</label>
+        <input type="text" [(ngModel)]="novaMiss.titulo" placeholder="Ex: 30 dias de exercício" />
+      </div>
+      <div class="field"><label>Tipo</label>
+        <select [(ngModel)]="novaMiss.tipoId">
+          <option *ngFor="let t of tiposMissao" [value]="t.id">{{ t.nome }}</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="field"><label>XP</label>
+          <input type="number" [(ngModel)]="novaMiss.recompensaXp" min="0" />
+        </div>
+        <div class="field"><label>Moedas</label>
+          <input type="number" [(ngModel)]="novaMiss.recompensaMoedas" min="0" />
+        </div>
+      </div>
+      <div class="field"><label>Atributo</label>
+        <select [(ngModel)]="novaMiss.atributoId">
+          <option [ngValue]="null" disabled>Selecione...</option>
+          <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+        </select>
+      </div>
+      <button class="btn-salvar" (click)="salvarMissao()">Cadastrar</button>
+      <p class="feedback" [class]="'feedback ' + feedbackMissTipo" *ngIf="feedbackMiss">{{ feedbackMiss }}</p>
+    </ng-container>
+  </section>
+
+  <!-- ── RECOMPENSAS ──────────────────────────────── -->
+  <section class="card">
+    <div class="secao-header" (click)="secaoRecomp = !secaoRecomp">
+      <h2 class="card-title"><span class="badge" style="background:#3d2a00;color:#ffd700">$</span> Recompensas</h2>
+      <svg class="chevron" [class.open]="secaoRecomp" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <ng-container *ngIf="secaoRecomp">
+      <div class="list-header" (click)="abertoRecomp = !abertoRecomp">
+        <span>Cadastradas ({{ recompensas.length }})</span>
+        <svg class="chevron" [class.open]="abertoRecomp" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <ng-container *ngIf="abertoRecomp">
+        <ul class="item-list" *ngIf="recompensas.length > 0">
+          <ng-container *ngFor="let r of recompensas">
+            <li class="item-row" *ngIf="editandoRecompId !== r.id">
+              <div class="item-info">
+                <span class="item-nome">
+                  {{ r.nome }}
+                  <span class="badge-inativa" *ngIf="!r.ativa">inativa</span>
+                </span>
+                <span class="item-meta">{{ r.preco }} moedas{{ r.descricao ? ' · ' + r.descricao : '' }}</span>
+              </div>
+              <div class="item-actions">
+                <button class="btn-icon edit" (click)="iniciarEdicaoRecomp(r)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="btn-icon delete" (click)="excluirRecomp(r.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </li>
+            <li class="item-edit" *ngIf="editandoRecompId === r.id">
+              <div class="edit-row edit-rewards">
+                <div class="reward-field" style="flex:1">
+                  <label class="reward-label">Nome</label>
+                  <input type="text" [(ngModel)]="editRecomp.nome" placeholder="Ex: Tomar um refrigerante" class="input-grow" />
+                </div>
+                <div class="reward-field">
+                  <label class="reward-label">Emoji</label>
+                  <input type="text" [(ngModel)]="editRecomp.emoji" placeholder="🎁" class="input-emoji-center" (input)="onEmojiInput($event, 'edit')" />
+                </div>
+                <div class="reward-field">
+                  <label class="reward-label">Moedas</label>
+                  <input type="number" [(ngModel)]="editRecomp.preco" min="1" class="input-reward" />
+                </div>
+              </div>
+              <div class="edit-row" style="margin-top:8px">
+                <div class="reward-field" style="flex:1">
+                  <label class="reward-label">Descrição</label>
+                  <input type="text" [(ngModel)]="editRecomp.descricao" placeholder="Opcional" class="input-grow" />
+                </div>
+              </div>
+              <div class="edit-row" style="margin-top:8px">
+                <div class="reward-field" style="flex:1">
+                  <label class="reward-label">Requisito de atributo <span class="label-opt">(opcional)</span></label>
+                  <select [(ngModel)]="editRecomp.atributoId" class="input-grow">
+                    <option [ngValue]="null">Nenhum</option>
+                    <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+                  </select>
+                </div>
+                <div class="reward-field" style="flex:0 0 120px" *ngIf="editRecomp.atributoId">
+                  <label class="reward-label">Pontos mínimos</label>
+                  <input type="number" [(ngModel)]="editRecomp.pontosNecessarios" min="0" class="input-reward" />
+                </div>
+              </div>
+              <div class="edit-row edit-status" style="margin-top:8px">
+                <label class="checkbox-label">
+                  <input type="checkbox" [(ngModel)]="editRecomp.ativa" />
+                  <span class="checkbox-text" [style.color]="editRecomp.ativa ? '#3fb950' : '#d29922'">
+                    {{ editRecomp.ativa ? 'Recompensa ativa — disponível na loja' : 'Recompensa inativa — não aparece na loja' }}
+                  </span>
+                </label>
+              </div>
+              <div class="edit-btns">
+                <button class="btn-confirm" (click)="salvarEdicaoRecomp()">Salvar</button>
+                <button class="btn-cancel" (click)="editandoRecompId = null">Cancelar</button>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+        <p class="empty-list" *ngIf="recompensas.length === 0">Nenhuma recompensa cadastrada.</p>
+      </ng-container>
+
+      <div class="divider"></div>
+      <h3 class="sub-title">Nova Recompensa</h3>
+      <div class="row">
+        <div class="field"><label>Nome</label>
+          <input type="text" [(ngModel)]="novaRecomp.nome" placeholder="Ex: Tomar um refrigerante" />
+        </div>
+        <div class="field" style="flex:0 0 58px"><label>Emoji</label>
+          <input type="text" [(ngModel)]="novaRecomp.emoji" placeholder="🎁" class="input-emoji-center" (input)="onEmojiInput($event, 'nova')" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Descrição</label>
+          <input type="text" [(ngModel)]="novaRecomp.descricao" placeholder="Opcional" />
+        </div>
+        <div class="field" style="flex:0 0 110px"><label>Moedas</label>
+          <input type="number" [(ngModel)]="novaRecomp.preco" min="1" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Requisito de atributo <span class="label-opt">(opcional)</span></label>
+          <select [(ngModel)]="novaRecomp.atributoId">
+            <option [ngValue]="null">Nenhum</option>
+            <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+          </select>
+        </div>
+        <div class="field" style="flex:0 0 120px" *ngIf="novaRecomp.atributoId">
+          <label>Pontos mínimos</label>
+          <input type="number" [(ngModel)]="novaRecomp.pontosNecessarios" min="0" />
+        </div>
+      </div>
+      <button class="btn-salvar" (click)="salvarRecompensa()">Cadastrar</button>
+      <p class="feedback" [class]="'feedback ' + feedbackRecompTipo" *ngIf="feedbackRecomp">{{ feedbackRecomp }}</p>
+    </ng-container>
+  </section>
+
+  <!-- ── DANGER ZONE ─────────────────────────────── -->
+  <section class="card danger-zone">
+    <div class="secao-header" (click)="secaoDanger = !secaoDanger">
+      <h2 class="card-title danger">⚠️ Zona de Perigo</h2>
+      <svg class="chevron" [class.open]="secaoDanger" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <ng-container *ngIf="secaoDanger">
+      <p class="danger-desc">
+        Resetar o perfil apaga seu XP, moedas, nível, rank e foto.<br>
+        <strong>Esta ação não pode ser desfeita.</strong>
+      </p>
+      <ng-container *ngIf="!confirmarReset">
+        <button class="btn-danger" (click)="confirmarReset = true">Resetar Perfil</button>
+      </ng-container>
+      <ng-container *ngIf="confirmarReset">
+        <p class="confirm-msg">Tem certeza? Você voltará ao nível 1.</p>
+        <div class="btn-row">
+          <button class="btn-danger"   (click)="resetar()">Sim, resetar</button>
+          <button class="btn-cancelar" (click)="confirmarReset = false">Cancelar</button>
+        </div>
+      </ng-container>
+    </ng-container>
+  </section>
+
+  <div class="bottom-spacer"></div>
+</div>
