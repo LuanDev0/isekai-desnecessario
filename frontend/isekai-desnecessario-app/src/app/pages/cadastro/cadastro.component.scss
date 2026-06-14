@@ -1,0 +1,391 @@
+$bg:      #0d1117;
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$blue:    #58a6ff;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+
+:host {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  background: $bg;
+}
+
+.cadastro-page {
+  width: 100%;
+  max-width: 480px;
+  padding: 64px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+// ── Hero ──────────────────────────────────────────────
+.hero {
+  text-align: center;
+}
+
+.logo {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: $white;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.hero-icon {
+  width: 160px;
+  height: 160px;
+  display: block;
+  margin: 0 auto 16px;
+  border-radius: 28px;
+}
+
+.sub {
+  font-size: 0.88rem;
+  color: $muted;
+  font-style: italic;
+}
+
+// ── Botões iniciais ───────────────────────────────────
+.btns-inicio {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-entrar, .btn-cadastro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  svg { width: 20px; height: 20px; flex-shrink: 0; }
+}
+
+.btn-entrar {
+  background: $blue;
+  color: #0d1117;
+  border: none;
+
+  svg { stroke: #0d1117; }
+  &:hover { background: #79c0ff; }
+}
+
+.btn-cadastro {
+  background: transparent;
+  color: $blue;
+  border: 1px solid #1a3a5e;
+
+  svg { stroke: $blue; }
+  &:hover { background: #0c1a2e; border-color: $blue; }
+}
+
+// ── Header das telas internas ─────────────────────────
+.tela-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-voltar {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+
+  svg { width: 18px; height: 18px; stroke: $muted; }
+  &:hover { background: $card; svg { stroke: $text; } }
+}
+
+.tela-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text;
+}
+
+// ── Grid de perfis ────────────────────────────────────
+.perfis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.perfil-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: $card;
+    border-color: $blue;
+  }
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: $card;
+  border: 2px solid $border;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.avatar-inicial {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+}
+
+.perfil-nome {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $text;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.perfil-rank {
+  font-size: 0.75rem;
+  color: $muted;
+}
+
+.empty {
+  text-align: center;
+  color: $muted;
+  font-size: 0.88rem;
+}
+
+.link {
+  background: none;
+  border: none;
+  color: $blue;
+  cursor: pointer;
+  font-size: 0.88rem;
+  text-decoration: underline;
+  padding: 0;
+}
+
+// ── Novo perfil ───────────────────────────────────────
+.novo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ── Label opcional ────────────────────────────────────
+.opc {
+  font-weight: 400;
+  color: $muted;
+  text-transform: none;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+}
+
+// ── Classes ───────────────────────────────────────────
+.classes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.classe-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover { background: $card; border-color: #484f58; }
+
+  &.selecionada {
+    border-color: $blue;
+    background: #0c1a2e;
+  }
+}
+
+.classe-emoji { font-size: 1.4rem; margin-bottom: 2px; }
+.classe-nome  { font-size: 0.9rem; font-weight: 700; color: $white; }
+.classe-attr  { font-size: 0.75rem; font-weight: 600; color: $blue; }
+.classe-desc  { font-size: 0.7rem; color: $muted; margin-top: 2px; line-height: 1.3; }
+
+// ── Foto + Gênero lado a lado ─────────────────────────
+.foto-genero-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.genero-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.genero-select {
+  width: 100%;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: $text;
+  font-size: 0.88rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: auto;
+
+  &:focus { border-color: $blue; }
+
+  option { background: $card; }
+}
+
+// ── Foto de perfil ────────────────────────────────────
+.foto-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.foto-avatar {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: $surface;
+  border: 2px dashed $border;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: $blue;
+    .foto-overlay { opacity: 1; }
+  }
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.foto-icon {
+  width: 32px;
+  height: 32px;
+  stroke: $muted;
+}
+
+.foto-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.foto-remover {
+  background: none;
+  border: none;
+  color: #f85149;
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0;
+
+  &:hover { text-decoration: underline; }
+}
+
+.foto-hint {
+  font-size: 0.78rem;
+  color: $muted;
+}
+
+.input-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-nome {
+  width: 100%;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: $text;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+
+  &:focus { border-color: $blue; }
+  &::placeholder { color: $muted; }
+}
+
+.btn-criar {
+  background: $blue;
+  color: #0d1117;
+  border: none;
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+
+  &:hover { background: #79c0ff; }
+  &:disabled { opacity: 0.6; cursor: default; }
+}
+
+.erro {
+  color: #f85149;
+  font-size: 0.82rem;
+}

@@ -1,0 +1,340 @@
+$bg:      #0d1117;
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$blue:    #58a6ff;
+$green:   #3fb950;
+$orange:  #d29922;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+
+.page {
+  padding: 24px 20px 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: $bg;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $white;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+
+  &:hover { background: $card; }
+
+  svg { width: 18px; height: 18px; stroke: currentColor; flex-shrink: 0; }
+
+  &.principal  { color: $orange; }
+  &.secundaria { color: $blue; }
+}
+
+.count {
+  margin-left: 2px;
+  font-size: 0.75rem;
+  background: #ffffff10;
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-weight: 600;
+}
+
+.chevron {
+  margin-left: auto;
+  width: 18px !important;
+  height: 18px !important;
+  transition: transform 0.25s ease;
+  opacity: 0.5;
+
+  &.open { transform: rotate(180deg); }
+}
+
+.mission-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mission-item {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: opacity 0.3s;
+
+  &.done {
+    opacity: 0.35;
+    .mission-title { text-decoration: line-through; }
+  }
+
+  &.expirada {
+    opacity: 0.45;
+    border-color: #3a1a1a;
+    .mission-title { color: #8b949e; }
+  }
+}
+
+.mission-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mission-title {
+  color: $text;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mission-rewards {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  &.xp    { color: $blue; }
+  &.coins { color: $orange; }
+  &.deadline { color: $muted; gap: 3px; svg { width: 12px; height: 12px; } }
+  &.deadline.expirada-badge { color: #f85149; }
+}
+
+.check-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    stroke: $muted;
+    transition: stroke 0.2s;
+  }
+
+  &:not([disabled]):hover svg { stroke: $text; }
+
+  &[disabled] {
+    cursor: default;
+    svg { stroke: $green; }
+  }
+}
+
+.empty {
+  color: $muted;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 16px 0;
+}
+
+// ── Label de seção ───────────────────────────────────────
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+
+  svg { width: 14px; height: 14px; flex-shrink: 0; }
+}
+
+// ── Missão Sugerida ──────────────────────────────────────
+.sugestao-section { display: flex; flex-direction: column; }
+
+.sugestao-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sug-atributo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sug-emoji { font-size: 1.6rem; }
+
+.sug-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sug-label {
+  font-size: 0.62rem;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sug-nome {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.sug-pontos {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sug-divider {
+  height: 1px;
+  background: $border;
+}
+
+.sug-missao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sug-missao-icon { font-size: 1.2rem; }
+
+.sug-missao-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sug-missao-label {
+  font-size: 0.62rem;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sug-missao-titulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $white;
+}
+
+// ── Jornada de Missões ───────────────────────────────────
+.jornada-section { display: flex; flex-direction: column; }
+
+.jornada-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+}
+
+.jornada-tooltip {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.tt-semana {
+  font-size: 0.6rem;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tt-total {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $white;
+}
+
+.tt-xp {
+  font-size: 0.72rem;
+  color: $blue;
+  font-weight: 600;
+}
+
+.jornada-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.jornada-legenda {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.jl-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.62rem;
+  color: $muted;
+}
+
+.jl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bottom-spacer { height: 20px; }
