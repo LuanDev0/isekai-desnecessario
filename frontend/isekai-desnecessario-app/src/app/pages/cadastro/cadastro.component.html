@@ -1,0 +1,117 @@
+<div class="cadastro-page">
+
+  <!-- Hero (sempre visível) -->
+  <div class="hero">
+    <h1 class="logo">ISEKAI DESNECESSÁRIO</h1>
+    <img class="hero-icon" src="icon-256.png" alt="Isekai Desnecessário" />
+    <p class="sub">Seu isekai começa aqui. Nenhum caminhão-chan necessário.</p>
+  </div>
+
+  <!-- Tela inicial -->
+  <div class="btns-inicio" *ngIf="tela === 'inicio'">
+    <button class="btn-entrar" (click)="irEntrar()">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Entrar
+    </button>
+    <button class="btn-cadastro" (click)="irCadastro()">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Criar Perfil
+    </button>
+  </div>
+
+  <!-- Tela: Entrar -->
+  <div class="tela-entrar" *ngIf="tela === 'entrar'">
+    <div class="tela-header">
+      <button class="btn-voltar" (click)="voltar()">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="tela-titulo">Selecione seu perfil</span>
+    </div>
+
+    <p class="empty" *ngIf="perfis.length === 0">Nenhum perfil encontrado. <button class="link" (click)="irCadastro()">Criar um agora</button></p>
+
+    <div class="perfis-grid" *ngIf="perfis.length > 0">
+      <button class="perfil-card" *ngFor="let p of perfis" (click)="selecionar(p)">
+        <div class="avatar">
+          <img *ngIf="fotoUrl(p)" [src]="fotoUrl(p)" alt="avatar" />
+          <span *ngIf="!fotoUrl(p)" class="avatar-inicial">{{ p.nome[0] }}</span>
+        </div>
+        <span class="perfil-nome">{{ p.nome }}</span>
+        <span class="perfil-rank">{{ p.rank }} · Nv {{ p.nivel }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tela: Criar Perfil -->
+  <div class="tela-cadastro" *ngIf="tela === 'cadastro'">
+    <div class="tela-header">
+      <button class="btn-voltar" (click)="voltar()">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="tela-titulo">Novo Perfil</span>
+    </div>
+
+    <div class="novo-card">
+
+      <!-- Nome -->
+      <label class="input-label">Seu nome de herói</label>
+      <input
+        type="text"
+        [(ngModel)]="novoNome"
+        placeholder="Digite seu nome..."
+        (keyup.enter)="criar()"
+        maxlength="30"
+        class="input-nome"
+      />
+
+      <!-- Foto + Classe + Gênero lado a lado -->
+      <div class="foto-genero-row">
+        <div class="foto-picker">
+          <div class="foto-avatar" (click)="fotoInput.click()" title="Adicionar foto">
+            <img *ngIf="fotoPreview" [src]="fotoPreview" alt="foto de perfil" />
+            <svg *ngIf="!fotoPreview" class="foto-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <div class="foto-overlay"><span>📷</span></div>
+          </div>
+          <input #fotoInput type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+                 style="display:none" (change)="onFotoSelecionada($event)" />
+          <button *ngIf="fotoPreview" class="foto-remover" (click)="removerFoto()">Remover</button>
+          <span *ngIf="!fotoPreview" class="foto-hint">Foto (opcional)</span>
+        </div>
+
+        <div class="genero-col">
+          <label class="input-label">Classe</label>
+          <select class="genero-select" [(ngModel)]="classeSelecionada">
+            <option [ngValue]="null" disabled>Selecione...</option>
+            <option *ngFor="let c of classes" [ngValue]="c.id">
+              {{ c.emoji }} {{ nomeClasse(c) }} — {{ c.atributo?.emoji }} {{ c.atributo?.nome }}: {{ c.atributo?.descricao }}
+            </option>
+          </select>
+
+          <label class="input-label">Gênero <span class="opc">(opcional)</span></label>
+          <select class="genero-select" [(ngModel)]="generoSelecionado">
+            <option [ngValue]="null">Prefiro não dizer</option>
+            <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="erro" *ngIf="erro">{{ erro }}</p>
+      <button class="btn-criar" [disabled]="salvando" (click)="criar()">
+        {{ salvando ? 'Criando...' : 'Começar Jornada' }}
+      </button>
+    </div>
+  </div>
+
+</div>

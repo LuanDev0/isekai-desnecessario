@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/IsekaiDesnecessario.API/IsekaiDesnecessario.API.csproj" />
+  </Folder>
+</Solution>

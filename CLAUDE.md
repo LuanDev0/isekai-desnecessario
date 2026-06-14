@@ -1,4 +1,4 @@
-# Solo Leveling App — Contexto do Projeto
+# Isekai Desnecessário — Contexto do Projeto
 
 ## O que é
 RPG habit tracker com XP, ranks e gacha.
