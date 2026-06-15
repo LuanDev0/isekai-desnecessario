@@ -1,27 +1,44 @@
 # Isekai Desnecessário — Contexto do Projeto
 
 ## O que é
-RPG habit tracker com XP, ranks e gacha.
-Documentação completa no vault: `Obsidian/1. Geral/2. Projetos/3. Solo Leveling App/`
+RPG **habit tracker**: transforma a rotina real numa aventura. Ganha XP, sobe de nível/rank,
+completa missões, junta moedas e troca por recompensas reais.
 
-## Ranks
-F → E → D → C → B → A → S → SS → SSS
+> 📖 **Documentação completa em [`docs/`](docs/README.md)** — arquitetura, banco, API, mecânicas e frontend.
 
-## Fórmula de XP
-`XP_próximo_nível = round(XP_anterior * 1.35)`
+## Stack
+- **Backend:** ASP.NET Core 10 (Web API) + EF Core + SQL Server — porta `5008`
+- **Frontend:** Angular 19 (standalone) — porta `4200`
+- **Banco:** `IsekaIDesnecessarioDB` (SQL Server local, Trusted_Connection)
 
-## Banco de Dados (tabelas principais)
-- **Perfil**: Id, Nome, Xp, Moedas, Rank, Título, Nível, Próximo Nível XP
-- **BonsHábitos**: Id, Habito, Xp, Frequência, Streak
-- **MausHábitos**: Id, Habito, Xp, Frequência, Streak
-- **Missões**: Id, Título, TipoId (FK), RecompensaXP, Streak
-- **Recompensas**: Id, Recompensa, Preço
+## Estrutura
+- `backend/IsekaiDesnecessario.API/` — API (Controllers, Models, Services, Data, Migrations)
+- `frontend/isekai-desnecessario-app/` — Angular
+- `IsekaiDesnecessario.slnx` — solução
+- `docs/` — documentação completa
 
-## Mecânicas
-- **Gacha**: libera a cada 3 dias com 300 XP acumulados
-- **Moedas**: ganhas por completar missões, gastas em recompensas
+## Progressão (código: `Services/XpService.cs`)
+- Nível 1 começa com `ProximoNivelXp = 100`
+- **Fórmula:** `XP_próximo = round(XP_atual × 1.036)`
+- **Rank** = índice `Nivel / 10`: 1–9 **H**, 10–19 **G**, 20–29 **F**, 30–39 **E**, 40–49 **D**,
+  50–59 **C**, 60–69 **B**, 70–79 **A**, 80–89 **S**, 90–99 **SS**, 100+ **SSS**
+- Maus hábitos deduzem XP e podem regredir nível
 
-## Stack (a definir)
-- Backend: .NET / C#
-- Frontend: Angular
-- ORM: Entity Framework
+## Mecânicas-chave
+- **Atributos (6):** Inteligência🧠, Sabedoria📚, Físico💪, Disciplina⚙️, Foco🎯, Vitalidade❤️
+- **Classes (6):** Mago, Bardo, Guerreiro, Escudeiro, Executor, Clérigo (com nome feminino; cada uma ligada a um atributo)
+- **Missões:** Principal / Secundária / Desafio — dão XP **e moedas** (única fonte de moedas).
+  Concluir uma principal auto-conclui as secundárias vinculadas (`MissaoPrincipalId`).
+- **Lootbox:** 1× por dia, exige **1000 XP acumulados no dia**; sorteio ponderado (mais barato = mais chance).
+- **Recompensas:** compradas com moedas, vão para o inventário.
+- **Experimentos:** hábitos em teste (21 dias) que podem virar bom hábito.
+
+## Autenticação (🚧 em construção)
+Login Google. `Usuario` (conta) 1→N `Perfil`. `Perfil.UsuarioId` null = convidado.
+Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · backend JWT · frontend · vincular convidados.
+
+## Notas de ambiente (Windows)
+- O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.
+- Após `git pull` com migrations novas: `dotnet ef database update` em `backend/IsekaiDesnecessario.API`.
+- Strings com emoji em INSERT manual precisam do prefixo `N` (`N'🍕'`).
+- `TiposMissao` ainda **não tem seed** — popular `Principal`/`Secundária`/`Desafio` antes de criar missões.
