@@ -54,6 +54,7 @@ $muted:   #8b949e;
 
   &.principal  { color: $orange; }
   &.secundaria { color: $blue; }
+  &.desafio    { color: #bc8cff; }
 }
 
 .count {
@@ -335,6 +336,11 @@ $muted:   #8b949e;
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.desafio-item {
+  border-color: #3d2a6e;
+  background: linear-gradient(135deg, #161b22 80%, #1e1535);
 }
 
 .bottom-spacer { height: 20px; }

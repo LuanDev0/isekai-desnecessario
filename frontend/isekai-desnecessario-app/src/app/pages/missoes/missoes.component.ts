@@ -19,6 +19,7 @@ export class MissoesComponent implements OnInit {
 
   principais:  Missao[] = [];
   secundarias: Missao[] = [];
+  desafios:    Missao[] = [];
   atributos:   Atributo[] = [];
   bonsHabitos: BomHabito[] = [];
   missoes:     Missao[] = [];
@@ -26,6 +27,7 @@ export class MissoesComponent implements OnInit {
 
   abertaPrincipais  = false;
   abertaSecundarias = false;
+  abertaDesafios    = false;
 
   ngOnInit() {
     const savedId = this.profile.getSavedId();
@@ -43,6 +45,7 @@ export class MissoesComponent implements OnInit {
       this.missoes    = missoes;
       this.principais  = missoes.filter(m => m.tipo?.nome === 'Principal');
       this.secundarias = missoes.filter(m => m.tipo?.nome === 'Secundária');
+      this.desafios    = missoes.filter(m => m.tipo?.nome === 'Desafio');
     });
     this.api.getAtributos().subscribe(a => this.atributos = a);
     this.api.getBonsHabitos(id).subscribe(h => this.bonsHabitos = h);
