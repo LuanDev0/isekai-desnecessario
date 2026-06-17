@@ -28,6 +28,7 @@ export class CadastroComponent implements OnInit {
 
   usuario: Usuario | null = null;
   perfis:  Perfil[] = [];
+  perfisOrfaos: Perfil[] = [];
   classes: Classe[] = [];
 
   // ── Estado de tela ────────────────────────────────
@@ -90,10 +91,29 @@ export class CadastroComponent implements OnInit {
       next: res => {
         this.usuario = res.usuario;
         this.perfis  = res.perfis;
-        this.carregando = false;
-        this.tela = this.perfis.length > 0 ? 'perfis' : 'cadastro';
+        if (this.perfis.length === 0) {
+          // Busca perfis órfãos para o usuário reconhecer os seus
+          this.api.getOrfaos().subscribe({
+            next: orfaos => { this.perfisOrfaos = orfaos; this.carregando = false; this.tela = 'perfis'; },
+            error: ()    => { this.carregando = false; this.tela = 'perfis'; }
+          });
+        } else {
+          this.perfisOrfaos = [];
+          this.carregando = false;
+          this.tela = 'perfis';
+        }
       },
       error: () => { this.erro = 'Erro ao autenticar com Google.'; this.carregando = false; }
+    });
+  }
+
+  reivindicarOrfao(orfao: Perfil) {
+    this.api.vincularPerfil(orfao.id).subscribe({
+      next: p => {
+        this.perfis.push(p);
+        this.perfisOrfaos = this.perfisOrfaos.filter(o => o.id !== p.id);
+      },
+      error: () => { this.erro = 'Não foi possível reivindicar este perfil.'; }
     });
   }
 
