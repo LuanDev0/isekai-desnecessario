@@ -31,7 +31,7 @@ public class ExperimentosController(AppDbContext db) : ControllerBase
             Titulo      = dto.Titulo,
             Descricao   = dto.Descricao,
             DuracaoDias = dto.DuracaoDias,
-            DataInicio  = DateTime.Today,
+            DataInicio  = DateTime.UtcNow.Date,
             Ativo       = true,
             Convertido  = false,
         };
@@ -58,7 +58,7 @@ public class ExperimentosController(AppDbContext db) : ControllerBase
         var exp = await db.Experimentos.Include(e => e.Dias).FirstOrDefaultAsync(e => e.Id == id);
         if (exp is null) return NotFound();
 
-        var hoje = DateTime.Today;
+        var hoje = DateTime.UtcNow.Date;
         if (exp.Dias.Any(d => d.Data.Date == hoje))
             return BadRequest("Já marcado hoje.");
 

@@ -10,5 +10,5 @@ public class SnapshotAtributo
     public int      AtributoId { get; set; }
     [JsonIgnore] public Atributo? Atributo { get; set; }
     public int      Pontos     { get; set; }
-    public DateTime Data       { get; set; } = DateTime.Today;
+    public DateTime Data       { get; set; } = DateTime.UtcNow.Date;
 }

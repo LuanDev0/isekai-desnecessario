@@ -44,7 +44,10 @@ export class ProfileSelectorComponent implements OnInit, OnDestroy {
   }
 
   fotoUrl(perfil: Perfil): string | null {
-    if (perfil.fotoUrl?.startsWith('/')) return `${API_BASE}${perfil.fotoUrl}`;
+    const url = perfil.fotoUrl;
+    if (!url) return null;
+    if (url.startsWith('data:')) return url;
+    if (url.startsWith('/')) return `${API_BASE}${url}`;
     return null;
   }
 

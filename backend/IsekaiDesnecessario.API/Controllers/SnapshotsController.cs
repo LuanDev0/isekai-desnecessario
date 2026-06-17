@@ -14,7 +14,7 @@ public class SnapshotsController(AppDbContext db) : ControllerBase
     [HttpGet("anterior")]
     public async Task<IActionResult> GetAnterior([FromQuery] int perfilId)
     {
-        var hoje = DateTime.Today;
+        var hoje = DateTime.UtcNow.Date;
 
         // Pega o dia mais recente que tenha snapshot antes de hoje
         var diasDisponiveis = await db.SnapshotsAtributo
@@ -43,7 +43,7 @@ public class SnapshotsController(AppDbContext db) : ControllerBase
     [HttpPost("salvar")]
     public async Task<IActionResult> Salvar([FromQuery] int perfilId, [FromBody] List<SnapshotDto> dados)
     {
-        var hoje = DateTime.Today;
+        var hoje = DateTime.UtcNow.Date;
 
         // Verifica se já salvou hoje
         var jaExiste = await db.SnapshotsAtributo
