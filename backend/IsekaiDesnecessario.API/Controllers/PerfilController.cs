@@ -51,6 +51,15 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         return perfil is null ? NotFound() : Ok(perfil);
     }
 
+    // Retorna perfis sem dono — para o usuário reivindicar os seus após login
+    [HttpGet("orfaos")]
+    [Authorize]
+    public async Task<IActionResult> GetOrfaos()
+    {
+        var perfis = await db.Perfis.Where(p => p.UsuarioId == null).ToListAsync();
+        return Ok(perfis);
+    }
+
     // Retorna perfis do usuário autenticado
     [HttpGet("meus")]
     [Authorize]
