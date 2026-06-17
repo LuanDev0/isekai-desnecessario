@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -12,6 +12,7 @@ declare const google: any;
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
+  private zone = inject(NgZone);
 
   private _usuario = signal<Usuario | null>(null);
   readonly usuario = this._usuario.asReadonly();
@@ -73,22 +74,21 @@ export class AuthService {
     if (!(window as any)['google']?.accounts?.id) return;
     google.accounts.id.initialize({
       client_id: environment.googleClientId,
-      callback:  (response: any) => callback(response.credential),
+      // Wraps callback in zone so Angular detects changes
+      callback:  (response: any) => this.zone.run(() => callback(response.credential)),
       auto_select: false,
       cancel_on_tap_outside: true,
     });
   }
 
-  abrirPopupGoogle() {
+  abrirPopupGoogle(): boolean {
     if (!(window as any)['google']?.accounts?.id) return false;
-    if (this.googleCallback) {
-      google.accounts.id.initialize({
-        client_id: environment.googleClientId,
-        callback:  (response: any) => this.googleCallback!(response.credential),
-        auto_select: false,
-        cancel_on_tap_outside: true,
-      });
-    }
+    google.accounts.id.initialize({
+      client_id: environment.googleClientId,
+      callback:  (response: any) => this.zone.run(() => this.googleCallback?.(response.credential)),
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
     google.accounts.id.prompt();
     return true;
   }
