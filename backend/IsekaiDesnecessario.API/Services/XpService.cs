@@ -22,10 +22,10 @@ public class XpService(AppDbContext db)
         perfil.Xp += xpGanho;
 
         // Acumula XP do dia (reseta à meia-noite)
-        if (perfil.DataXpHoje?.Date != DateTime.Today)
+        if (perfil.DataXpHoje?.Date != DateTime.UtcNow.Date)
         {
             perfil.XpHoje    = 0;
-            perfil.DataXpHoje = DateTime.Today;
+            perfil.DataXpHoje = DateTime.UtcNow;
         }
         perfil.XpHoje += xpGanho;
 
