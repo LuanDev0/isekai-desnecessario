@@ -7,26 +7,14 @@
     <p class="sub">{{ 'cadastro.sub' | translate }}</p>
   </div>
 
-  <!-- Tela: Início (login com Google) -->
+  <!-- ── Tela: Início ── -->
   <div class="btns-inicio" *ngIf="tela === 'inicio'">
 
-    <ng-container *ngIf="clientIdConfigurado; else semClientId">
-      <!-- Botão renderizado pelo Google Identity Services -->
-      <div class="google-btn-wrapper">
-        <div #googleBtn id="google-signin-btn"></div>
-      </div>
-
-      <div class="separador" *ngIf="carregando">
-        <span class="carregando-txt">Autenticando...</span>
-      </div>
-    </ng-container>
-
-    <ng-template #semClientId>
-      <div class="aviso-config">
-        <span>⚙️</span>
-        <p>Google Client ID ainda não configurado. Consulte o README para configurar o login com Google.</p>
-      </div>
-    </ng-template>
+    <!-- Botão Google -->
+    <div class="google-btn-wrapper" *ngIf="!carregando">
+      <div #googleBtn id="google-signin-btn"></div>
+    </div>
+    <p class="carregando-txt" *ngIf="carregando">Autenticando...</p>
 
     <div class="separador">
       <span class="sep-linha"></span>
@@ -34,19 +22,161 @@
       <span class="sep-linha"></span>
     </div>
 
-    <button class="btn-convidado" (click)="irModoConvidado()">
-      {{ 'cadastro.continuarSemConta' | translate }}
+    <button class="btn-email" (click)="tela = 'login'; erro = ''">
+      <svg viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+        <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      {{ 'cadastro.entrarEmail' | translate }}
     </button>
+
+    <p class="registro-link">
+      {{ 'cadastro.semConta' | translate }}
+      <button class="link" (click)="tela = 'registro'; erro = ''">{{ 'cadastro.criarConta' | translate }}</button>
+    </p>
 
     <p class="erro" *ngIf="erro">{{ erro }}</p>
   </div>
 
-  <!-- Tela: Perfis do usuário Google -->
-  <div class="tela-perfis" *ngIf="tela === 'perfis'">
+  <!-- ── Tela: Login email/senha ── -->
+  <div class="tela-form" *ngIf="tela === 'login'">
+    <div class="tela-header">
+      <button class="btn-voltar" (click)="tela = 'inicio'; erro = ''">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="tela-titulo">{{ 'cadastro.entrar' | translate }}</span>
+    </div>
 
-    <!-- Info do usuário Google -->
+    <div class="form-card">
+      <div class="field">
+        <label class="input-label">{{ 'cadastro.email' | translate }}</label>
+        <input type="email" [(ngModel)]="loginEmail" class="input-nome"
+               placeholder="seu@email.com" autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label class="input-label">{{ 'cadastro.senha' | translate }}</label>
+        <div class="senha-wrapper">
+          <input [type]="mostrarSenha ? 'text' : 'password'" [(ngModel)]="loginSenha"
+                 class="input-nome" placeholder="••••••••" autocomplete="current-password"
+                 (keyup.enter)="fazerLogin()" />
+          <button class="btn-eye" type="button" (click)="mostrarSenha = !mostrarSenha">
+            <svg *ngIf="!mostrarSenha" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+            <svg *ngIf="mostrarSenha" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <p class="erro" *ngIf="erro">{{ erro }}</p>
+
+      <button class="btn-criar" [disabled]="salvando" (click)="fazerLogin()">
+        {{ salvando ? ('cadastro.entrando' | translate) : ('cadastro.entrar' | translate) }}
+      </button>
+
+      <div class="separador" style="margin-top: 8px">
+        <span class="sep-linha"></span>
+        <span class="sep-txt">{{ 'cadastro.ou' | translate }}</span>
+        <span class="sep-linha"></span>
+      </div>
+
+      <div class="google-btn-wrapper">
+        <div #googleBtn id="google-signin-btn-login"></div>
+      </div>
+
+      <p class="registro-link">
+        {{ 'cadastro.semConta' | translate }}
+        <button class="link" (click)="tela = 'registro'; erro = ''">{{ 'cadastro.criarConta' | translate }}</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Tela: Registro ── -->
+  <div class="tela-form" *ngIf="tela === 'registro'">
+    <div class="tela-header">
+      <button class="btn-voltar" (click)="tela = 'inicio'; erro = ''">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="tela-titulo">{{ 'cadastro.criarConta' | translate }}</span>
+    </div>
+
+    <div class="form-card">
+      <div class="field">
+        <label class="input-label">{{ 'cadastro.nomeCompleto' | translate }}</label>
+        <input type="text" [(ngModel)]="regNome" class="input-nome"
+               placeholder="Seu nome" autocomplete="name" maxlength="60" />
+      </div>
+
+      <div class="field">
+        <label class="input-label">{{ 'cadastro.email' | translate }}</label>
+        <input type="email" [(ngModel)]="regEmail" class="input-nome"
+               placeholder="seu@email.com" autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label class="input-label">{{ 'cadastro.senha' | translate }}</label>
+        <div class="senha-wrapper">
+          <input [type]="mostrarSenha ? 'text' : 'password'" [(ngModel)]="regSenha"
+                 class="input-nome" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+          <button class="btn-eye" type="button" (click)="mostrarSenha = !mostrarSenha">
+            <svg *ngIf="!mostrarSenha" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+            <svg *ngIf="mostrarSenha" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <!-- Indicador de força de senha -->
+        <div class="forca-barra" *ngIf="regSenha.length > 0">
+          <div class="forca-fill" [class]="'forca-' + senhaForca"></div>
+        </div>
+        <p class="forca-label" *ngIf="regSenha.length > 0">
+          <span *ngIf="senhaForca <= 1" style="color:#f85149">Fraca</span>
+          <span *ngIf="senhaForca === 2" style="color:#e3b341">Razoável</span>
+          <span *ngIf="senhaForca === 3" style="color:#3fb950">Boa</span>
+          <span *ngIf="senhaForca === 4" style="color:#58a6ff">Forte</span>
+        </p>
+        <ul class="senha-requisitos">
+          <li [class.ok]="regSenha.length >= 8">Mínimo 8 caracteres</li>
+          <li [class.ok]="senhaTemMaiuscula">Uma letra maiúscula</li>
+          <li [class.ok]="senhaTemNumero">Um número</li>
+        </ul>
+      </div>
+
+      <div class="field">
+        <label class="input-label">{{ 'cadastro.confirmarSenha' | translate }}</label>
+        <div class="senha-wrapper">
+          <input [type]="mostrarSenhaConfirma ? 'text' : 'password'" [(ngModel)]="regConfirma"
+                 class="input-nome" placeholder="Repita a senha" autocomplete="new-password"
+                 (keyup.enter)="fazerRegistro()" />
+          <button class="btn-eye" type="button" (click)="mostrarSenhaConfirma = !mostrarSenhaConfirma">
+            <svg *ngIf="!mostrarSenhaConfirma" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+            <svg *ngIf="mostrarSenhaConfirma" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <p class="privacidade-txt">
+        Ao criar sua conta, você concorda que seus dados (nome e e-mail) são armazenados de forma segura e usados exclusivamente para identificação neste aplicativo. A senha é criptografada com BCrypt e nunca é armazenada em texto puro.
+      </p>
+
+      <p class="erro" *ngIf="erro">{{ erro }}</p>
+
+      <button class="btn-criar" [disabled]="salvando" (click)="fazerRegistro()">
+        {{ salvando ? ('cadastro.criando' | translate) : ('cadastro.criarConta' | translate) }}
+      </button>
+
+      <p class="registro-link">
+        {{ 'cadastro.temConta' | translate }}
+        <button class="link" (click)="tela = 'login'; erro = ''">{{ 'cadastro.entrar' | translate }}</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Tela: Perfis do usuário ── -->
+  <div class="tela-perfis" *ngIf="tela === 'perfis'">
     <div class="usuario-card" *ngIf="usuario">
-      <img *ngIf="usuario.fotoUrl" [src]="usuario.fotoUrl" class="usuario-foto" alt="foto Google" />
+      <img *ngIf="usuario.fotoUrl" [src]="usuario.fotoUrl" class="usuario-foto" alt="foto" />
       <div *ngIf="!usuario.fotoUrl" class="usuario-foto-placeholder">{{ usuario.nome[0] }}</div>
       <div class="usuario-info">
         <span class="usuario-nome">{{ usuario.nome }}</span>
@@ -60,10 +190,7 @@
     </div>
 
     <p class="perfis-titulo">{{ 'cadastro.selecionePerfil' | translate }}</p>
-
-    <p class="empty" *ngIf="perfis.length === 0 && !carregando">
-      {{ 'cadastro.nenhumPerfil' | translate }}
-    </p>
+    <p class="empty" *ngIf="perfis.length === 0 && !carregando">{{ 'cadastro.nenhumPerfil' | translate }}</p>
 
     <div class="perfis-grid" *ngIf="perfis.length > 0">
       <button class="perfil-card" *ngFor="let p of perfis" (click)="selecionar(p)">
@@ -83,36 +210,10 @@
       </svg>
       {{ 'cadastro.novoHeroi' | translate }}
     </button>
-
     <p class="limite-txt" *ngIf="!podeCriarMais">{{ 'cadastro.limiteAtingido' | translate }}</p>
   </div>
 
-  <!-- Tela: Modo convidado (perfis locais) -->
-  <div class="tela-entrar" *ngIf="tela === 'convidado'">
-    <div class="tela-header">
-      <button class="btn-voltar" (click)="voltar()">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <span class="tela-titulo">{{ 'cadastro.selecionePerfil' | translate }}</span>
-    </div>
-
-    <p class="empty" *ngIf="perfis.length === 0">{{ 'cadastro.nenhumPerfil' | translate }} <button class="link" (click)="irCadastro()">{{ 'cadastro.criarAgora' | translate }}</button></p>
-
-    <div class="perfis-grid" *ngIf="perfis.length > 0">
-      <button class="perfil-card" *ngFor="let p of perfis" (click)="selecionar(p)">
-        <div class="avatar">
-          <img *ngIf="fotoUrl(p)" [src]="fotoUrl(p)" alt="avatar" />
-          <span *ngIf="!fotoUrl(p)" class="avatar-inicial">{{ p.nome[0] }}</span>
-        </div>
-        <span class="perfil-nome">{{ p.nome }}</span>
-        <span class="perfil-rank">{{ p.rank }} · Nv {{ p.nivel }}</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Tela: Criar Perfil -->
+  <!-- ── Tela: Criar Perfil ── -->
   <div class="tela-cadastro" *ngIf="tela === 'cadastro'">
     <div class="tela-header">
       <button class="btn-voltar" (click)="voltar()">
@@ -124,21 +225,14 @@
     </div>
 
     <div class="novo-card">
-
       <label class="input-label">{{ 'cadastro.nomeHeroi' | translate }}</label>
-      <input
-        type="text"
-        [(ngModel)]="novoNome"
-        placeholder="Digite seu nome..."
-        (keyup.enter)="criar()"
-        maxlength="30"
-        class="input-nome"
-      />
+      <input type="text" [(ngModel)]="novoNome" placeholder="Digite seu nome..."
+             (keyup.enter)="criar()" maxlength="30" class="input-nome" />
 
       <div class="foto-genero-row">
         <div class="foto-picker">
           <div class="foto-avatar" (click)="fotoInput.click()" title="Adicionar foto">
-            <img *ngIf="fotoPreview" [src]="fotoPreview" alt="foto de perfil" />
+            <img *ngIf="fotoPreview" [src]="fotoPreview" alt="foto" />
             <svg *ngIf="!fotoPreview" class="foto-icon" viewBox="0 0 24 24" fill="none">
               <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/>

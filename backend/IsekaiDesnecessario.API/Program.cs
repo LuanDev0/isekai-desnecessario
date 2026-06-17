@@ -41,6 +41,10 @@ builder.Services.Configure<FormOptions>(opt => opt.MultipartBodyLengthLimit = 5 
 
 var app = builder.Build();
 
+// Aplica migrations pendentes automaticamente na inicialização
+using (var scope = app.Services.CreateScope())
+    scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+
 app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI();

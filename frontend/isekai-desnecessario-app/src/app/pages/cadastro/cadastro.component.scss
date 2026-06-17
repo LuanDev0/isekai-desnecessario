@@ -52,6 +52,128 @@ $muted:   #8b949e;
   font-style: italic;
 }
 
+// ── Tela de formulário (login/registro) ───────────────
+.tela-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.senha-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input { padding-right: 42px; width: 100%; box-sizing: border-box; }
+}
+
+.btn-eye {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+
+  svg { width: 18px; height: 18px; stroke: $muted; }
+  &:hover svg { stroke: $text; }
+}
+
+.forca-barra {
+  height: 4px;
+  background: $border;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.forca-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s, background 0.3s;
+
+  &.forca-1 { width: 25%; background: #f85149; }
+  &.forca-2 { width: 50%; background: #e3b341; }
+  &.forca-3 { width: 75%; background: #3fb950; }
+  &.forca-4 { width: 100%; background: #58a6ff; }
+}
+
+.forca-label {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.senha-requisitos {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  li {
+    font-size: 0.75rem;
+    color: $muted;
+    padding-left: 16px;
+    position: relative;
+
+    &::before { content: '✗'; position: absolute; left: 0; color: #f85149; }
+    &.ok { color: #3fb950; &::before { content: '✓'; color: #3fb950; } }
+  }
+}
+
+.privacidade-txt {
+  font-size: 0.75rem;
+  color: $muted;
+  line-height: 1.5;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0;
+}
+
+.registro-link {
+  text-align: center;
+  font-size: 0.82rem;
+  color: $muted;
+  margin: 0;
+}
+
+.btn-email {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px;
+  background: $surface;
+  color: $text;
+  border: 1px solid $border;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  svg { width: 18px; height: 18px; stroke: $text; flex-shrink: 0; }
+  &:hover { background: $card; border-color: #484f58; }
+}
+
 // ── Botões iniciais ───────────────────────────────────
 .btns-inicio {
   display: flex;

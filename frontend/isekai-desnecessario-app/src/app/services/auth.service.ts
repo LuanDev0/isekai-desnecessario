@@ -29,19 +29,34 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  private salvarSessao(res: { token: string; usuario: Usuario }) {
+    localStorage.setItem(TOKEN_KEY, res.token);
+    localStorage.setItem(USUARIO_KEY, JSON.stringify(res.usuario));
+    this._usuario.set(res.usuario);
+  }
+
   loginComGoogle(idToken: string) {
     return this.http
       .post<{ token: string; usuario: Usuario; perfis: Perfil[] }>(
-        `${environment.apiUrl}/auth/google`,
-        { idToken }
+        `${environment.apiUrl}/auth/google`, { idToken }
       )
-      .pipe(
-        tap(res => {
-          localStorage.setItem(TOKEN_KEY, res.token);
-          localStorage.setItem(USUARIO_KEY, JSON.stringify(res.usuario));
-          this._usuario.set(res.usuario);
-        })
-      );
+      .pipe(tap(res => this.salvarSessao(res)));
+  }
+
+  registrar(nome: string, email: string, senha: string) {
+    return this.http
+      .post<{ token: string; usuario: Usuario; perfis: Perfil[] }>(
+        `${environment.apiUrl}/auth/registrar`, { nome, email, senha }
+      )
+      .pipe(tap(res => this.salvarSessao(res)));
+  }
+
+  login(email: string, senha: string) {
+    return this.http
+      .post<{ token: string; usuario: Usuario; perfis: Perfil[] }>(
+        `${environment.apiUrl}/auth/login`, { email, senha }
+      )
+      .pipe(tap(res => this.salvarSessao(res)));
   }
 
   logout() {
