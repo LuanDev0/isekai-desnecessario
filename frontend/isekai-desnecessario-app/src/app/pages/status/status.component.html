@@ -1,17 +1,14 @@
 <div class="status-page">
 
-  <!-- Loading -->
   <div class="loading" *ngIf="carregando">
     <div class="spinner"></div>
-    <span>Carregando status...</span>
+    <span>{{ 'status.carregando' | translate }}</span>
   </div>
 
   <ng-container *ngIf="!carregando && perfil">
 
-    <!-- Título -->
-    <h1 class="page-title">Status</h1>
+    <h1 class="page-title">{{ 'status.titulo' | translate }}</h1>
 
-    <!-- ── Hero Card ─────────────────────────────────── -->
     <div class="hero-card">
       <div class="avatar-wrap">
         <img *ngIf="fotoUrl" [src]="fotoUrl" class="avatar-img" alt="avatar" />
@@ -27,48 +24,46 @@
 
         <div class="xp-bar-wrap">
           <div class="xp-bar-labels">
-            <span>Nível {{ perfil.nivel }}</span>
+            <span>{{ 'status.nivel' | translate }} {{ perfil.nivel }}</span>
             <span>{{ xpPercent }}%</span>
-            <span>Nível {{ perfil.nivel + 1 }}</span>
+            <span>{{ 'status.nivel' | translate }} {{ perfil.nivel + 1 }}</span>
           </div>
           <div class="xp-bar-track">
             <div class="xp-bar-fill" [style.width.%]="xpPercent"></div>
           </div>
-          <span class="xp-falta">{{ xpParaProximo }} XP para o próximo nível</span>
+          <span class="xp-falta">{{ 'status.xpProximo' | translate: { xp: xpParaProximo } }}</span>
         </div>
       </div>
     </div>
 
-    <!-- ── Stats rápidos ──────────────────────────────── -->
     <div class="quick-stats">
       <div class="qs-card">
         <span class="qs-icon">⚔️</span>
         <span class="qs-value">{{ perfil.nivel }}</span>
-        <span class="qs-label">Nível</span>
+        <span class="qs-label">{{ 'status.nivel' | translate }}</span>
       </div>
       <div class="qs-card">
         <span class="qs-icon">🏆</span>
         <span class="qs-value" [style.color]="rankCor">{{ rankLabel }}</span>
-        <span class="qs-label">Rank</span>
+        <span class="qs-label">{{ 'status.rank' | translate }}</span>
       </div>
       <div class="qs-card">
         <span class="qs-icon">💰</span>
         <span class="qs-value gold">{{ perfil.moedas }}</span>
-        <span class="qs-label">Moedas</span>
+        <span class="qs-label">{{ 'status.moedas' | translate }}</span>
       </div>
       <div class="qs-card">
         <span class="qs-icon">⚡</span>
         <span class="qs-value blue">{{ perfil.xp }}</span>
-        <span class="qs-label">XP Total</span>
+        <span class="qs-label">{{ 'status.xpTotal' | translate }}</span>
       </div>
     </div>
 
-    <!-- ── Atributos RPG ──────────────────────────────── -->
     <section class="section">
       <div class="section-header">
         <h2 class="section-title">
           <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-          Atributos
+          {{ 'status.atributos' | translate }}
         </h2>
         <div class="vista-toggle">
           <button [class.ativo]="!vistaRadar" (click)="vistaRadar = false" title="Barras">
@@ -80,7 +75,6 @@
         </div>
       </div>
 
-      <!-- Vista: Barras -->
       <div class="attr-list" *ngIf="!vistaRadar">
         <div class="attr-row" *ngFor="let a of atributosDisplay">
           <div class="attr-header">
@@ -96,16 +90,13 @@
                  [style.background]="a.cor">
             </div>
           </div>
-          <span class="attr-desc">{{ a.desc }}{{ a.habitos === 0 ? ' — nenhum hábito vinculado' : '' }}</span>
+          <span class="attr-desc">{{ a.desc }}{{ a.habitos === 0 ? ' — ' + ('status.nenhumHabitoVinculado' | translate) : '' }}</span>
         </div>
       </div>
 
-      <!-- Vista: Radar — cards esquerda | radar direita -->
       <div class="radar-layout" *ngIf="vistaRadar">
-
-        <!-- Grade 2×3 de cards à esquerda -->
         <div class="mini-cards-col-wrap">
-          <span class="mc-titulo">⚔️ Atributos</span>
+          <span class="mc-titulo">⚔️ {{ 'status.atributos' | translate }}</span>
           <div class="mini-cards-grid">
           <div class="mini-card"
                *ngFor="let a of atributosDisplay"
@@ -127,19 +118,15 @@
         </div>
         </div>
 
-        <!-- Radar SVG à direita -->
         <div class="radar-wrap">
           <svg viewBox="0 0 300 330" class="radar-svg">
-
             <polygon *ngFor="let r of [0.2, 0.4, 0.6, 0.8, 1.0]"
               [attr.points]="hexGrid(r)"
               fill="none" stroke="#30363d" stroke-width="1"/>
-
             <line *ngFor="let a of atributosDisplay; let i = index"
               [attr.x1]="CX" [attr.y1]="CY"
               [attr.x2]="eixoFim(i).x" [attr.y2]="eixoFim(i).y"
               stroke="#30363d" stroke-width="1"/>
-
             <polygon *ngIf="temFantasma"
               [attr.points]="radarFantasma"
               fill="rgba(139,148,158,0.08)"
@@ -147,21 +134,18 @@
               stroke-width="1.5"
               stroke-dasharray="4,3"
               stroke-linejoin="round"/>
-
             <polygon
               [attr.points]="radarPoligono"
               fill="rgba(88,166,255,0.15)"
               stroke="#58a6ff"
               stroke-width="2"
               stroke-linejoin="round"/>
-
             <circle *ngFor="let a of atributosDisplay; let i = index"
               [attr.cx]="radarPonto(i, a.valor).x"
               [attr.cy]="radarPonto(i, a.valor).y"
               r="4"
               [attr.fill]="a.cor"
               stroke="#0d1117" stroke-width="1.5"/>
-
             <g *ngFor="let a of atributosDisplay; let i = index">
               <text [attr.x]="labelPos(i).x" [attr.y]="labelPos(i).y - 6"
                 text-anchor="middle" dominant-baseline="middle" font-size="18">{{ a.emoji }}</text>
@@ -171,45 +155,42 @@
                 text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700"
                 [attr.fill]="a.cor">{{ a.valor }}</text>
             </g>
-
           </svg>
 
           <div class="radar-legenda" *ngIf="temFantasma">
-            <span class="leg-item"><span class="leg-line"></span> Atual</span>
-            <span class="leg-item"><span class="leg-line dashed"></span> Anterior</span>
+            <span class="leg-item"><span class="leg-line"></span> {{ 'status.atual' | translate }}</span>
+            <span class="leg-item"><span class="leg-line dashed"></span> {{ 'status.anterior' | translate }}</span>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- ── Resumo de Atividade ────────────────────────── -->
     <section class="section">
       <h2 class="section-title">
         <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Atividade
+        {{ 'status.atividade' | translate }}
       </h2>
 
       <div class="activity-grid">
         <div class="act-card green">
           <span class="act-value">{{ bonsHabitos.length }}</span>
-          <span class="act-label">Bons Hábitos</span>
-          <span class="act-sub">cadastrados</span>
+          <span class="act-label">{{ 'dashboard.bonsHabitos' | translate }}</span>
+          <span class="act-sub">{{ 'status.bonsHabitosSub' | translate }}</span>
         </div>
         <div class="act-card blue">
           <span class="act-value">{{ melhorStreakBom }}</span>
-          <span class="act-label">Maior Streak</span>
-          <span class="act-sub">bons hábitos 🔥</span>
+          <span class="act-label">{{ 'status.maiorStreak' | translate }}</span>
+          <span class="act-sub">{{ 'status.bonsHabitosSub2' | translate }}</span>
         </div>
         <div class="act-card purple">
           <span class="act-value">{{ missoesConcluidas }}</span>
-          <span class="act-label">Missões</span>
-          <span class="act-sub">concluídas ✓</span>
+          <span class="act-label">{{ 'status.missoesLabel' | translate }}</span>
+          <span class="act-sub">{{ 'status.missoesSub' | translate }}</span>
         </div>
         <div class="act-card gold">
           <span class="act-value">{{ inventario.length }}</span>
-          <span class="act-label">Itens</span>
-          <span class="act-sub">no inventário 🎒</span>
+          <span class="act-label">{{ 'status.itens' | translate }}</span>
+          <span class="act-sub">{{ 'status.itensSub' | translate }}</span>
         </div>
       </div>
     </section>

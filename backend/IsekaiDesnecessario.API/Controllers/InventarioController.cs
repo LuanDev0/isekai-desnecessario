@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 
@@ -28,7 +28,7 @@ public class InventarioController(AppDbContext db) : ControllerBase
         if (item.Usado) return BadRequest("Item já foi usado.");
 
         item.Usado   = true;
-        item.DataUso = DateTime.Now;
+        item.DataUso = DateTime.UtcNow;
         await db.SaveChangesAsync();
         return Ok(item);
     }

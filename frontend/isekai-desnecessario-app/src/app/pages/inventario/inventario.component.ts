@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ItemInventario } from '../../models/models';
 
 export type AbaInventario = 'disponiveis' | 'usados';
@@ -21,7 +23,7 @@ export interface Pilha {
 @Component({
   selector: 'app-inventario',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.scss',
 })
@@ -29,6 +31,7 @@ export class InventarioComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);
+  readonly lang   = inject(LanguageService);
 
   itens:     ItemInventario[] = [];
   aba:       AbaInventario    = 'disponiveis';

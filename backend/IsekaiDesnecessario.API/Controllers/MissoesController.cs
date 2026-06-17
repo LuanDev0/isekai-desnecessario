@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
@@ -64,7 +64,7 @@ public class MissoesController(AppDbContext db, XpService xpService) : Controlle
         if (missao.Concluida) return BadRequest("Missão já concluída.");
 
         missao.Concluida = true;
-        missao.ConcluidaEm = DateTime.Now;
+        missao.ConcluidaEm = DateTime.UtcNow;
         missao.Streak++;
 
         // Completa missões secundárias vinculadas a esta
@@ -74,7 +74,7 @@ public class MissoesController(AppDbContext db, XpService xpService) : Controlle
         foreach (var v in vinculadas)
         {
             v.Concluida = true;
-            v.ConcluidaEm = DateTime.Now;
+            v.ConcluidaEm = DateTime.UtcNow;
             v.Streak++;
         }
 

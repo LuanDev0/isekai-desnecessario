@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, ItemInventario, JornadaSemana, MauHabito, Missao, Perfil, Recompensa } from '../models/models';
+import { environment } from '../../environments/environment';
 
-const BASE = 'http://localhost:5008/api';
+const BASE = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

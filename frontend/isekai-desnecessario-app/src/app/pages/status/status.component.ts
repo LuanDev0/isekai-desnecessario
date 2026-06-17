@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Atributo, Perfil, BomHabito, MauHabito, Missao, ItemInventario } from '../../models/models';
 
 export interface AtributoDisplay {
@@ -20,13 +22,14 @@ export interface AtributoDisplay {
 @Component({
   selector: 'app-status',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './status.component.html',
   styleUrl: './status.component.scss',
 })
 export class StatusComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
+  readonly lang   = inject(LanguageService);
   private router  = inject(Router);
 
   perfil:      Perfil | null  = null;

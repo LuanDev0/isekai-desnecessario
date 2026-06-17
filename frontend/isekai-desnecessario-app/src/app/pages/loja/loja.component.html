@@ -1,12 +1,9 @@
 <div class="loja-page">
 
-  <!-- Header -->
   <div class="loja-header">
-    <h1 class="page-title">Loja</h1>
+    <h1 class="page-title">{{ 'loja.titulo' | translate }}</h1>
 
     <div class="header-right">
-
-      <!-- Lootbox -->
       <button
         class="lootbox-btn"
         [class.disponivel]="lootboxDisponivel"
@@ -14,12 +11,12 @@
         [class.ja-abriu]="lootboxJaAbriu && !lootboxDisponivel"
         [disabled]="!lootboxDisponivel || lootboxAbrindo"
         (click)="abrirLootbox()"
-        [title]="lootboxDisponivel ? 'Abrir lootbox gratuita!' : lootboxJaAbriu ? 'Já aberta hoje' : 'Ganhe 1000 XP hoje para desbloquear'"
+        [title]="lootboxDisponivel ? ('loja.tituloDisp' | translate) : lootboxJaAbriu ? ('loja.tituloJaAbriu' | translate) : ('loja.tituloLocked' | translate)"
       >
         <span class="lootbox-icon">{{ lootboxAbrindo ? '✨' : '📦' }}</span>
         <div class="lootbox-info">
           <span class="lootbox-label">
-            {{ lootboxAbrindo ? 'Abrindo...' : lootboxDisponivel ? 'Lootbox!' : lootboxJaAbriu ? 'Aberta hoje' : 'Lootbox' }}
+            {{ lootboxAbrindo ? ('loja.abrindo' | translate) : lootboxDisponivel ? ('loja.lootboxDisp' | translate) : lootboxJaAbriu ? ('loja.abertaHoje' | translate) : ('loja.lootbox' | translate) }}
           </span>
           <span class="lootbox-sub" *ngIf="!lootboxDisponivel && !lootboxJaAbriu">
             ({{ lootboxXpHoje }}/1000 XP)
@@ -30,7 +27,6 @@
         </div>
       </button>
 
-      <!-- Moedas -->
       <div class="moedas-badge" *ngIf="perfil">
         <svg viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/>
@@ -41,10 +37,9 @@
     </div>
   </div>
 
-  <!-- Modal resultado da lootbox -->
   <div class="lootbox-modal" *ngIf="lootboxResultado" (click)="fecharResultado()">
     <div class="lootbox-card" (click)="$event.stopPropagation()">
-      <p class="lootbox-modal-titulo">🎉 Você ganhou!</p>
+      <p class="lootbox-modal-titulo">{{ 'loja.voceGanhou' | translate }}</p>
       <div class="lootbox-recompensa-reveal">
         <span class="lootbox-emoji-big">{{ lootboxResultado.recompensa.emoji }}</span>
         <h3>{{ lootboxResultado.recompensa.nome }}</h3>
@@ -53,18 +48,16 @@
         </p>
         <span class="lootbox-chance">{{ lootboxResultado.chance }}% de chance</span>
       </div>
-      <button class="btn-fechar-lootbox" (click)="fecharResultado()">Boa! Fechar</button>
+      <button class="btn-fechar-lootbox" (click)="fecharResultado()">{{ 'loja.fechar' | translate }}</button>
     </div>
   </div>
 
-  <!-- Sem recompensas cadastradas -->
   <div class="vazio" *ngIf="recompensas.length === 0">
     <span class="vazio-icon">🎁</span>
-    <p>Nenhuma recompensa cadastrada ainda.</p>
-    <small>Vá em Configurações para adicionar!</small>
+    <p>{{ 'loja.nenhumaRecomp' | translate }}</p>
+    <small>{{ 'loja.vaConfig' | translate }}</small>
   </div>
 
-  <!-- Grid de recompensas -->
   <div class="recompensas-grid" *ngIf="recompensas.length > 0">
     <div
       class="recompensa-card"
@@ -78,7 +71,6 @@
       <div class="card-body">
         <h3 class="card-nome">{{ r.nome }}</h3>
         <p class="card-desc" *ngIf="r.descricao">{{ r.descricao }}</p>
-        <!-- Requisito de atributo -->
         <div class="card-requisito" *ngIf="r.atributoId && r.pontosNecessarios > 0">
           <span class="req-label" [class.cumprido]="requisitoCumprido(r)" [class.pendente]="!requisitoCumprido(r)">
             {{ nomeAtributo(r.atributoId) }}
@@ -100,12 +92,12 @@
           [disabled]="!podeComprar(r) || !requisitoCumprido(r) || resgatando === r.id"
           (click)="resgatar(r)"
         >
-          <ng-container *ngIf="feedbacks[r.id] === 'ok'">✓ Resgatado!</ng-container>
-          <ng-container *ngIf="feedbacks[r.id] === 'sem-moedas'">Sem moedas</ng-container>
-          <ng-container *ngIf="feedbacks[r.id] === 'atributo'">Atributo baixo!</ng-container>
-          <ng-container *ngIf="feedbacks[r.id] === 'erro'">Erro!</ng-container>
+          <ng-container *ngIf="feedbacks[r.id] === 'ok'">{{ 'loja.resgatado' | translate }}</ng-container>
+          <ng-container *ngIf="feedbacks[r.id] === 'sem-moedas'">{{ 'loja.semMoedas' | translate }}</ng-container>
+          <ng-container *ngIf="feedbacks[r.id] === 'atributo'">{{ 'loja.atributoBaixo' | translate }}</ng-container>
+          <ng-container *ngIf="feedbacks[r.id] === 'erro'">{{ 'loja.erroCompra' | translate }}</ng-container>
           <ng-container *ngIf="!feedbacks[r.id]">
-            {{ resgatando === r.id ? '...' : !requisitoCumprido(r) ? '🔒 Bloqueado' : podeComprar(r) ? 'Resgatar' : 'Sem saldo' }}
+            {{ resgatando === r.id ? '...' : !requisitoCumprido(r) ? ('loja.bloqueado' | translate) : podeComprar(r) ? ('loja.resgatar' | translate) : ('loja.semSaldo' | translate) }}
           </ng-container>
         </button>
       </div>

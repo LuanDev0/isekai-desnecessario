@@ -9,7 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<XpService>();
 builder.Services.AddScoped<GachaService>();
 
@@ -27,4 +27,5 @@ app.UseSwaggerUI();
 app.UseStaticFiles(); // serve wwwroot/uploads/
 app.UseHttpsRedirection();
 app.MapControllers();
+app.MapGet("/health", () => Results.Ok("healthy"));
 app.Run();

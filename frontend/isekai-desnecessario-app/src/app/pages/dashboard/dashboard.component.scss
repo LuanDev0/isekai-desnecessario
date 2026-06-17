@@ -27,11 +27,31 @@ $muted:   #8b949e;   // fg.subtle
   justify-content: space-between;
 }
 
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .datetime {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
+}
+
+.lang-select {
+  background: $card;
+  color: $text;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  outline: none;
+
+  &:hover  { border-color: $blue; }
+  &:focus  { border-color: $blue; box-shadow: 0 0 0 2px rgba($blue, 0.2); }
 }
 
 .date {

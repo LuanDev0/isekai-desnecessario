@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Perfil } from '../../models/models';
 
 export type Periodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -33,7 +35,7 @@ const CH    = VB_H - PAD_T - PAD_B;
 @Component({
   selector: 'app-grafico',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './grafico.component.html',
   styleUrl: './grafico.component.scss',
 })
@@ -41,18 +43,21 @@ export class GraficoComponent implements OnInit, OnDestroy {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);
+  readonly lang   = inject(LanguageService);
 
   perfil:   Perfil | null = null;
   history:  DiaStat[]    = [];
   periodo:  Periodo      = 'diario';
   private pollInterval: any;
 
-  readonly periodos: { key: Periodo; label: string }[] = [
-    { key: 'diario',  label: 'Diário'  },
-    { key: 'semanal', label: 'Semanal' },
-    { key: 'mensal',  label: 'Mensal'  },
-    { key: 'anual',   label: 'Anual'   },
-  ];
+  readonly periodoKeys: Periodo[] = ['diario', 'semanal', 'mensal', 'anual'];
+
+  get periodos(): { key: Periodo; label: string }[] {
+    return this.periodoKeys.map(key => ({
+      key,
+      label: this.lang.translate(`grafico.periodo${key.charAt(0).toUpperCase() + key.slice(1)}`),
+    }));
+  }
 
   readonly vbW = VB_W; readonly vbH = VB_H;
   readonly padL = PAD_L; readonly padT = PAD_T;
@@ -146,7 +151,7 @@ export class GraficoComponent implements OnInit, OnDestroy {
     const domAtual = new Date(hoje);
     domAtual.setDate(hoje.getDate() - hoje.getDay()); // domingo da semana
 
-    const nomes = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const nomes = (['dom','seg','ter','qua','qui','sex','sab'] as const).map(k => this.lang.translate(`grafico.${k}`));
 
     return Array.from({ length: 7 }, (_, i) => {
       const d    = new Date(domAtual);
@@ -175,7 +180,7 @@ export class GraficoComponent implements OnInit, OnDestroy {
   /** Meses Jan–Dez do ano atual */
   private pontosMesesAno(): Ponto[] {
     const ano    = new Date().getFullYear();
-    const nomes  = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const nomes  = (['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'] as const).map(k => this.lang.translate(`grafico.${k}`));
 
     return Array.from({ length: 12 }, (_, m) => {
       const prefixo = `${ano}-${String(m + 1).padStart(2, '0')}`;
@@ -297,7 +302,12 @@ export class GraficoComponent implements OnInit, OnDestroy {
   }
 
   get labelPeriodo(): string {
-    const map: Record<Periodo, string> = { diario: 'hora', semanal: 'dia', mensal: 'dia', anual: 'mês' };
-    return map[this.periodo];
+    const map: Record<Periodo, string> = {
+      diario:  'grafico.labelDiario',
+      semanal: 'grafico.labelSemanal',
+      mensal:  'grafico.labelMensal',
+      anual:   'grafico.labelAnual',
+    };
+    return this.lang.translate(map[this.periodo]);
   }
 }

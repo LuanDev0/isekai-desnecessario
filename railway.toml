@@ -1,0 +1,10 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "backend/IsekaiDesnecessario.API/Dockerfile"
+dockerContext = "backend/IsekaiDesnecessario.API"
+
+[deploy]
+startCommand = "dotnet IsekaiDesnecessario.API.dll"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"

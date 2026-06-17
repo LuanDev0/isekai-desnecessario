@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace IsekaiDesnecessario.API.Models;
 
@@ -14,8 +14,8 @@ public class Usuario
     public string? FotoUrl { get; set; }                    // avatar do Google
 
     // ── Auditoria ─────────────────────────────────────
-    public DateTime CriadoEm    { get; set; } = DateTime.Now;
-    public DateTime UltimoLogin { get; set; } = DateTime.Now;
+    public DateTime CriadoEm    { get; set; } = DateTime.UtcNow;
+    public DateTime UltimoLogin { get; set; } = DateTime.UtcNow;
 
     // ── Heróis (perfis) pertencentes a esta conta ─────
     [JsonIgnore]

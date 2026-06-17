@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace IsekaiDesnecessario.API.Models;
 
@@ -17,7 +17,7 @@ public class ItemInventario
     public string Descricao { get; set; } = string.Empty;
     public int Preco { get; set; }
 
-    public DateTime DataCompra { get; set; } = DateTime.Now;
+    public DateTime DataCompra { get; set; } = DateTime.UtcNow;
     public DateTime? DataUso { get; set; }
     public bool Usado { get; set; } = false;
 }
