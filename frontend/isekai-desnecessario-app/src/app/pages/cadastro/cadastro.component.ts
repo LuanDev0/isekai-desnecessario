@@ -85,25 +85,13 @@ export class CadastroComponent implements OnInit {
   onGoogleToken(idToken: string) {
     this.carregando = true;
     this.erro = '';
-    this.auth.loginComGoogle(idToken).subscribe({
+    const savedId = this.profile.getSavedId();
+    this.auth.loginComGoogle(idToken, savedId).subscribe({
       next: res => {
         this.usuario = res.usuario;
         this.perfis  = res.perfis;
-        if (this.perfis.length === 0) {
-          const savedId = this.profile.getSavedId();
-          if (savedId) {
-            this.api.vincularPerfil(savedId).subscribe({
-              next: p => { this.perfis = [p]; this.carregando = false; this.tela = 'perfis'; },
-              error: () => { this.carregando = false; this.tela = 'cadastro'; }
-            });
-            return;
-          }
-          this.carregando = false;
-          this.tela = 'cadastro';
-        } else {
-          this.carregando = false;
-          this.tela = 'perfis';
-        }
+        this.carregando = false;
+        this.tela = this.perfis.length > 0 ? 'perfis' : 'cadastro';
       },
       error: () => { this.erro = 'Erro ao autenticar com Google.'; this.carregando = false; }
     });
@@ -146,19 +134,7 @@ export class CadastroComponent implements OnInit {
     this.usuario = res.usuario;
     this.perfis  = res.perfis;
     this.salvando = false;
-    if (this.perfis.length === 0) {
-      const savedId = this.profile.getSavedId();
-      if (savedId) {
-        this.api.vincularPerfil(savedId).subscribe({
-          next: p => { this.perfis = [p]; this.tela = 'perfis'; },
-          error: () => { this.tela = 'cadastro'; }
-        });
-        return;
-      }
-      this.tela = 'cadastro';
-    } else {
-      this.tela = 'perfis';
-    }
+    this.tela = this.perfis.length > 0 ? 'perfis' : 'cadastro';
   }
 
   // ── Carregar perfis do usuário já logado ──────────
