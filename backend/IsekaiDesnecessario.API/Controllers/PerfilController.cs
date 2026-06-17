@@ -51,7 +51,7 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         return perfil is null ? NotFound() : Ok(perfil);
     }
 
-    // Retorna perfis sem dono (UsuarioId = null) — para recuperação após login
+    // Retorna perfis sem dono — para o usuário reivindicar os seus após login
     [HttpGet("orfaos")]
     [Authorize]
     public async Task<IActionResult> GetOrfaos()
@@ -72,24 +72,37 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create(Perfil perfil)
     {
-        // Se há JWT válido, associa o perfil ao usuário autenticado
         var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        if (int.TryParse(sub, out int usuarioIdJwt))
-            perfil.UsuarioId = usuarioIdJwt;
+        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
 
-        // Limite de perfis por conta Google (convidados, com UsuarioId null, não contam)
-        if (perfil.UsuarioId is int usuarioId)
-        {
-            var qtd = await db.Perfis.CountAsync(p => p.UsuarioId == usuarioId);
-            if (qtd >= MaxPerfisPorConta)
-                return BadRequest($"Limite de {MaxPerfisPorConta} perfis por conta atingido.");
-        }
+        var qtd = await db.Perfis.CountAsync(p => p.UsuarioId == usuarioId);
+        if (qtd >= MaxPerfisPorConta)
+            return BadRequest($"Limite de {MaxPerfisPorConta} perfis por conta atingido.");
 
+        perfil.UsuarioId = usuarioId;
         db.Perfis.Add(perfil);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);
+    }
+
+    // Remove vínculo de um perfil desta conta (vira órfão novamente)
+    [HttpPost("{id}/desvincular")]
+    [Authorize]
+    public async Task<IActionResult> Desvincular(int id)
+    {
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
+
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+        if (perfil.UsuarioId != usuarioId) return Forbid();
+
+        perfil.UsuarioId = null;
+        await db.SaveChangesAsync();
+        return Ok();
     }
 
     // Vincula um perfil convidado (UsuarioId = null) à conta Google autenticada

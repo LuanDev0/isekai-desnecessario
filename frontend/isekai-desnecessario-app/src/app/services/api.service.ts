@@ -21,9 +21,11 @@ export class ApiService {
     return this.http.post<Perfil>(`${BASE}/perfil/${id}/vincular`, {});
   }
 
-  getOrfaos() {
-    return this.http.get<Perfil[]>(`${BASE}/perfil/orfaos`);
+  desvincularPerfil(id: number) {
+    return this.http.post(`${BASE}/perfil/${id}/desvincular`, {});
   }
+
+  getOrfaos() { return this.http.get<Perfil[]>(`${BASE}/perfil/orfaos`); }
 
   getPerfil(id: number) {
     return this.http.get<Perfil>(`${BASE}/perfil/${id}`);

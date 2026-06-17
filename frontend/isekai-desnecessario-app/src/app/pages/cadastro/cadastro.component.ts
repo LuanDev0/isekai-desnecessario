@@ -27,9 +27,9 @@ export class CadastroComponent implements OnInit {
   readonly lang   = inject(LanguageService);
 
   usuario: Usuario | null = null;
-  perfis:  Perfil[] = [];
+  perfis:       Perfil[] = [];
   perfisOrfaos: Perfil[] = [];
-  classes: Classe[] = [];
+  classes:      Classe[] = [];
 
   // ── Estado de tela ────────────────────────────────
   tela: 'inicio' | 'login' | 'registro' | 'perfis' | 'cadastro' = 'inicio';
@@ -86,13 +86,11 @@ export class CadastroComponent implements OnInit {
   onGoogleToken(idToken: string) {
     this.carregando = true;
     this.erro = '';
-    const savedId = this.profile.getSavedId();
-    this.auth.loginComGoogle(idToken, savedId).subscribe({
+    this.auth.loginComGoogle(idToken).subscribe({
       next: res => {
         this.usuario = res.usuario;
         this.perfis  = res.perfis;
         if (this.perfis.length === 0) {
-          // Busca perfis órfãos para o usuário reconhecer os seus
           this.api.getOrfaos().subscribe({
             next: orfaos => { this.perfisOrfaos = orfaos; this.carregando = false; this.tela = 'perfis'; },
             error: ()    => { this.carregando = false; this.tela = 'perfis'; }
@@ -114,6 +112,14 @@ export class CadastroComponent implements OnInit {
         this.perfisOrfaos = this.perfisOrfaos.filter(o => o.id !== p.id);
       },
       error: () => { this.erro = 'Não foi possível reivindicar este perfil.'; }
+    });
+  }
+
+  desvincular(perfil: Perfil) {
+    if (!confirm(`Remover "${perfil.nome}" desta conta? O perfil não será excluído.`)) return;
+    this.api.desvincularPerfil(perfil.id).subscribe({
+      next: () => { this.perfis = this.perfis.filter(p => p.id !== perfil.id); },
+      error: () => { this.erro = 'Não foi possível remover o perfil.'; }
     });
   }
 
