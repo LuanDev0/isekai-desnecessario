@@ -227,7 +227,9 @@ export class StatusComponent implements OnInit {
   // ── Rank cor ──────────────────────────────────────────
   get fotoUrl(): string | null {
     const url = this.perfil?.fotoUrl;
-    if (url && url.startsWith('/')) return `${API_BASE}${url}`;
+    if (!url) return null;
+    if (url.startsWith('data:')) return url;
+    if (url.startsWith('/')) return `${API_BASE}${url}`;
     return null;
   }
 

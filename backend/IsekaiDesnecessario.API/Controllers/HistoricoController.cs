@@ -37,7 +37,7 @@ public class HistoricoController(AppDbContext db) : ControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert(int perfilId, [FromBody] UpsertHistoricoDto dto)
     {
-        var hoje = DateOnly.FromDateTime(DateTime.Today);
+        var hoje = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var entrada = await db.HistoricoXp
             .FirstOrDefaultAsync(h => h.PerfilId == perfilId && h.Data == hoje);

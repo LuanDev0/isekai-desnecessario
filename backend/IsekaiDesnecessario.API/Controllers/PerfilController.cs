@@ -132,37 +132,20 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
 
-        var extensoesPermitidas = new[] { ".jpg", ".jpeg", ".jfif", ".png", ".webp", ".gif" };
-        var ext = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
-        if (!extensoesPermitidas.Contains(ext))
-            return BadRequest("Formato inválido. Use JPG, JFIF, PNG, GIF ou WebP.");
-
-        // JFIF é JPEG — salva como .jpg para compatibilidade com browsers
-        if (ext == ".jfif") ext = ".jpg";
+        var mimePermitidos = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+        var mime = arquivo.ContentType.ToLowerInvariant();
+        if (!mimePermitidos.Contains(mime))
+            return BadRequest("Formato inválido. Use JPG, PNG, GIF ou WebP.");
 
         if (arquivo.Length > 5 * 1024 * 1024)
             return BadRequest("Arquivo muito grande. Máximo 5MB.");
 
-        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-        Directory.CreateDirectory(uploadsDir);
+        using var ms = new MemoryStream();
+        await arquivo.CopyToAsync(ms);
+        var base64 = Convert.ToBase64String(ms.ToArray());
+        perfil.FotoUrl = $"data:{mime};base64,{base64}";
 
-        // Remove foto antiga se existir
-        if (!string.IsNullOrEmpty(perfil.FotoUrl))
-        {
-            var fotoAntiga = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", perfil.FotoUrl.TrimStart('/'));
-            if (System.IO.File.Exists(fotoAntiga))
-                System.IO.File.Delete(fotoAntiga);
-        }
-
-        var nomeArquivo = $"perfil_{id}_{Guid.NewGuid():N}{ext}";
-        var caminho = Path.Combine(uploadsDir, nomeArquivo);
-
-        using (var stream = new FileStream(caminho, FileMode.Create))
-            await arquivo.CopyToAsync(stream);
-
-        perfil.FotoUrl = $"/uploads/{nomeArquivo}";
         await db.SaveChangesAsync();
-
         return Ok(perfil);
     }
 
@@ -197,15 +180,15 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         if (perfil is null) return NotFound();
 
         // Reseta XpHoje se for um dia novo
-        if (perfil.DataXpHoje?.Date != DateTime.Today)
+        if (perfil.DataXpHoje?.Date != DateTime.UtcNow.Date)
         {
             perfil.XpHoje     = 0;
-            perfil.DataXpHoje = DateTime.Today;
+            perfil.DataXpHoje = DateTime.UtcNow;
             await db.SaveChangesAsync();
         }
 
         bool xpSuficiente  = perfil.XpHoje >= 1000;
-        bool naoPegouHoje  = perfil.UltimaLootbox?.Date != DateTime.Today;
+        bool naoPegouHoje  = perfil.UltimaLootbox?.Date != DateTime.UtcNow.Date;
         bool disponivel    = xpSuficiente && naoPegouHoje;
 
         return Ok(new
@@ -223,13 +206,13 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
 
-        if (perfil.DataXpHoje?.Date != DateTime.Today)
-        { perfil.XpHoje = 0; perfil.DataXpHoje = DateTime.Today; }
+        if (perfil.DataXpHoje?.Date != DateTime.UtcNow.Date)
+        { perfil.XpHoje = 0; perfil.DataXpHoje = DateTime.UtcNow; }
 
         if (perfil.XpHoje < 1000)
             return BadRequest("XP insuficiente. Ganhe 1000 XP hoje para abrir a lootbox.");
 
-        if (perfil.UltimaLootbox?.Date == DateTime.Today)
+        if (perfil.UltimaLootbox?.Date == DateTime.UtcNow.Date)
             return BadRequest("Lootbox já aberta hoje. Volte amanhã!");
 
         var recompensas = await db.Recompensas

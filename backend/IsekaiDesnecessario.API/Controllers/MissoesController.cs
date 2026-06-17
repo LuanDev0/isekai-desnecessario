@@ -106,7 +106,7 @@ public class MissoesController(AppDbContext db, XpService xpService) : Controlle
     [HttpGet("jornada")]
     public async Task<IActionResult> Jornada([FromQuery] int perfilId)
     {
-        var doze = DateTime.Today.AddDays(-84); // 12 semanas atrás
+        var doze = DateTime.UtcNow.Date.AddDays(-84); // 12 semanas atrás
 
         var concluidas = await db.Missoes
             .Where(m => m.PerfilId == perfilId && m.Concluida && m.ConcluidaEm >= doze)
