@@ -7,6 +7,7 @@ import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Atributo, BomHabito, Classe, MauHabito, Missao, Perfil, Recompensa } from '../../models/models';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-configuracoes',
@@ -307,7 +308,7 @@ export class ConfiguracoesComponent implements OnInit {
   get fotoUrlAtual(): string | null {
     const f = this.profile.perfilAtivo()?.fotoUrl;
     if (!f) return null;
-    return f.startsWith('/') ? `http://localhost:5008${f}` : f;
+    return f.startsWith('/') ? `${environment.apiUrl.replace('/api', '')}${f}` : f;
   }
 
   toggleSecaoPerfil() {

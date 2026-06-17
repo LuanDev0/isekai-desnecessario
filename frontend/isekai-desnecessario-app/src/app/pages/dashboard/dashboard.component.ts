@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
@@ -8,7 +9,7 @@ import { ProfileSelectorComponent } from '../../components/profile-selector/prof
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { BomHabito, DiarioAcao, MauHabito, Perfil } from '../../models/models';
 
-const API_BASE = 'http://localhost:5008';
+const API_BASE = environment.apiUrl.replace('/api', '');
 
 @Component({
   selector: 'app-dashboard',

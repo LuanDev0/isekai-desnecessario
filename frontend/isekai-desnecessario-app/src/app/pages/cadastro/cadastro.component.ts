@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,7 +9,7 @@ import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Classe, Perfil } from '../../models/models';
 
-const API_BASE = 'http://localhost:5008';
+const API_BASE = environment.apiUrl.replace('/api', '');
 
 @Component({
   selector: 'app-cadastro',

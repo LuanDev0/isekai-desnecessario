@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -6,7 +7,7 @@ import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { Perfil } from '../../models/models';
 
-const API_BASE = 'http://localhost:5008';
+const API_BASE = environment.apiUrl.replace('/api', '');
 
 @Component({
   selector: 'app-profile-selector',
