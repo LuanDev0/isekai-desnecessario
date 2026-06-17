@@ -77,8 +77,13 @@ export class AuthService {
     google.accounts.id.renderButton(element, {
       theme:  'outline',
       size:   'large',
-      width:  280,
+      width:  element.offsetWidth || 280,
       locale: 'pt-BR',
     });
+  }
+
+  renderGoogleButtonById(id: string) {
+    const el = document.getElementById(id);
+    if (el) this.renderGoogleButton(el);
   }
 }

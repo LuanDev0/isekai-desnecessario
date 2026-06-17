@@ -23,6 +23,27 @@ $muted:   #8b949e;
   gap: 40px;
 }
 
+// ── Barra de idioma ───────────────────────────────────
+.lang-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -24px;
+}
+
+.lang-select {
+  background: $surface;
+  color: $text;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  outline: none;
+
+  &:hover { border-color: #484f58; }
+  option { background: $card; }
+}
+
 // ── Hero ──────────────────────────────────────────────
 .hero {
   text-align: center;
