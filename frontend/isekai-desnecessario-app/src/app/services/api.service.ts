@@ -13,6 +13,10 @@ export class ApiService {
     return this.http.get<Perfil[]>(`${BASE}/perfil`);
   }
 
+  getMeusPerfis() {
+    return this.http.get<Perfil[]>(`${BASE}/perfil/meus`);
+  }
+
   getPerfil(id: number) {
     return this.http.get<Perfil>(`${BASE}/perfil/${id}`);
   }

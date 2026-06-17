@@ -208,12 +208,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   completar(habito: BomHabito) {
     if (!this.estaDisponivel(habito)) return;
+    this.aplicarXpOtimista(habito.xp);
+    habito.ultimaExecucao = new Date().toISOString();
     this.api.completarBomHabito(habito.id, this.perfil!.id).subscribe(() => this.carregarDados());
   }
 
   completarDesafio() {
     const d = this.desafioDoDia;
     if (!d || this.desafioConcluido) return;
+    this.aplicarXpOtimista(d.xp);
     this.api.completarBomHabito(d.id, this.perfil!.id).subscribe(() => {
       this.api.concluirDesafio(this.perfil!.id).subscribe(p => {
         this.perfil = p;
@@ -225,6 +228,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   registrar(habito: MauHabito) {
     if (!this.estaDisponivel(habito)) return;
+    this.aplicarXpOtimista(-habito.xp);
+    habito.ultimaExecucao = new Date().toISOString();
     this.api.registrarMauHabito(habito.id, this.perfil!.id).subscribe(() => this.carregarDados());
+  }
+
+  private aplicarXpOtimista(delta: number) {
+    if (!this.perfil) return;
+    this.perfil.xp = Math.max(0, this.perfil.xp + delta);
+    // sobe de nível otimisticamente se passou do limite
+    while (this.perfil.xp >= this.perfil.proximoNivelXp) {
+      this.perfil.xp -= this.perfil.proximoNivelXp;
+      this.perfil.nivel++;
+    }
+    // desce de nível otimisticamente se ficou negativo
+    while (this.perfil.xp < 0 && this.perfil.nivel > 1) {
+      this.perfil.nivel--;
+      this.perfil.xp += this.perfil.proximoNivelXp;
+    }
   }
 }

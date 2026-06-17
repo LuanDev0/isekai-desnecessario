@@ -26,6 +26,10 @@ export const pt = {
     comecarJornada: 'Começar Jornada',
     remover: 'Remover',
     selecione: 'Selecione...',
+    ou: 'ou',
+    continuarSemConta: 'Continuar sem conta',
+    novoHeroi: 'Novo Herói',
+    limiteAtingido: 'Limite de 3 perfis por conta atingido.',
   },
   missoes: {
     titulo: 'Missões',

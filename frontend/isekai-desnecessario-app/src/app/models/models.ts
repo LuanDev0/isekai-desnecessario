@@ -7,8 +7,17 @@ export interface Classe {
   atributo?: Atributo;
 }
 
+export interface Usuario {
+  id: number;
+  googleId: string;
+  email: string;
+  nome: string;
+  fotoUrl?: string | null;
+}
+
 export interface Perfil {
   id: number;
+  usuarioId?: number | null;
   nome: string;
   genero?: string | null;
   classeId?: number | null;
