@@ -12,7 +12,7 @@ public class AuthController(AuthService authService) : ControllerBase
     {
         try
         {
-            var (jwt, usuario, perfis) = await authService.LoginComGoogle(dto.IdToken, dto.PerfilOrfaoId);
+            var (jwt, usuario, perfis) = await authService.LoginComGoogle(dto.IdToken);
             return Ok(new { token = jwt, usuario, perfis });
         }
         catch (Exception ex)
@@ -54,6 +54,6 @@ public class AuthController(AuthService authService) : ControllerBase
     }
 }
 
-public record GoogleLoginDto(string IdToken, int? PerfilOrfaoId = null);
+public record GoogleLoginDto(string IdToken);
 public record RegistrarDto(string Nome, string Email, string Senha);
 public record LoginDto(string Email, string Senha);

@@ -51,15 +51,6 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         return perfil is null ? NotFound() : Ok(perfil);
     }
 
-    // Retorna perfis sem dono (UsuarioId = null) — para recuperação após login
-    [HttpGet("orfaos")]
-    [Authorize]
-    public async Task<IActionResult> GetOrfaos()
-    {
-        var perfis = await db.Perfis.Where(p => p.UsuarioId == null).ToListAsync();
-        return Ok(perfis);
-    }
-
     // Retorna perfis do usuário autenticado
     [HttpGet("meus")]
     [Authorize]
@@ -72,21 +63,17 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create(Perfil perfil)
     {
-        // Se há JWT válido, associa o perfil ao usuário autenticado
         var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        if (int.TryParse(sub, out int usuarioIdJwt))
-            perfil.UsuarioId = usuarioIdJwt;
+        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
 
-        // Limite de perfis por conta Google (convidados, com UsuarioId null, não contam)
-        if (perfil.UsuarioId is int usuarioId)
-        {
-            var qtd = await db.Perfis.CountAsync(p => p.UsuarioId == usuarioId);
-            if (qtd >= MaxPerfisPorConta)
-                return BadRequest($"Limite de {MaxPerfisPorConta} perfis por conta atingido.");
-        }
+        var qtd = await db.Perfis.CountAsync(p => p.UsuarioId == usuarioId);
+        if (qtd >= MaxPerfisPorConta)
+            return BadRequest($"Limite de {MaxPerfisPorConta} perfis por conta atingido.");
 
+        perfil.UsuarioId = usuarioId;
         db.Perfis.Add(perfil);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);

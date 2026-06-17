@@ -12,7 +12,7 @@ namespace IsekaiDesnecessario.API.Services;
 public class AuthService(AppDbContext db, IConfiguration config)
 {
     // ── Google OAuth ──────────────────────────────────────────────────────────
-    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginComGoogle(string idToken, int? perfilOrfaoId = null)
+    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginComGoogle(string idToken)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
         {
@@ -46,19 +46,6 @@ public class AuthService(AppDbContext db, IConfiguration config)
         await db.SaveChangesAsync();
 
         var perfis = await db.Perfis.Where(p => p.UsuarioId == usuario.Id).ToListAsync();
-
-        // Se o frontend passou um perfilOrfaoId explícito (salvo no localStorage), vincula só ele
-        if (perfis.Count == 0 && perfilOrfaoId is int orfaoId)
-        {
-            var orfao = await db.Perfis.FindAsync(orfaoId);
-            if (orfao is not null && orfao.UsuarioId is null)
-            {
-                orfao.UsuarioId = usuario.Id;
-                await db.SaveChangesAsync();
-                perfis = [orfao];
-            }
-        }
-
         return (GerarJwt(usuario), usuario, perfis);
     }
 

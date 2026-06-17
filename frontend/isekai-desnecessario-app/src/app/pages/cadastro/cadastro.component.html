@@ -209,23 +209,7 @@
     </div>
 
     <p class="perfis-titulo">{{ 'cadastro.selecionePerfil' | translate }}</p>
-    <p class="empty" *ngIf="perfis.length === 0 && perfisOrfaos.length === 0 && !carregando">{{ 'cadastro.nenhumPerfil' | translate }}</p>
-
-    <!-- Perfis órfãos (sem conta) que o usuário pode reivindicar -->
-    <div *ngIf="perfisOrfaos.length > 0" class="orfaos-section">
-      <p class="orfaos-titulo">Perfis sem conta vinculada — algum é seu?</p>
-      <div class="perfis-grid">
-        <button class="perfil-card perfil-orfao" *ngFor="let o of perfisOrfaos" (click)="reivindicarOrfao(o)">
-          <div class="avatar">
-            <img *ngIf="fotoUrl(o)" [src]="fotoUrl(o)" alt="avatar" />
-            <span *ngIf="!fotoUrl(o)" class="avatar-inicial">{{ o.nome[0] }}</span>
-          </div>
-          <span class="perfil-nome">{{ o.nome }}</span>
-          <span class="perfil-rank">{{ o.rank }} · Nv {{ o.nivel }}</span>
-          <span class="orfao-badge">Este é meu</span>
-        </button>
-      </div>
-    </div>
+    <p class="empty" *ngIf="perfis.length === 0 && !carregando">{{ 'cadastro.nenhumPerfil' | translate }}</p>
 
     <div class="perfis-grid" *ngIf="perfis.length > 0">
       <div class="perfil-card-wrap" *ngFor="let p of perfis">

@@ -28,7 +28,6 @@ export class CadastroComponent implements OnInit {
 
   usuario: Usuario | null = null;
   perfis:  Perfil[] = [];
-  perfisOrfaos: Perfil[] = [];
   classes: Classe[] = [];
 
   // ── Estado de tela ────────────────────────────────
@@ -86,42 +85,22 @@ export class CadastroComponent implements OnInit {
   onGoogleToken(idToken: string) {
     this.carregando = true;
     this.erro = '';
-    const savedId = this.profile.getSavedId();
-    this.auth.loginComGoogle(idToken, savedId).subscribe({
+    this.auth.loginComGoogle(idToken).subscribe({
       next: res => {
         this.usuario = res.usuario;
         this.perfis  = res.perfis;
-        if (this.perfis.length === 0) {
-          // Busca perfis órfãos para o usuário reconhecer os seus
-          this.api.getOrfaos().subscribe({
-            next: orfaos => { this.perfisOrfaos = orfaos; this.carregando = false; this.tela = 'perfis'; },
-            error: ()    => { this.carregando = false; this.tela = 'perfis'; }
-          });
-        } else {
-          this.perfisOrfaos = [];
-          this.carregando = false;
-          this.tela = 'perfis';
-        }
+        this.carregando = false;
+        this.tela = this.perfis.length > 0 ? 'perfis' : 'cadastro';
       },
       error: () => { this.erro = 'Erro ao autenticar com Google.'; this.carregando = false; }
     });
   }
 
   desvincular(perfil: Perfil) {
-    if (!confirm(`Remover "${perfil.nome}" desta conta? O perfil ficará disponível para ser vinculado a outro login.`)) return;
+    if (!confirm(`Remover "${perfil.nome}" desta conta? O perfil não será excluído.`)) return;
     this.api.desvincularPerfil(perfil.id).subscribe({
       next: () => { this.perfis = this.perfis.filter(p => p.id !== perfil.id); },
       error: () => { this.erro = 'Não foi possível remover o perfil.'; }
-    });
-  }
-
-  reivindicarOrfao(orfao: Perfil) {
-    this.api.vincularPerfil(orfao.id).subscribe({
-      next: p => {
-        this.perfis.push(p);
-        this.perfisOrfaos = this.perfisOrfaos.filter(o => o.id !== p.id);
-      },
-      error: () => { this.erro = 'Não foi possível reivindicar este perfil.'; }
     });
   }
 

@@ -36,10 +36,10 @@ export class AuthService {
     this._usuario.set(res.usuario);
   }
 
-  loginComGoogle(idToken: string, perfilOrfaoId?: number | null) {
+  loginComGoogle(idToken: string) {
     return this.http
       .post<{ token: string; usuario: Usuario; perfis: Perfil[] }>(
-        `${environment.apiUrl}/auth/google`, { idToken, perfilOrfaoId }
+        `${environment.apiUrl}/auth/google`, { idToken }
       )
       .pipe(tap(res => this.salvarSessao(res)));
   }
