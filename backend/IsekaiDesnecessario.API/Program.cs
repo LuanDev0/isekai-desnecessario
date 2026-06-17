@@ -20,6 +20,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
     {
+        opt.MapInboundClaims = false; // preserva "sub" sem remap para NameIdentifier
         opt.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer           = true,
