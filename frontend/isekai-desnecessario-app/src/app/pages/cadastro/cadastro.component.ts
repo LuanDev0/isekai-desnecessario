@@ -107,6 +107,14 @@ export class CadastroComponent implements OnInit {
     });
   }
 
+  desvincular(perfil: Perfil) {
+    if (!confirm(`Remover "${perfil.nome}" desta conta? O perfil ficará disponível para ser vinculado a outro login.`)) return;
+    this.api.desvincularPerfil(perfil.id).subscribe({
+      next: () => { this.perfis = this.perfis.filter(p => p.id !== perfil.id); },
+      error: () => { this.erro = 'Não foi possível remover o perfil.'; }
+    });
+  }
+
   reivindicarOrfao(orfao: Perfil) {
     this.api.vincularPerfil(orfao.id).subscribe({
       next: p => {

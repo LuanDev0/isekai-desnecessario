@@ -92,6 +92,23 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);
     }
 
+    // Remove vínculo de um perfil desta conta (vira órfão novamente)
+    [HttpPost("{id}/desvincular")]
+    [Authorize]
+    public async Task<IActionResult> Desvincular(int id)
+    {
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
+
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+        if (perfil.UsuarioId != usuarioId) return Forbid();
+
+        perfil.UsuarioId = null;
+        await db.SaveChangesAsync();
+        return Ok();
+    }
+
     // Vincula um perfil convidado (UsuarioId = null) à conta Google autenticada
     [HttpPost("{id}/vincular")]
     [Authorize]
