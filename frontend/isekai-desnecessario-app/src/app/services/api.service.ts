@@ -17,6 +17,10 @@ export class ApiService {
     return this.http.get<Perfil[]>(`${BASE}/perfil/meus`);
   }
 
+  vincularPerfil(id: number) {
+    return this.http.post<Perfil>(`${BASE}/perfil/${id}/vincular`, {});
+  }
+
   getPerfil(id: number) {
     return this.http.get<Perfil>(`${BASE}/perfil/${id}`);
   }

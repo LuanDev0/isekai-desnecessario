@@ -32,51 +32,56 @@ export class CadastroComponent implements OnInit, AfterViewInit {
   perfis:  Perfil[] = [];
   classes: Classe[] = [];
 
-  novoNome   = '';
-  erro       = '';
-  salvando   = false;
-  carregando = false;
+  // ── Estado de tela ────────────────────────────────
+  tela: 'inicio' | 'login' | 'registro' | 'perfis' | 'cadastro' = 'inicio';
 
-  tela: 'inicio' | 'perfis' | 'cadastro' | 'convidado' = 'inicio';
+  // ── Formulários ───────────────────────────────────
+  loginEmail  = '';
+  loginSenha  = '';
+  regNome     = '';
+  regEmail    = '';
+  regSenha    = '';
+  regConfirma = '';
+  mostrarSenha        = false;
+  mostrarSenhaConfirma = false;
 
-  fotoFile:          File | null = null;
-  fotoPreview:       string | null = null;
+  // ── Novo perfil ───────────────────────────────────
+  novoNome           = '';
   classeSelecionada: number | null = null;
   generoSelecionado: string | null = null;
+  fotoFile:    File | null = null;
+  fotoPreview: string | null = null;
+
+  erro      = '';
+  salvando  = false;
+  carregando = false;
 
   readonly generos = ['Masculino', 'Feminino', 'Não-binário'];
 
   nomeClasse(c: Classe): string {
-    if (this.generoSelecionado === 'Feminino') return c.nomeFeminino ?? c.nome;
-    return c.nome;
+    return this.generoSelecionado === 'Feminino' ? (c.nomeFeminino ?? c.nome) : c.nome;
   }
 
   ngOnInit() {
     this.api.getClasses().subscribe({ next: c => this.classes = c });
-
-    // Se já está logado com Google, pula direto para os perfis
     this.usuario = this.auth.usuario();
-    if (this.usuario) {
-      this.carregarPerfisDoUsuario();
-    }
+    if (this.usuario) this.carregarPerfisDoUsuario();
   }
 
   ngAfterViewInit() {
-    if (!environment.googleClientId) return;
-    this.tentarIniciarGoogle();
+    if (environment.googleClientId) this.tentarIniciarGoogle();
   }
 
   private tentarIniciarGoogle() {
     if ((window as any)['google']?.accounts?.id) {
       this.auth.initGoogleSignIn(idToken => this.onGoogleToken(idToken));
-      if (this.googleBtnRef) {
-        this.auth.renderGoogleButton(this.googleBtnRef.nativeElement);
-      }
+      if (this.googleBtnRef) this.auth.renderGoogleButton(this.googleBtnRef.nativeElement);
     } else {
       setTimeout(() => this.tentarIniciarGoogle(), 150);
     }
   }
 
+  // ── Autenticação Google ───────────────────────────
   onGoogleToken(idToken: string) {
     this.carregando = true;
     this.erro = '';
@@ -84,42 +89,93 @@ export class CadastroComponent implements OnInit, AfterViewInit {
       next: res => {
         this.usuario = res.usuario;
         this.perfis  = res.perfis;
-        this.carregando = false;
         if (this.perfis.length === 0) {
+          const savedId = this.profile.getSavedId();
+          if (savedId) {
+            this.api.vincularPerfil(savedId).subscribe({
+              next: p => { this.perfis = [p]; this.carregando = false; this.tela = 'perfis'; },
+              error: () => { this.carregando = false; this.tela = 'cadastro'; }
+            });
+            return;
+          }
+          this.carregando = false;
           this.tela = 'cadastro';
         } else {
+          this.carregando = false;
           this.tela = 'perfis';
         }
       },
-      error: () => {
-        this.erro = 'Erro ao autenticar com Google. Tente novamente.';
-        this.carregando = false;
+      error: () => { this.erro = 'Erro ao autenticar com Google.'; this.carregando = false; }
+    });
+  }
+
+  // ── Login email/senha ─────────────────────────────
+  fazerLogin() {
+    if (!this.loginEmail || !this.loginSenha) { this.erro = 'Preencha e-mail e senha.'; return; }
+    this.salvando = true;
+    this.erro = '';
+    this.auth.login(this.loginEmail, this.loginSenha).subscribe({
+      next: res => this.aposAuth(res),
+      error: err => {
+        this.erro = err.error?.erro ?? 'E-mail ou senha incorretos.';
+        this.salvando = false;
       }
     });
   }
 
+  // ── Registro email/senha ──────────────────────────
+  fazerRegistro() {
+    if (!this.regNome.trim()) { this.erro = 'Digite seu nome.'; return; }
+    if (!this.regEmail)       { this.erro = 'Digite seu e-mail.'; return; }
+    if (this.regSenha.length < 8) { this.erro = 'A senha deve ter pelo menos 8 caracteres.'; return; }
+    if (!this.regSenha.match(/[A-Z]/)) { this.erro = 'A senha deve conter pelo menos uma letra maiúscula.'; return; }
+    if (!this.regSenha.match(/[0-9]/)) { this.erro = 'A senha deve conter pelo menos um número.'; return; }
+    if (this.regSenha !== this.regConfirma) { this.erro = 'As senhas não coincidem.'; return; }
+    this.salvando = true;
+    this.erro = '';
+    this.auth.registrar(this.regNome, this.regEmail, this.regSenha).subscribe({
+      next: res => this.aposAuth(res),
+      error: err => {
+        this.erro = err.error?.erro ?? 'Erro ao criar conta.';
+        this.salvando = false;
+      }
+    });
+  }
+
+  private aposAuth(res: { usuario: any; perfis: Perfil[] }) {
+    this.usuario = res.usuario;
+    this.perfis  = res.perfis;
+    this.salvando = false;
+    if (this.perfis.length === 0) {
+      const savedId = this.profile.getSavedId();
+      if (savedId) {
+        this.api.vincularPerfil(savedId).subscribe({
+          next: p => { this.perfis = [p]; this.tela = 'perfis'; },
+          error: () => { this.tela = 'cadastro'; }
+        });
+        return;
+      }
+      this.tela = 'cadastro';
+    } else {
+      this.tela = 'perfis';
+    }
+  }
+
+  // ── Carregar perfis do usuário já logado ──────────
   carregarPerfisDoUsuario() {
     this.carregando = true;
     this.api.getMeusPerfis().subscribe({
-      next: p => {
-        this.perfis = p;
-        this.carregando = false;
-        this.tela = 'perfis';
-      },
-      error: () => {
-        this.carregando = false;
-        this.tela = 'perfis';
-      }
+      next: p => { this.perfis = p; this.carregando = false; this.tela = 'perfis'; },
+      error: () => { this.carregando = false; this.tela = 'inicio'; }
     });
   }
 
-  // ── Modo convidado (sem Google) ───────────────────────
-  irModoConvidado() {
-    this.api.getPerfis().subscribe({ next: p => this.perfis = p });
-    this.tela = 'convidado';
+  // ── Seleção / criação de perfil ───────────────────
+  selecionar(perfil: Perfil) {
+    this.profile.setPerfilAtivo(perfil);
+    this.router.navigate(['/']);
   }
 
-  // ── Criar novo perfil ─────────────────────────────────
   irCadastro() {
     this.novoNome = '';
     this.erro = '';
@@ -129,31 +185,8 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     this.tela = 'cadastro';
   }
 
-  voltar() {
-    if (this.usuario) {
-      this.tela = this.perfis.length > 0 ? 'perfis' : 'inicio';
-    } else {
-      this.tela = 'inicio';
-    }
-  }
-
-  logout() {
-    this.auth.logout();
-    this.profile.clearPerfil();
-    this.usuario = null;
-    this.perfis = [];
-    this.tela = 'inicio';
-    // Re-renderiza o botão Google
-    setTimeout(() => this.tentarIniciarGoogle(), 200);
-  }
-
-  selecionar(perfil: Perfil) {
-    this.profile.setPerfilAtivo(perfil);
-    this.router.navigate(['/']);
-  }
-
   criar() {
-    if (!this.novoNome.trim()) { this.erro = 'Digite seu nome de herói.'; return; }
+    if (!this.novoNome.trim())   { this.erro = 'Digite seu nome de herói.'; return; }
     if (!this.classeSelecionada) { this.erro = 'Escolha uma classe para continuar.'; return; }
     if (this.salvando) return;
     this.erro = '';
@@ -162,7 +195,7 @@ export class CadastroComponent implements OnInit, AfterViewInit {
       next: p => {
         if (this.fotoFile) {
           this.api.uploadFoto(p.id, this.fotoFile).subscribe({
-            next: atualizado => this.entrar(atualizado),
+            next: a => this.entrar(a),
             error: () => this.entrar(p),
           });
         } else {
@@ -178,13 +211,25 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/']);
   }
 
-  // ── Foto ──────────────────────────────────────────────
+  voltar() {
+    this.erro = '';
+    this.tela = this.usuario ? 'perfis' : 'inicio';
+  }
+
+  logout() {
+    this.auth.logout();
+    this.profile.clearPerfil();
+    this.usuario = null;
+    this.perfis = [];
+    this.tela = 'inicio';
+    setTimeout(() => this.tentarIniciarGoogle(), 200);
+  }
+
+  // ── Foto ──────────────────────────────────────────
   onFotoSelecionada(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    const okTipos = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!okTipos.includes(file.type)) { this.erro = 'Use uma imagem JPG, PNG, GIF ou WebP.'; return; }
+    if (!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)) { this.erro = 'Use JPG, PNG, GIF ou WebP.'; return; }
     if (file.size > 5 * 1024 * 1024) { this.erro = 'Imagem muito grande. Máximo 5MB.'; return; }
     this.erro = '';
     if (this.fotoPreview) URL.revokeObjectURL(this.fotoPreview);
@@ -206,11 +251,15 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-  get podeCriarMais(): boolean {
-    return this.perfis.length < 3;
-  }
-
-  get clientIdConfigurado(): boolean {
-    return !!environment.googleClientId;
+  get podeCriarMais(): boolean { return this.perfis.length < 3; }
+  get senhaTemMaiuscula(): boolean { return /[A-Z]/.test(this.regSenha); }
+  get senhaTemNumero(): boolean { return /[0-9]/.test(this.regSenha); }
+  get senhaForca(): number {
+    let f = 0;
+    if (this.regSenha.length >= 8) f++;
+    if (this.senhaTemMaiuscula) f++;
+    if (this.senhaTemNumero) f++;
+    if (/[^A-Za-z0-9]/.test(this.regSenha)) f++;
+    return f;
   }
 }

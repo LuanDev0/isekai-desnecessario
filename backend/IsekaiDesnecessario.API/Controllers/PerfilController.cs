@@ -83,6 +83,27 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);
     }
 
+    // Vincula um perfil convidado (UsuarioId = null) à conta Google autenticada
+    [HttpPost("{id}/vincular")]
+    [Authorize]
+    public async Task<IActionResult> Vincular(int id)
+    {
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
+
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+        if (perfil.UsuarioId is not null) return BadRequest("Perfil já vinculado a uma conta.");
+
+        var qtd = await db.Perfis.CountAsync(p => p.UsuarioId == usuarioId);
+        if (qtd >= MaxPerfisPorConta)
+            return BadRequest($"Limite de {MaxPerfisPorConta} perfis por conta atingido.");
+
+        perfil.UsuarioId = usuarioId;
+        await db.SaveChangesAsync();
+        return Ok(perfil);
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, Perfil perfil)
     {

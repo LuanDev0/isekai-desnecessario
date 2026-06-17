@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace IsekaiDesnecessario.API.Models;
 
@@ -6,12 +6,16 @@ public class Usuario
 {
     public int Id { get; set; }
 
-    // ── Identidade Google ─────────────────────────────
-    public string GoogleId { get; set; } = string.Empty;   // 'sub' do token Google (chave única)
+    // ── Identidade Google (opcional) ──────────────────
+    public string? GoogleId { get; set; }
     public string Email { get; set; } = string.Empty;
     public bool EmailVerificado { get; set; }
-    public string Nome { get; set; } = string.Empty;        // nome da conta Google
-    public string? FotoUrl { get; set; }                    // avatar do Google
+    public string Nome { get; set; } = string.Empty;
+    public string? FotoUrl { get; set; }
+
+    // ── Login próprio (opcional) ──────────────────────
+    [JsonIgnore]
+    public string? SenhaHash { get; set; }
 
     // ── Auditoria ─────────────────────────────────────
     public DateTime CriadoEm    { get; set; } = DateTime.UtcNow;
