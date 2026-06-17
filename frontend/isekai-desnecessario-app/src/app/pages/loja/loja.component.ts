@@ -3,18 +3,21 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Perfil, Recompensa, Atributo, BomHabito, Missao } from '../../models/models';
 
 @Component({
   selector: 'app-loja',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './loja.component.html',
   styleUrl: './loja.component.scss',
 })
 export class LojaComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
+  readonly lang   = inject(LanguageService);
   private router  = inject(Router);
 
   perfil:      Perfil | null  = null;

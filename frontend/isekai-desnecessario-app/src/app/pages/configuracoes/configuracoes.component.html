@@ -1,10 +1,10 @@
 <div class="config-page">
-  <h1 class="page-title">Configurações</h1>
+  <h1 class="page-title">{{ 'config.titulo' | translate }}</h1>
 
   <!-- ── PERFIL ─────────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="toggleSecaoPerfil()">
-      <h2 class="card-title">👤 Perfil</h2>
+      <h2 class="card-title">{{ 'config.secPerfil' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoPerfil" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -14,7 +14,7 @@
       <div class="perfil-edit-row">
         <!-- Avatar -->
         <div class="perfil-foto">
-          <div class="perfil-avatar" (click)="fotoInputConfig.click()" title="Alterar foto">
+          <div class="perfil-avatar" (click)="fotoInputConfig.click()" [title]="'config.cliqueAlterar' | translate">
             <img *ngIf="fotoPreviewConfig" [src]="fotoPreviewConfig" alt="avatar" />
             <img *ngIf="!fotoPreviewConfig && fotoUrlAtual" [src]="fotoUrlAtual" alt="avatar" />
             <svg *ngIf="!fotoPreviewConfig && !fotoUrlAtual" class="foto-icon-config" viewBox="0 0 24 24" fill="none">
@@ -25,21 +25,21 @@
           </div>
           <input #fotoInputConfig type="file" accept="image/jpeg,image/png,image/webp,image/gif"
                  style="display:none" (change)="onFotoSelecionadaConfig($event)" />
-          <button *ngIf="fotoPreviewConfig" class="foto-remover-config" (click)="removerFotoConfig()">Remover nova</button>
-          <span *ngIf="!fotoPreviewConfig" class="foto-hint-config">Clique para alterar</span>
+          <button *ngIf="fotoPreviewConfig" class="foto-remover-config" (click)="removerFotoConfig()">{{ 'config.removerNova' | translate }}</button>
+          <span *ngIf="!fotoPreviewConfig" class="foto-hint-config">{{ 'config.cliqueAlterar' | translate }}</span>
         </div>
 
         <!-- Nome -->
         <div class="field" style="flex:1; margin-bottom:0">
-          <label>Nome do herói</label>
+          <label>{{ 'config.nomeHeroi' | translate }}</label>
           <input type="text" [(ngModel)]="editNome" placeholder="Seu nome" maxlength="30" />
         </div>
       </div>
 
       <div class="field">
-        <label>Classe</label>
+        <label>{{ 'config.classe' | translate }}</label>
         <select [(ngModel)]="editClasseId">
-          <option [ngValue]="null">Sem classe</option>
+          <option [ngValue]="null">{{ 'cadastro.preferirNaoDizer' | translate }}</option>
           <option *ngFor="let c of classes" [ngValue]="c.id">
             {{ c.emoji }} {{ nomeClasse(c) }} — {{ c.atributo?.emoji }} {{ c.atributo?.nome }}: {{ c.atributo?.descricao }}
           </option>
@@ -47,15 +47,15 @@
       </div>
 
       <div class="field">
-        <label>Gênero <span class="label-opt">(opcional)</span></label>
+        <label>{{ 'config.genero' | translate }} <span class="label-opt">{{ 'config.generoOpcional' | translate }}</span></label>
         <select [ngModel]="editGenero" (ngModelChange)="editGeneroChanged($event)">
-          <option [ngValue]="null">Prefiro não dizer</option>
+          <option [ngValue]="null">{{ 'config.preferirNaoDizer' | translate }}</option>
           <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
         </select>
       </div>
 
       <button class="btn-salvar" [disabled]="salvandoPerfil" (click)="salvarPerfil()">
-        {{ salvandoPerfil ? 'Salvando...' : 'Salvar Perfil' }}
+        {{ salvandoPerfil ? ('config.salvando' | translate) : ('config.salvarPerfil' | translate) }}
       </button>
       <p class="feedback" [class]="'feedback ' + feedbackPerfilTipo" *ngIf="feedbackPerfil">{{ feedbackPerfil }}</p>
     </ng-container>
@@ -64,7 +64,7 @@
   <!-- ── BOM HÁBITO ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoBons = !secaoBons">
-      <h2 class="card-title"><span class="badge good">+XP</span> Bons Hábitos</h2>
+      <h2 class="card-title"><span class="badge good">+XP</span> {{ 'config.secBons' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoBons" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -72,7 +72,7 @@
 
     <ng-container *ngIf="secaoBons">
       <div class="list-header" (click)="abertoBons = !abertoBons">
-        <span>Cadastrados ({{ bonsHabitos.length }})</span>
+        <span>{{ 'config.cadastrados' | translate: { n: bonsHabitos.length } }}</span>
         <svg class="chevron" [class.open]="abertoBons" viewBox="0 0 24 24" fill="none">
           <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -98,62 +98,68 @@
             <li class="item-edit" *ngIf="editandoBomId === h.id">
               <div class="edit-row">
                 <div class="edit-field edit-field-grow">
-                  <label class="edit-label">Nome do hábito</label>
+                  <label class="edit-label">{{ 'config.nomeHabito' | translate }}</label>
                   <input type="text" [(ngModel)]="editBom.habito" placeholder="Ex: Ler 10 páginas" />
                 </div>
                 <div class="edit-field edit-field-xp">
-                  <label class="edit-label">XP ganho</label>
+                  <label class="edit-label">{{ 'config.xpGanho' | translate }}</label>
                   <input type="number" [(ngModel)]="editBom.xp" placeholder="50" min="1" max="9999" />
                 </div>
                 <div class="edit-field edit-field-freq">
-                  <label class="edit-label">Frequência</label>
+                  <label class="edit-label">{{ 'config.frequencia' | translate }}</label>
                   <select [(ngModel)]="editBom.frequencia">
-                    <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+                    <option>{{ 'config.freqDiario' | translate }}</option>
+                    <option>{{ 'config.freqSemanal' | translate }}</option>
+                    <option>{{ 'config.freqMensal' | translate }}</option>
+                    <option>{{ 'config.freqLivre' | translate }}</option>
                   </select>
                 </div>
               </div>
               <div class="edit-row" style="margin-top:8px">
                 <div class="edit-field edit-field-grow">
-                  <label class="edit-label">Atributo</label>
+                  <label class="edit-label">{{ 'config.atributo' | translate }}</label>
                   <select [(ngModel)]="editBom.atributoId">
-                    <option [ngValue]="null" disabled>Selecione...</option>
+                    <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
                     <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
                   </select>
                 </div>
               </div>
               <p class="feedback warn" *ngIf="feedbackBom && feedbackBomTipo === 'warn'" style="margin:6px 0 0">{{ feedbackBom }}</p>
               <div class="edit-btns">
-                <button class="btn-confirm" (click)="salvarEdicaoBom()">Salvar</button>
-                <button class="btn-cancel"  (click)="editandoBomId = null">Cancelar</button>
+                <button class="btn-confirm" (click)="salvarEdicaoBom()">{{ 'config.salvar' | translate }}</button>
+                <button class="btn-cancel"  (click)="editandoBomId = null">{{ 'config.cancelar' | translate }}</button>
               </div>
             </li>
           </ng-container>
         </ul>
-        <p class="empty-list" *ngIf="bonsHabitos.length === 0">Nenhum hábito cadastrado.</p>
+        <p class="empty-list" *ngIf="bonsHabitos.length === 0">{{ 'config.nenhumHabitoCad' | translate }}</p>
       </ng-container>
 
       <div class="divider"></div>
-      <h3 class="sub-title">Novo Bom Hábito</h3>
-      <div class="field"><label>Nome</label>
+      <h3 class="sub-title">{{ 'config.novoBomHabito' | translate }}</h3>
+      <div class="field"><label>{{ 'config.nome' | translate }}</label>
         <input type="text" [(ngModel)]="novoBom.habito" placeholder="Ex: Ler 10 páginas" />
       </div>
       <div class="row">
-        <div class="field"><label>XP</label>
+        <div class="field"><label>{{ 'config.xp' | translate }}</label>
           <input type="number" [(ngModel)]="novoBom.xp" min="1" />
         </div>
-        <div class="field"><label>Frequência</label>
+        <div class="field"><label>{{ 'config.frequencia' | translate }}</label>
           <select [(ngModel)]="novoBom.frequencia">
-            <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+            <option>{{ 'config.freqDiario' | translate }}</option>
+            <option>{{ 'config.freqSemanal' | translate }}</option>
+            <option>{{ 'config.freqMensal' | translate }}</option>
+            <option>{{ 'config.freqLivre' | translate }}</option>
           </select>
         </div>
       </div>
-      <div class="field"><label>Atributo</label>
+      <div class="field"><label>{{ 'config.atributo' | translate }}</label>
         <select [(ngModel)]="novoBom.atributoId">
-          <option [ngValue]="null" disabled>Selecione...</option>
+          <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
           <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
         </select>
       </div>
-      <button class="btn-salvar" (click)="salvarBomHabito()">Cadastrar</button>
+      <button class="btn-salvar" (click)="salvarBomHabito()">{{ 'config.cadastrar' | translate }}</button>
       <p class="feedback" [class]="'feedback ' + feedbackBomTipo" *ngIf="feedbackBom">{{ feedbackBom }}</p>
     </ng-container>
   </section>
@@ -161,7 +167,7 @@
   <!-- ── MAU HÁBITO ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoMaus = !secaoMaus">
-      <h2 class="card-title"><span class="badge bad">-XP</span> Maus Hábitos</h2>
+      <h2 class="card-title"><span class="badge bad">-XP</span> {{ 'config.secMaus' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoMaus" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -169,7 +175,7 @@
 
     <ng-container *ngIf="secaoMaus">
       <div class="list-header" (click)="abertoMaus = !abertoMaus">
-        <span>Cadastrados ({{ mausHabitos.length }})</span>
+        <span>{{ 'config.cadastrados' | translate: { n: mausHabitos.length } }}</span>
         <svg class="chevron" [class.open]="abertoMaus" viewBox="0 0 24 24" fill="none">
           <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -195,62 +201,68 @@
             <li class="item-edit" *ngIf="editandoMauId === h.id">
               <div class="edit-row">
                 <div class="edit-field edit-field-grow">
-                  <label class="edit-label">Nome do hábito</label>
+                  <label class="edit-label">{{ 'config.nomeHabito' | translate }}</label>
                   <input type="text" [(ngModel)]="editMau.habito" placeholder="Ex: Fumar" />
                 </div>
                 <div class="edit-field edit-field-xp">
-                  <label class="edit-label">XP perdido</label>
+                  <label class="edit-label">{{ 'config.xpPerdido' | translate }}</label>
                   <input type="number" [(ngModel)]="editMau.xp" placeholder="30" min="1" max="9999" />
                 </div>
                 <div class="edit-field edit-field-freq">
-                  <label class="edit-label">Frequência</label>
+                  <label class="edit-label">{{ 'config.frequencia' | translate }}</label>
                   <select [(ngModel)]="editMau.frequencia">
-                    <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+                    <option>{{ 'config.freqDiario' | translate }}</option>
+                    <option>{{ 'config.freqSemanal' | translate }}</option>
+                    <option>{{ 'config.freqMensal' | translate }}</option>
+                    <option>{{ 'config.freqLivre' | translate }}</option>
                   </select>
                 </div>
               </div>
               <div class="edit-row" style="margin-top:8px">
                 <div class="edit-field edit-field-grow">
-                  <label class="edit-label">Atributo</label>
+                  <label class="edit-label">{{ 'config.atributo' | translate }}</label>
                   <select [(ngModel)]="editMau.atributoId">
-                    <option [ngValue]="null" disabled>Selecione...</option>
+                    <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
                     <option *ngFor="let a of atributos" [ngValue]="a.id">− {{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
                   </select>
                 </div>
               </div>
               <p class="feedback warn" *ngIf="feedbackMau && feedbackMauTipo === 'warn'" style="margin:6px 0 0">{{ feedbackMau }}</p>
               <div class="edit-btns">
-                <button class="btn-confirm" (click)="salvarEdicaoMau()">Salvar</button>
-                <button class="btn-cancel"  (click)="editandoMauId = null">Cancelar</button>
+                <button class="btn-confirm" (click)="salvarEdicaoMau()">{{ 'config.salvar' | translate }}</button>
+                <button class="btn-cancel"  (click)="editandoMauId = null">{{ 'config.cancelar' | translate }}</button>
               </div>
             </li>
           </ng-container>
         </ul>
-        <p class="empty-list" *ngIf="mausHabitos.length === 0">Nenhum hábito cadastrado.</p>
+        <p class="empty-list" *ngIf="mausHabitos.length === 0">{{ 'config.nenhumHabitoCad' | translate }}</p>
       </ng-container>
 
       <div class="divider"></div>
-      <h3 class="sub-title">Novo Mau Hábito</h3>
-      <div class="field"><label>Nome</label>
+      <h3 class="sub-title">{{ 'config.novoMauHabito' | translate }}</h3>
+      <div class="field"><label>{{ 'config.nome' | translate }}</label>
         <input type="text" [(ngModel)]="novoMau.habito" placeholder="Ex: Pular treino" />
       </div>
       <div class="row">
-        <div class="field"><label>XP penalidade</label>
+        <div class="field"><label>{{ 'config.xpPenalidade' | translate }}</label>
           <input type="number" [(ngModel)]="novoMau.xp" min="1" />
         </div>
-        <div class="field"><label>Frequência</label>
+        <div class="field"><label>{{ 'config.frequencia' | translate }}</label>
           <select [(ngModel)]="novoMau.frequencia">
-            <option>Diário</option><option>Semanal</option><option>Mensal</option><option>Livre</option>
+            <option>{{ 'config.freqDiario' | translate }}</option>
+            <option>{{ 'config.freqSemanal' | translate }}</option>
+            <option>{{ 'config.freqMensal' | translate }}</option>
+            <option>{{ 'config.freqLivre' | translate }}</option>
           </select>
         </div>
       </div>
-      <div class="field"><label>Atributo</label>
+      <div class="field"><label>{{ 'config.atributo' | translate }}</label>
         <select [(ngModel)]="novoMau.atributoId">
-          <option [ngValue]="null" disabled>Selecione...</option>
+          <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
           <option *ngFor="let a of atributos" [ngValue]="a.id">− {{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
         </select>
       </div>
-      <button class="btn-salvar" (click)="salvarMauHabito()">Cadastrar</button>
+      <button class="btn-salvar" (click)="salvarMauHabito()">{{ 'config.cadastrar' | translate }}</button>
       <p class="feedback" [class]="'feedback ' + feedbackMauTipo" *ngIf="feedbackMau">{{ feedbackMau }}</p>
     </ng-container>
   </section>
@@ -258,7 +270,7 @@
   <!-- ── MISSÕES ─────────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoMiss = !secaoMiss">
-      <h2 class="card-title"><span class="badge quest">⚔</span> Missões</h2>
+      <h2 class="card-title"><span class="badge quest">⚔</span> {{ 'config.secMissoes' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoMiss" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -266,7 +278,7 @@
 
     <ng-container *ngIf="secaoMiss">
       <div class="list-header" (click)="abertoMiss = !abertoMiss">
-        <span>Cadastradas ({{ missoes.length }})</span>
+        <span>{{ 'config.cadastradas' | translate: { n: missoes.length } }}</span>
         <svg class="chevron" [class.open]="abertoMiss" viewBox="0 0 24 24" fill="none">
           <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -278,7 +290,7 @@
             <li class="item-row" *ngIf="editandoMissId !== m.id">
               <div class="item-info">
                 <span class="item-nome">{{ m.titulo }}</span>
-                <span class="item-meta">{{ nomeTipo(m.tipoId) }} · +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} moedas</span>
+                <span class="item-meta">{{ nomeTipo(m.tipoId) }} · +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} {{ 'config.moedas' | translate }}</span>
               </div>
               <div class="item-actions">
                 <button class="btn-icon edit" (click)="iniciarEdicaoMiss(m)" title="Editar">
@@ -292,11 +304,11 @@
             <li class="item-edit" *ngIf="editandoMissId === m.id">
               <div class="edit-row">
                 <div class="edit-field edit-field-grow">
-                  <label class="edit-label">Título da missão</label>
+                  <label class="edit-label">{{ 'config.tituloMissao' | translate }}</label>
                   <input type="text" [(ngModel)]="editMiss.titulo" placeholder="Título" />
                 </div>
                 <div class="edit-field" style="flex:0 0 130px">
-                  <label class="edit-label">Tipo</label>
+                  <label class="edit-label">{{ 'config.tipo' | translate }}</label>
                   <select [(ngModel)]="editMiss.tipoId">
                     <option *ngFor="let t of tiposMissao" [ngValue]="t.id">{{ t.nome }}</option>
                   </select>
@@ -304,34 +316,34 @@
               </div>
               <div class="edit-row edit-rewards" style="margin-top:8px">
                 <div class="reward-field">
-                  <label class="reward-label">XP</label>
+                  <label class="reward-label">{{ 'config.xp' | translate }}</label>
                   <input type="number" [(ngModel)]="editMiss.recompensaXp" min="0" class="input-reward" />
                 </div>
                 <div class="reward-field">
-                  <label class="reward-label">Moedas</label>
+                  <label class="reward-label">{{ 'config.moedas' | translate }}</label>
                   <input type="number" [(ngModel)]="editMiss.recompensaMoedas" min="0" class="input-reward" />
                 </div>
               </div>
               <div class="edit-row" style="margin-top:8px">
                 <div class="reward-field" style="flex:1">
-                  <label class="reward-label">Atributo</label>
+                  <label class="reward-label">{{ 'config.atributo' | translate }}</label>
                   <select [(ngModel)]="editMiss.atributoId" class="input-grow">
-                    <option [ngValue]="null" disabled>Selecione...</option>
+                    <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
                     <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
                   </select>
                 </div>
               </div>
               <div class="edit-row" style="margin-top:8px">
                 <div class="edit-field edit-field-grow">
-                  <label class="edit-label">Data limite <span class="label-opt">(opcional)</span></label>
+                  <label class="edit-label">{{ 'config.dataLimite' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
                   <input type="date" [(ngModel)]="editMiss.dataLimite" class="input-grow" />
                 </div>
               </div>
               <div class="edit-row" style="margin-top:8px" *ngIf="editMiss.tipoId === tipoSecundariaId">
                 <div class="edit-field edit-field-grow">
-                  <label class="edit-label">Missão Principal vinculada <span class="label-opt">(opcional)</span></label>
+                  <label class="edit-label">{{ 'config.missaoPrincipalVinc' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
                   <select [(ngModel)]="editMiss.missaoPrincipalId" class="input-grow">
-                    <option [ngValue]="null">Nenhuma</option>
+                    <option [ngValue]="null">{{ 'config.nenhuma' | translate }}</option>
                     <option *ngFor="let p of missoesPrincipais" [ngValue]="p.id">{{ p.titulo }}</option>
                   </select>
                 </div>
@@ -339,57 +351,57 @@
               <div class="edit-row edit-status" *ngIf="m.concluida" style="margin-top:8px">
                 <label class="checkbox-label">
                   <input type="checkbox" [(ngModel)]="editMiss.concluida" />
-                  <span class="checkbox-text">Missão concluída — desmarcar para reativar</span>
+                  <span class="checkbox-text">{{ 'config.missaoConcluida' | translate }}</span>
                 </label>
               </div>
               <p class="feedback warn" *ngIf="feedbackMiss && feedbackMissTipo === 'warn'" style="margin:6px 0 0">{{ feedbackMiss }}</p>
               <div class="edit-btns">
-                <button class="btn-confirm" (click)="salvarEdicaoMiss()">Salvar</button>
-                <button class="btn-cancel"  (click)="editandoMissId = null">Cancelar</button>
+                <button class="btn-confirm" (click)="salvarEdicaoMiss()">{{ 'config.salvar' | translate }}</button>
+                <button class="btn-cancel"  (click)="editandoMissId = null">{{ 'config.cancelar' | translate }}</button>
               </div>
             </li>
           </ng-container>
         </ul>
-        <p class="empty-list" *ngIf="missoes.length === 0">Nenhuma missão cadastrada.</p>
+        <p class="empty-list" *ngIf="missoes.length === 0">{{ 'config.nenhumaMissaoCad' | translate }}</p>
       </ng-container>
 
       <div class="divider"></div>
-      <h3 class="sub-title">Nova Missão</h3>
-      <div class="field"><label>Título</label>
+      <h3 class="sub-title">{{ 'config.novaMissao' | translate }}</h3>
+      <div class="field"><label>{{ 'config.tituloLabel' | translate }}</label>
         <input type="text" [(ngModel)]="novaMiss.titulo" placeholder="Ex: 30 dias de exercício" />
       </div>
       <div class="row">
-        <div class="field"><label>Tipo</label>
+        <div class="field"><label>{{ 'config.tipo' | translate }}</label>
           <select [(ngModel)]="novaMiss.tipoId">
             <option *ngFor="let t of tiposMissao" [value]="t.id">{{ t.nome }}</option>
           </select>
         </div>
-        <div class="field"><label>Data limite <span class="label-opt">(opcional)</span></label>
+        <div class="field"><label>{{ 'config.dataLimite' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
           <input type="date" [(ngModel)]="novaMiss.dataLimite" />
         </div>
       </div>
       <div class="row">
-        <div class="field"><label>XP</label>
+        <div class="field"><label>{{ 'config.xp' | translate }}</label>
           <input type="number" [(ngModel)]="novaMiss.recompensaXp" min="0" />
         </div>
-        <div class="field"><label>Moedas</label>
+        <div class="field"><label>{{ 'config.moedas' | translate }}</label>
           <input type="number" [(ngModel)]="novaMiss.recompensaMoedas" min="0" />
         </div>
       </div>
-      <div class="field"><label>Atributo</label>
+      <div class="field"><label>{{ 'config.atributo' | translate }}</label>
         <select [(ngModel)]="novaMiss.atributoId">
-          <option [ngValue]="null" disabled>Selecione...</option>
+          <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
           <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
         </select>
       </div>
       <div class="field" *ngIf="+novaMiss.tipoId === tipoSecundariaId">
-        <label>Missão Principal vinculada <span class="label-opt">(opcional)</span></label>
+        <label>{{ 'config.missaoPrincipalVinc' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
         <select [(ngModel)]="novaMiss.missaoPrincipalId">
-          <option [ngValue]="null">Nenhuma</option>
+          <option [ngValue]="null">{{ 'config.nenhuma' | translate }}</option>
           <option *ngFor="let m of missoesPrincipais" [ngValue]="m.id">{{ m.titulo }}</option>
         </select>
       </div>
-      <button class="btn-salvar" (click)="salvarMissao()">Cadastrar</button>
+      <button class="btn-salvar" (click)="salvarMissao()">{{ 'config.cadastrar' | translate }}</button>
       <p class="feedback" [class]="'feedback ' + feedbackMissTipo" *ngIf="feedbackMiss">{{ feedbackMiss }}</p>
     </ng-container>
   </section>
@@ -397,7 +409,7 @@
   <!-- ── RECOMPENSAS ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoRecomp = !secaoRecomp">
-      <h2 class="card-title"><span class="badge" style="background:#3d2a00;color:#ffd700">$</span> Recompensas</h2>
+      <h2 class="card-title"><span class="badge" style="background:#3d2a00;color:#ffd700">$</span> {{ 'config.secRecomp' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoRecomp" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -405,7 +417,7 @@
 
     <ng-container *ngIf="secaoRecomp">
       <div class="list-header" (click)="abertoRecomp = !abertoRecomp">
-        <span>Cadastradas ({{ recompensas.length }})</span>
+        <span>{{ 'config.cadastradas' | translate: { n: recompensas.length } }}</span>
         <svg class="chevron" [class.open]="abertoRecomp" viewBox="0 0 24 24" fill="none">
           <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -418,9 +430,9 @@
               <div class="item-info">
                 <span class="item-nome">
                   {{ r.nome }}
-                  <span class="badge-inativa" *ngIf="!r.ativa">inativa</span>
+                  <span class="badge-inativa" *ngIf="!r.ativa">{{ 'config.inativa' | translate }}</span>
                 </span>
-                <span class="item-meta">{{ r.preco }} moedas{{ r.descricao ? ' · ' + r.descricao : '' }}</span>
+                <span class="item-meta">{{ r.preco }} {{ 'config.moedas' | translate }}{{ r.descricao ? ' · ' + r.descricao : '' }}</span>
               </div>
               <div class="item-actions">
                 <button class="btn-icon edit" (click)="iniciarEdicaoRecomp(r)" title="Editar">
@@ -434,34 +446,34 @@
             <li class="item-edit" *ngIf="editandoRecompId === r.id">
               <div class="edit-row edit-rewards">
                 <div class="reward-field" style="flex:1">
-                  <label class="reward-label">Nome</label>
+                  <label class="reward-label">{{ 'config.nome' | translate }}</label>
                   <input type="text" [(ngModel)]="editRecomp.nome" placeholder="Ex: Tomar um refrigerante" class="input-grow" />
                 </div>
                 <div class="reward-field">
-                  <label class="reward-label">Emoji</label>
+                  <label class="reward-label">{{ 'config.emoji' | translate }}</label>
                   <input type="text" [(ngModel)]="editRecomp.emoji" placeholder="🎁" class="input-emoji-center" (input)="onEmojiInput($event, 'edit')" />
                 </div>
                 <div class="reward-field">
-                  <label class="reward-label">Moedas</label>
+                  <label class="reward-label">{{ 'config.moedas' | translate }}</label>
                   <input type="number" [(ngModel)]="editRecomp.preco" min="1" class="input-reward" />
                 </div>
               </div>
               <div class="edit-row" style="margin-top:8px">
                 <div class="reward-field" style="flex:1">
-                  <label class="reward-label">Descrição</label>
+                  <label class="reward-label">{{ 'config.descricao' | translate }}</label>
                   <input type="text" [(ngModel)]="editRecomp.descricao" placeholder="Opcional" class="input-grow" />
                 </div>
               </div>
               <div class="edit-row" style="margin-top:8px">
                 <div class="reward-field" style="flex:1">
-                  <label class="reward-label">Requisito de atributo <span class="label-opt">(opcional)</span></label>
+                  <label class="reward-label">{{ 'config.reqAtributo' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
                   <select [(ngModel)]="editRecomp.atributoId" class="input-grow">
-                    <option [ngValue]="null">Nenhum</option>
+                    <option [ngValue]="null">{{ 'config.nenhum' | translate }}</option>
                     <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
                   </select>
                 </div>
                 <div class="reward-field" style="flex:0 0 120px" *ngIf="editRecomp.atributoId">
-                  <label class="reward-label">Pontos mínimos</label>
+                  <label class="reward-label">{{ 'config.pontosMinimos' | translate }}</label>
                   <input type="number" [(ngModel)]="editRecomp.pontosNecessarios" min="0" class="input-reward" />
                 </div>
               </div>
@@ -469,51 +481,51 @@
                 <label class="checkbox-label">
                   <input type="checkbox" [(ngModel)]="editRecomp.ativa" />
                   <span class="checkbox-text" [style.color]="editRecomp.ativa ? '#3fb950' : '#d29922'">
-                    {{ editRecomp.ativa ? 'Recompensa ativa — disponível na loja' : 'Recompensa inativa — não aparece na loja' }}
+                    {{ editRecomp.ativa ? ('config.recompAtiva' | translate) : ('config.recompInativa' | translate) }}
                   </span>
                 </label>
               </div>
               <div class="edit-btns">
-                <button class="btn-confirm" (click)="salvarEdicaoRecomp()">Salvar</button>
-                <button class="btn-cancel" (click)="editandoRecompId = null">Cancelar</button>
+                <button class="btn-confirm" (click)="salvarEdicaoRecomp()">{{ 'config.salvar' | translate }}</button>
+                <button class="btn-cancel" (click)="editandoRecompId = null">{{ 'config.cancelar' | translate }}</button>
               </div>
             </li>
           </ng-container>
         </ul>
-        <p class="empty-list" *ngIf="recompensas.length === 0">Nenhuma recompensa cadastrada.</p>
+        <p class="empty-list" *ngIf="recompensas.length === 0">{{ 'config.nenhumaRecompCad' | translate }}</p>
       </ng-container>
 
       <div class="divider"></div>
-      <h3 class="sub-title">Nova Recompensa</h3>
+      <h3 class="sub-title">{{ 'config.novaRecomp' | translate }}</h3>
       <div class="row">
-        <div class="field"><label>Nome</label>
+        <div class="field"><label>{{ 'config.nome' | translate }}</label>
           <input type="text" [(ngModel)]="novaRecomp.nome" placeholder="Ex: Tomar um refrigerante" />
         </div>
-        <div class="field" style="flex:0 0 58px"><label>Emoji</label>
+        <div class="field" style="flex:0 0 58px"><label>{{ 'config.emoji' | translate }}</label>
           <input type="text" [(ngModel)]="novaRecomp.emoji" placeholder="🎁" class="input-emoji-center" (input)="onEmojiInput($event, 'nova')" />
         </div>
       </div>
       <div class="row">
-        <div class="field"><label>Descrição</label>
+        <div class="field"><label>{{ 'config.descricao' | translate }}</label>
           <input type="text" [(ngModel)]="novaRecomp.descricao" placeholder="Opcional" />
         </div>
-        <div class="field" style="flex:0 0 110px"><label>Moedas</label>
+        <div class="field" style="flex:0 0 110px"><label>{{ 'config.moedas' | translate }}</label>
           <input type="number" [(ngModel)]="novaRecomp.preco" min="1" />
         </div>
       </div>
       <div class="row">
-        <div class="field"><label>Requisito de atributo <span class="label-opt">(opcional)</span></label>
+        <div class="field"><label>{{ 'config.reqAtributo' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
           <select [(ngModel)]="novaRecomp.atributoId">
-            <option [ngValue]="null">Nenhum</option>
+            <option [ngValue]="null">{{ 'config.nenhum' | translate }}</option>
             <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
           </select>
         </div>
         <div class="field" style="flex:0 0 120px" *ngIf="novaRecomp.atributoId">
-          <label>Pontos mínimos</label>
+          <label>{{ 'config.pontosMinimos' | translate }}</label>
           <input type="number" [(ngModel)]="novaRecomp.pontosNecessarios" min="0" />
         </div>
       </div>
-      <button class="btn-salvar" (click)="salvarRecompensa()">Cadastrar</button>
+      <button class="btn-salvar" (click)="salvarRecompensa()">{{ 'config.cadastrar' | translate }}</button>
       <p class="feedback" [class]="'feedback ' + feedbackRecompTipo" *ngIf="feedbackRecomp">{{ feedbackRecomp }}</p>
     </ng-container>
   </section>
@@ -521,7 +533,7 @@
   <!-- ── DANGER ZONE ─────────────────────────────── -->
   <section class="card danger-zone">
     <div class="secao-header" (click)="secaoDanger = !secaoDanger">
-      <h2 class="card-title danger">⚠️ Zona de Perigo</h2>
+      <h2 class="card-title danger">{{ 'config.dangerZone' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoDanger" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -530,35 +542,33 @@
     <ng-container *ngIf="secaoDanger">
       <!-- Reset -->
       <p class="danger-desc">
-        Resetar o perfil apaga seu XP, moedas, nível, rank e foto.<br>
-        <strong>Esta ação não pode ser desfeita.</strong>
+        {{ 'config.resetDesc1' | translate }}<br>
+        <strong>{{ 'config.resetDesc2' | translate }}</strong>
       </p>
       <ng-container *ngIf="!confirmarReset">
-        <button class="btn-danger" (click)="confirmarReset = true">Resetar Perfil</button>
+        <button class="btn-danger" (click)="confirmarReset = true">{{ 'config.resetarPerfil' | translate }}</button>
       </ng-container>
       <ng-container *ngIf="confirmarReset">
-        <p class="confirm-msg">Tem certeza? Você voltará ao nível 1.</p>
+        <p class="confirm-msg">{{ 'config.confirmarReset' | translate }}</p>
         <div class="btn-row">
-          <button class="btn-danger"   (click)="resetar()">Sim, resetar</button>
-          <button class="btn-cancelar" (click)="confirmarReset = false">Cancelar</button>
+          <button class="btn-danger"   (click)="resetar()">{{ 'config.simResetar' | translate }}</button>
+          <button class="btn-cancelar" (click)="confirmarReset = false">{{ 'config.cancelar' | translate }}</button>
         </div>
       </ng-container>
 
       <!-- Apagar perfil -->
       <div class="danger-divider"></div>
-      <p class="danger-desc">
-        Apagar o perfil remove <strong>tudo permanentemente</strong>: hábitos, missões, inventário, histórico e o próprio perfil.<br>
-        <strong>Não há como desfazer.</strong>
-      </p>
+      <p class="danger-desc" [innerHTML]="('config.apagarDesc1' | translate)"></p>
+      <p class="danger-desc"><strong>{{ 'config.apagarDesc2' | translate }}</strong></p>
       <ng-container *ngIf="!confirmarApagar">
-        <button class="btn-danger btn-danger-apagar" (click)="confirmarApagar = true">🗑️ Apagar Perfil</button>
+        <button class="btn-danger btn-danger-apagar" (click)="confirmarApagar = true">{{ 'config.apagarPerfil' | translate }}</button>
       </ng-container>
       <ng-container *ngIf="confirmarApagar">
-        <p class="confirm-msg">Digite o nome do perfil (<strong>{{ nomePerfilAtual }}</strong>) para confirmar:</p>
+        <p class="confirm-msg" [innerHTML]="'config.digitarNome' | translate: { nome: nomePerfilAtual }"></p>
         <input class="input-confirm-nome" [(ngModel)]="digitouNome" placeholder="Nome do perfil" />
         <div class="btn-row" style="margin-top:10px">
-          <button class="btn-danger" (click)="apagar()" [disabled]="digitouNome !== nomePerfilAtual">Apagar para sempre</button>
-          <button class="btn-cancelar" (click)="confirmarApagar = false; digitouNome = ''">Cancelar</button>
+          <button class="btn-danger" (click)="apagar()" [disabled]="digitouNome !== nomePerfilAtual">{{ 'config.apagarSempre' | translate }}</button>
+          <button class="btn-cancelar" (click)="confirmarApagar = false; digitouNome = ''">{{ 'config.cancelar' | translate }}</button>
         </div>
       </ng-container>
     </ng-container>

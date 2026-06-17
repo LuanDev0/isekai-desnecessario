@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Atributo, BomHabito, Classe, MauHabito, Missao, Perfil, Recompensa } from '../../models/models';
 
 @Component({
   selector: 'app-configuracoes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './configuracoes.component.html',
   styleUrl: './configuracoes.component.scss',
 })
@@ -17,6 +19,7 @@ export class ConfiguracoesComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);
+  readonly lang   = inject(LanguageService);
 
   get perfilId() { return this.profile.id; }
 

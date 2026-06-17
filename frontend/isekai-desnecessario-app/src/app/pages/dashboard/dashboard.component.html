@@ -1,11 +1,16 @@
 <div class="page">
 
-  <!-- Seletor de perfil + Relógio -->
+  <!-- Seletor de perfil + Relógio + Idioma -->
   <div class="top-bar">
     <app-profile-selector />
-    <div class="datetime">
-      <span class="date">{{ agora | date:'dd/MM/yyyy' }}</span>
-      <span class="time">{{ agora | date:'HH:mm' }}</span>
+    <div class="top-bar-right">
+      <select class="lang-select" (change)="onLangChange($event)">
+        <option *ngFor="let l of lang.languages" [value]="l.code" [selected]="lang.current() === l.code">{{ l.flag }} {{ l.code.toUpperCase() }}</option>
+      </select>
+      <div class="datetime">
+        <span class="date">{{ agora | date:'dd/MM/yyyy' }}</span>
+        <span class="time">{{ agora | date:'HH:mm' }}</span>
+      </div>
     </div>
   </div>
 
@@ -25,7 +30,7 @@
         <div class="xp-track">
           <div class="xp-fill" [style.width.%]="xpPercent"></div>
         </div>
-        <p class="xp-label">Nível {{ perfil.nivel }} ({{ perfil.xp }} XP)</p>
+        <p class="xp-label">{{ 'dashboard.nivel' | translate: { nivel: perfil.nivel, xp: perfil.xp } }}</p>
       </div>
       <div class="coins-badge">
         <svg class="coins-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,7 +47,7 @@
   <div class="habitos-row">
 
     <section class="card">
-      <h2 class="card-title green">Bons hábitos</h2>
+      <h2 class="card-title green">{{ 'dashboard.bonsHabitos' | translate }}</h2>
       <ul class="habit-list">
         <li *ngFor="let h of bonsHabitos" class="habit-row" [class.indisponivel]="!estaDisponivel(h)">
           <button class="pill green" [disabled]="!estaDisponivel(h)" (click)="completar(h)">+</button>
@@ -53,11 +58,11 @@
           <span class="habit-xp green">+{{ h.xp }} XP</span>
         </li>
       </ul>
-      <p class="empty" *ngIf="bonsHabitos.length === 0">Nenhum hábito cadastrado.</p>
+      <p class="empty" *ngIf="bonsHabitos.length === 0">{{ 'dashboard.nenhumHabitoCadastrado' | translate }}</p>
     </section>
 
     <section class="card">
-      <h2 class="card-title red">Maus hábitos</h2>
+      <h2 class="card-title red">{{ 'dashboard.mausHabitos' | translate }}</h2>
       <ul class="habit-list">
         <li *ngFor="let h of mausHabitos" class="habit-row" [class.indisponivel]="!estaDisponivel(h)">
           <button class="pill red" [disabled]="!estaDisponivel(h)" (click)="registrar(h)">−</button>
@@ -68,7 +73,7 @@
           <span class="habit-xp red">-{{ h.xp }} XP</span>
         </li>
       </ul>
-      <p class="empty" *ngIf="mausHabitos.length === 0">Nenhum hábito cadastrado.</p>
+      <p class="empty" *ngIf="mausHabitos.length === 0">{{ 'dashboard.nenhumHabitoCadastrado' | translate }}</p>
     </section>
 
   </div>
@@ -78,7 +83,7 @@
 
     <!-- Desafio do dia -->
     <section class="card desafio-card">
-      <h2 class="card-title gold">⚡ Desafio do Dia</h2>
+      <h2 class="card-title gold">{{ 'dashboard.desafioDoDia' | translate }}</h2>
       <!-- Concluído -->
       <ng-container *ngIf="desafioConcluido">
         <div class="desafio-body concluido">
@@ -88,7 +93,7 @@
             <span class="desafio-xp">+{{ desafioDoDia?.xp }} XP</span>
           </div>
         </div>
-        <p class="desafio-desc done">Excelente trabalho hoje, herói! 🔥<br><span class="desafio-amanha">Novo desafio amanhã...</span></p>
+        <p class="desafio-desc done">{{ 'dashboard.desafioConcluido' | translate }}<br><span class="desafio-amanha">{{ 'dashboard.novoDesafioAmanha' | translate }}</span></p>
       </ng-container>
 
       <!-- Recusado -->
@@ -96,8 +101,8 @@
         <div class="desafio-body recusado">
           <span class="desafio-emoji">😤</span>
           <div class="desafio-info">
-            <span class="desafio-nome">Desafio recusado</span>
-            <span class="desafio-xp" style="color:#8b949e">Novo desafio amanhã...</span>
+            <span class="desafio-nome">{{ 'dashboard.desafioRecusadoTitulo' | translate }}</span>
+            <span class="desafio-xp" style="color:#8b949e">{{ 'dashboard.novoDesafioAmanha' | translate }}</span>
           </div>
         </div>
       </ng-container>
@@ -111,21 +116,21 @@
             <span class="desafio-xp">+{{ desafioDoDia!.xp }} XP</span>
           </div>
           <div class="desafio-btns">
-            <button class="btn-desafio" (click)="completarDesafio()">Aceitar</button>
-            <button class="btn-desafio recusar" (click)="recusarDesafio()">Recusar</button>
+            <button class="btn-desafio" (click)="completarDesafio()">{{ 'dashboard.aceitar' | translate }}</button>
+            <button class="btn-desafio recusar" (click)="recusarDesafio()">{{ 'dashboard.recusar' | translate }}</button>
           </div>
         </div>
-        <p class="desafio-desc">Herói, complete este desafio hoje!</p>
+        <p class="desafio-desc">{{ 'dashboard.descricaoDesafio' | translate }}</p>
       </ng-container>
 
       <ng-container *ngIf="!desafioDoDia && !desafioConcluido && !desafioRecusado">
-        <p class="empty">Nenhum hábito disponível hoje.</p>
+        <p class="empty">{{ 'dashboard.nenhumHabitoHoje' | translate }}</p>
       </ng-container>
     </section>
 
     <!-- Diário de conquistas -->
     <section class="card diario-card">
-      <h2 class="card-title purple">📜 Diário de Conquistas</h2>
+      <h2 class="card-title purple">{{ 'dashboard.diarioConquistas' | translate }}</h2>
       <ul class="diario-list" *ngIf="diario.length > 0">
         <li *ngFor="let a of diario" class="diario-item" [class]="'diario-item tipo-' + a.tipo">
           <span class="diario-emoji">{{ a.emoji }}</span>
@@ -133,7 +138,7 @@
           <span class="diario-hora">{{ horaAcao(a.data) }}</span>
         </li>
       </ul>
-      <p class="empty" *ngIf="diario.length === 0">Nenhuma ação registrada ainda.</p>
+      <p class="empty" *ngIf="diario.length === 0">{{ 'dashboard.nenhumaAcao' | translate }}</p>
     </section>
 
   </div>

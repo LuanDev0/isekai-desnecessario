@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
@@ -93,7 +93,7 @@ public class RecompensasController(AppDbContext db) : ControllerBase
             Emoji       = recompensa.Emoji,
             Descricao   = recompensa.Descricao,
             Preco       = recompensa.Preco,
-            DataCompra  = DateTime.Now,
+            DataCompra  = DateTime.UtcNow,
         });
 
         await db.SaveChangesAsync();

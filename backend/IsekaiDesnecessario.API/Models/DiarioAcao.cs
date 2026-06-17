@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace IsekaiDesnecessario.API.Models;
 
@@ -12,5 +12,5 @@ public class DiarioAcao
     public string Emoji    { get; set; } = "📝";
     // habito_bom | habito_mau | missao | nivel | recompensa | lootbox
     public string Tipo     { get; set; } = "acao";
-    public DateTime Data   { get; set; } = DateTime.Now;
+    public DateTime Data   { get; set; } = DateTime.UtcNow;
 }

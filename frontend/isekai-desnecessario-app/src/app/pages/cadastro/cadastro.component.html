@@ -4,7 +4,7 @@
   <div class="hero">
     <h1 class="logo">ISEKAI DESNECESSÁRIO</h1>
     <img class="hero-icon" src="icon-256.png" alt="Isekai Desnecessário" />
-    <p class="sub">Seu isekai começa aqui. Nenhum caminhão-chan necessário.</p>
+    <p class="sub">{{ 'cadastro.sub' | translate }}</p>
   </div>
 
   <!-- Tela inicial -->
@@ -13,14 +13,14 @@
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      Entrar
+      {{ 'cadastro.entrar' | translate }}
     </button>
     <button class="btn-cadastro" (click)="irCadastro()">
       <svg viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
         <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Criar Perfil
+      {{ 'cadastro.criarPerfil' | translate }}
     </button>
   </div>
 
@@ -32,10 +32,10 @@
           <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <span class="tela-titulo">Selecione seu perfil</span>
+      <span class="tela-titulo">{{ 'cadastro.selecionePerfil' | translate }}</span>
     </div>
 
-    <p class="empty" *ngIf="perfis.length === 0">Nenhum perfil encontrado. <button class="link" (click)="irCadastro()">Criar um agora</button></p>
+    <p class="empty" *ngIf="perfis.length === 0">{{ 'cadastro.nenhumPerfil' | translate }} <button class="link" (click)="irCadastro()">{{ 'cadastro.criarAgora' | translate }}</button></p>
 
     <div class="perfis-grid" *ngIf="perfis.length > 0">
       <button class="perfil-card" *ngFor="let p of perfis" (click)="selecionar(p)">
@@ -57,13 +57,13 @@
           <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <span class="tela-titulo">Novo Perfil</span>
+      <span class="tela-titulo">{{ 'cadastro.novoPerfil' | translate }}</span>
     </div>
 
     <div class="novo-card">
 
       <!-- Nome -->
-      <label class="input-label">Seu nome de herói</label>
+      <label class="input-label">{{ 'cadastro.nomeHeroi' | translate }}</label>
       <input
         type="text"
         [(ngModel)]="novoNome"
@@ -86,22 +86,22 @@
           </div>
           <input #fotoInput type="file" accept="image/jpeg,image/png,image/webp,image/gif"
                  style="display:none" (change)="onFotoSelecionada($event)" />
-          <button *ngIf="fotoPreview" class="foto-remover" (click)="removerFoto()">Remover</button>
-          <span *ngIf="!fotoPreview" class="foto-hint">Foto (opcional)</span>
+          <button *ngIf="fotoPreview" class="foto-remover" (click)="removerFoto()">{{ 'cadastro.remover' | translate }}</button>
+          <span *ngIf="!fotoPreview" class="foto-hint">{{ 'cadastro.fotoOpcional' | translate }}</span>
         </div>
 
         <div class="genero-col">
-          <label class="input-label">Classe</label>
+          <label class="input-label">{{ 'cadastro.classe' | translate }}</label>
           <select class="genero-select" [(ngModel)]="classeSelecionada">
-            <option [ngValue]="null" disabled>Selecione...</option>
+            <option [ngValue]="null" disabled>{{ 'cadastro.selecione' | translate }}</option>
             <option *ngFor="let c of classes" [ngValue]="c.id">
               {{ c.emoji }} {{ nomeClasse(c) }} — {{ c.atributo?.emoji }} {{ c.atributo?.nome }}: {{ c.atributo?.descricao }}
             </option>
           </select>
 
-          <label class="input-label">Gênero <span class="opc">(opcional)</span></label>
+          <label class="input-label">{{ 'cadastro.genero' | translate }} <span class="opc">{{ 'cadastro.generoOpcional' | translate }}</span></label>
           <select class="genero-select" [(ngModel)]="generoSelecionado">
-            <option [ngValue]="null">Prefiro não dizer</option>
+            <option [ngValue]="null">{{ 'cadastro.preferirNaoDizer' | translate }}</option>
             <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
           </select>
         </div>
@@ -109,7 +109,7 @@
 
       <p class="erro" *ngIf="erro">{{ erro }}</p>
       <button class="btn-criar" [disabled]="salvando" (click)="criar()">
-        {{ salvando ? 'Criando...' : 'Começar Jornada' }}
+        {{ salvando ? ('cadastro.criando' | translate) : ('cadastro.comecarJornada' | translate) }}
       </button>
     </div>
   </div>

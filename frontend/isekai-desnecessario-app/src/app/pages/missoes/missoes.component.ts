@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Atributo, BomHabito, JornadaSemana, Missao } from '../../models/models';
 
 @Component({
   selector: 'app-missoes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './missoes.component.html',
   styleUrl: './missoes.component.scss',
 })
@@ -16,6 +18,7 @@ export class MissoesComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);
+  readonly lang   = inject(LanguageService);
 
   principais:  Missao[] = [];
   secundarias: Missao[] = [];
@@ -70,7 +73,8 @@ export class MissoesComponent implements OnInit {
   labelDataLimite(missao: Missao): string {
     if (!missao.dataLimite) return '';
     const d = new Date(missao.dataLimite);
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const locale = this.lang.current() === 'en' ? 'en-US' : 'pt-BR';
+    return d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
   // ── Missão Sugerida (Ideia 4) ────────────────────────
@@ -171,7 +175,8 @@ export class MissoesComponent implements OnInit {
   }
 
   private labelSemana(d: Date): string {
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    const locale = this.lang.current() === 'en' ? 'en-US' : 'pt-BR';
+    return d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
   }
 
   get maxJornada(): number {

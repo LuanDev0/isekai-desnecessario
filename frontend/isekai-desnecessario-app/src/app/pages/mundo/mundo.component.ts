@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Perfil } from '../../models/models';
 
 interface RankInfo {
@@ -17,11 +19,12 @@ interface RankInfo {
 @Component({
   selector: 'app-mundo',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './mundo.component.html',
   styleUrl: './mundo.component.scss',
 })
 export class MundoComponent implements OnInit {
+  readonly lang = inject(LanguageService);
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);

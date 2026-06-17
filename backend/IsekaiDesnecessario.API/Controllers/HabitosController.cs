@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
@@ -59,7 +59,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : Controlle
 
         habito.Streak++;
         if (habito.Frequencia != "Livre")
-            habito.UltimaExecucao = DateTime.Now;
+            habito.UltimaExecucao = DateTime.UtcNow;
 
         await xpService.AdicionarXp(perfilId, habito.Xp);
 
@@ -118,7 +118,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : Controlle
 
         habito.Streak++;
         if (habito.Frequencia != "Livre")
-            habito.UltimaExecucao = DateTime.Now;
+            habito.UltimaExecucao = DateTime.UtcNow;
 
         db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = "❌", Tipo = "habito_mau",
             Mensagem = $"Registrou \"{habito.Habito}\" -{habito.Xp} XP" });
@@ -135,7 +135,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : Controlle
     {
         if (ultimaExecucao is null) return true;
         var ultima = ultimaExecucao.Value;
-        var agora  = DateTime.Now;
+        var agora  = DateTime.UtcNow;
 
         return frequencia switch
         {

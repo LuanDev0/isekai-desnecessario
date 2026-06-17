@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
@@ -173,7 +173,7 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     {
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
-        perfil.DesafioRecusadoEm = DateTime.Now;
+        perfil.DesafioRecusadoEm = DateTime.UtcNow;
         await db.SaveChangesAsync();
         return Ok(perfil);
     }
@@ -183,7 +183,7 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     {
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
-        perfil.DesafioConcluídoEm = DateTime.Now;
+        perfil.DesafioConcluídoEm = DateTime.UtcNow;
         await db.SaveChangesAsync();
         return Ok(perfil);
     }
@@ -253,7 +253,7 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
             if (roll < acumulado) { ganhador = p.r; break; }
         }
 
-        perfil.UltimaLootbox = DateTime.Now;
+        perfil.UltimaLootbox = DateTime.UtcNow;
 
         db.DiarioAcoes.Add(new IsekaiDesnecessario.API.Models.DiarioAcao { PerfilId = id, Emoji = "📦", Tipo = "lootbox",
             Mensagem = $"Abriu lootbox e ganhou \"{ganhador!.Nome}\"" });

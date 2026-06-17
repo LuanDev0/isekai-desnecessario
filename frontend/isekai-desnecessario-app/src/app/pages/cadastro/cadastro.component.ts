@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Classe, Perfil } from '../../models/models';
 
 const API_BASE = 'http://localhost:5008';
@@ -11,7 +13,7 @@ const API_BASE = 'http://localhost:5008';
 @Component({
   selector: 'app-cadastro',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
 })
@@ -19,6 +21,7 @@ export class CadastroComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);
+  readonly lang   = inject(LanguageService);
 
   perfis:  Perfil[] = [];
   classes: Classe[] = [];

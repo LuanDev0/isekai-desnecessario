@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService } from '../../services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Experimento } from '../../models/models';
 
 @Component({
   selector: 'app-laboratorio',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './laboratorio.component.html',
   styleUrl: './laboratorio.component.scss',
 })
@@ -17,6 +19,7 @@ export class LaboratorioComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);
+  readonly lang   = inject(LanguageService);
 
   experimentos: Experimento[] = [];
 

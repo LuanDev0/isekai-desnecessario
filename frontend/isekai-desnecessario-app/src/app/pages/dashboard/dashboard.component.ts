@@ -3,7 +3,9 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
+import { LanguageService, LangCode } from '../../services/language.service';
 import { ProfileSelectorComponent } from '../../components/profile-selector/profile-selector.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { BomHabito, DiarioAcao, MauHabito, Perfil } from '../../models/models';
 
 const API_BASE = 'http://localhost:5008';
@@ -11,7 +13,7 @@ const API_BASE = 'http://localhost:5008';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DatePipe, ProfileSelectorComponent],
+  imports: [CommonModule, DatePipe, ProfileSelectorComponent, TranslatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -19,6 +21,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private router  = inject(Router);
+  readonly lang   = inject(LanguageService);
+
+  onLangChange(event: Event) {
+    const code = (event.target as HTMLSelectElement).value as LangCode;
+    this.lang.setLanguage(code);
+  }
 
   perfil: Perfil | null = null;
   bonsHabitos: BomHabito[] = [];
@@ -107,9 +115,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const diff = reset.getTime() - agora.getTime();
     const h_ = Math.floor(diff / 3600000);
     const m  = Math.floor((diff % 3600000) / 60000);
-    if (h_ >= 24) return `${Math.floor(h_ / 24)}d`;
-    if (h_ > 0)   return `${h_}h ${m}m`;
-    return `${m}m`;
+    if (h_ >= 24) return this.lang.translate('dashboard.dias', { d: Math.floor(h_ / 24) });
+    if (h_ > 0)   return this.lang.translate('dashboard.horasMinutos', { h: h_, m });
+    return this.lang.translate('dashboard.minutos', { m });
   }
 
   private ordenarHabitos<T extends BomHabito | MauHabito>(lista: T[]): T[] {
@@ -185,13 +193,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const d = new Date(data);
     const agora = new Date();
     const diff = Math.floor((agora.getTime() - d.getTime()) / 60000);
-    if (diff < 1)  return 'agora';
-    if (diff < 60) return `${diff}min atrás`;
+    if (diff < 1)  return this.lang.translate('dashboard.agora');
+    if (diff < 60) return this.lang.translate('dashboard.minAtras', { min: diff });
     if (diff < 1440) {
       const h = Math.floor(diff / 60);
-      return `${h}h atrás`;
+      return this.lang.translate('dashboard.hAtras', { h });
     }
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    const locale = this.lang.current() === 'en' ? 'en-US' : 'pt-BR';
+    return d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
   }
 
   completar(habito: BomHabito) {
