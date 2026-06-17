@@ -175,6 +175,25 @@ $muted:   #8b949e;
   margin: 0;
 }
 
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px;
+  background: #fff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover { background: #f8f9fa; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+}
+
 .btn-email {
   display: flex;
   align-items: center;

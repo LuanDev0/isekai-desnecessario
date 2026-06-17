@@ -66,24 +66,34 @@ export class AuthService {
     try { google.accounts.id.disableAutoSelect(); } catch {}
   }
 
+  private googleCallback: ((idToken: string) => void) | null = null;
+
   initGoogleSignIn(callback: (idToken: string) => void) {
+    this.googleCallback = callback;
+    if (!(window as any)['google']?.accounts?.id) return;
     google.accounts.id.initialize({
       client_id: environment.googleClientId,
       callback:  (response: any) => callback(response.credential),
+      auto_select: false,
+      cancel_on_tap_outside: true,
     });
   }
 
-  renderGoogleButton(element: HTMLElement) {
-    google.accounts.id.renderButton(element, {
-      theme:  'outline',
-      size:   'large',
-      width:  element.offsetWidth || 280,
-      locale: 'pt-BR',
-    });
+  abrirPopupGoogle() {
+    if (!(window as any)['google']?.accounts?.id) return false;
+    if (this.googleCallback) {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback:  (response: any) => this.googleCallback!(response.credential),
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+    }
+    google.accounts.id.prompt();
+    return true;
   }
 
-  renderGoogleButtonById(id: string) {
-    const el = document.getElementById(id);
-    if (el) this.renderGoogleButton(el);
+  get googleDisponivel(): boolean {
+    return !!(window as any)['google']?.accounts?.id;
   }
 }

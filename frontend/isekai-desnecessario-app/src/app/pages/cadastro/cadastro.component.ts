@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,14 +19,12 @@ const API_BASE = environment.apiUrl.replace('/api', '');
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
 })
-export class CadastroComponent implements OnInit, AfterViewInit {
+export class CadastroComponent implements OnInit {
   private api     = inject(ApiService);
   private profile = inject(ProfileService);
   private auth    = inject(AuthService);
   private router  = inject(Router);
   readonly lang   = inject(LanguageService);
-
-  @ViewChild('googleBtn') googleBtnRef?: ElementRef<HTMLDivElement>;
 
   usuario: Usuario | null = null;
   perfis:  Perfil[] = [];
@@ -66,30 +64,21 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     this.api.getClasses().subscribe({ next: c => this.classes = c });
     this.usuario = this.auth.usuario();
     if (this.usuario) this.carregarPerfisDoUsuario();
-  }
-
-  ngAfterViewInit() {
     if (environment.googleClientId) this.tentarIniciarGoogle();
   }
-
-  private googlePronto = false;
 
   private tentarIniciarGoogle() {
     if ((window as any)['google']?.accounts?.id) {
       this.auth.initGoogleSignIn(idToken => this.onGoogleToken(idToken));
-      this.googlePronto = true;
-      this.renderizarBotoesGoogle();
     } else {
       setTimeout(() => this.tentarIniciarGoogle(), 150);
     }
   }
 
-  private renderizarBotoesGoogle() {
-    if (!this.googlePronto) return;
-    setTimeout(() => {
-      this.auth.renderGoogleButtonById('google-signin-btn');
-      this.auth.renderGoogleButtonById('google-signin-btn-login');
-    }, 50);
+  loginGoogle() {
+    if (!this.auth.abrirPopupGoogle()) {
+      this.erro = 'Google ainda carregando, tente novamente em instantes.';
+    }
   }
 
   // ── Autenticação Google ───────────────────────────
@@ -225,17 +214,11 @@ export class CadastroComponent implements OnInit, AfterViewInit {
   irTela(tela: 'inicio' | 'login' | 'registro') {
     this.erro = '';
     this.tela = tela;
-    this.renderizarBotoesGoogle();
   }
 
   voltar() {
     this.erro = '';
-    if (this.usuario) {
-      this.tela = 'perfis';
-    } else {
-      this.tela = 'inicio';
-      this.renderizarBotoesGoogle();
-    }
+    this.tela = this.usuario ? 'perfis' : 'inicio';
   }
 
   logout() {
@@ -244,7 +227,6 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     this.usuario = null;
     this.perfis = [];
     this.tela = 'inicio';
-    this.renderizarBotoesGoogle();
   }
 
   // ── Foto ──────────────────────────────────────────
