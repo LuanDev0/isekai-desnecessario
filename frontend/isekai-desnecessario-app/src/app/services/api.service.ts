@@ -21,6 +21,10 @@ export class ApiService {
     return this.http.post<Perfil>(`${BASE}/perfil/${id}/vincular`, {});
   }
 
+  getOrfaos() {
+    return this.http.get<Perfil[]>(`${BASE}/perfil/orfaos`);
+  }
+
   getPerfil(id: number) {
     return this.http.get<Perfil>(`${BASE}/perfil/${id}`);
   }

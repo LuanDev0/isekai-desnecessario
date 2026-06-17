@@ -47,35 +47,16 @@ public class AuthService(AppDbContext db, IConfiguration config)
 
         var perfis = await db.Perfis.Where(p => p.UsuarioId == usuario.Id).ToListAsync();
 
-        // Se não há perfis vinculados, reivindica todos os perfis órfãos (UsuarioId = null)
-        // respeitando o limite de 3 por conta
-        if (perfis.Count == 0)
+        // Se o frontend passou um perfilOrfaoId explícito (salvo no localStorage), vincula só ele
+        if (perfis.Count == 0 && perfilOrfaoId is int orfaoId)
         {
-            // Primeiro tenta o perfil específico passado pelo frontend (via localStorage)
-            if (perfilOrfaoId is int orfaoId)
+            var orfao = await db.Perfis.FindAsync(orfaoId);
+            if (orfao is not null && orfao.UsuarioId is null)
             {
-                var orfao = await db.Perfis.FindAsync(orfaoId);
-                if (orfao is not null && orfao.UsuarioId is null)
-                {
-                    orfao.UsuarioId = usuario.Id;
-                    perfis.Add(orfao);
-                }
-            }
-
-            // Se ainda vazio, reivindica quaisquer órfãos existentes (até o limite)
-            if (perfis.Count == 0)
-            {
-                var orfaos = await db.Perfis
-                    .Where(p => p.UsuarioId == null)
-                    .Take(3)
-                    .ToListAsync();
-                foreach (var o in orfaos)
-                    o.UsuarioId = usuario.Id;
-                perfis = orfaos;
-            }
-
-            if (perfis.Count > 0)
+                orfao.UsuarioId = usuario.Id;
                 await db.SaveChangesAsync();
+                perfis = [orfao];
+            }
         }
 
         return (GerarJwt(usuario), usuario, perfis);
