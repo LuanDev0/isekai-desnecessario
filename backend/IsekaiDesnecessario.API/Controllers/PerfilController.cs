@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
 using IsekaiDesnecessario.API.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace IsekaiDesnecessario.API.Controllers;
 
@@ -48,9 +51,25 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         return perfil is null ? NotFound() : Ok(perfil);
     }
 
+    // Retorna perfis do usuário autenticado
+    [HttpGet("meus")]
+    [Authorize]
+    public async Task<IActionResult> GetMeus()
+    {
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
+        var perfis = await db.Perfis.Where(p => p.UsuarioId == usuarioId).ToListAsync();
+        return Ok(perfis);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(Perfil perfil)
     {
+        // Se há JWT válido, associa o perfil ao usuário autenticado
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (int.TryParse(sub, out int usuarioIdJwt))
+            perfil.UsuarioId = usuarioIdJwt;
+
         // Limite de perfis por conta Google (convidados, com UsuarioId null, não contam)
         if (perfil.UsuarioId is int usuarioId)
         {

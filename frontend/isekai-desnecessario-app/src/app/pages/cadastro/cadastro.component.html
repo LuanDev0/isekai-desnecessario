@@ -7,25 +7,88 @@
     <p class="sub">{{ 'cadastro.sub' | translate }}</p>
   </div>
 
-  <!-- Tela inicial -->
+  <!-- Tela: Início (login com Google) -->
   <div class="btns-inicio" *ngIf="tela === 'inicio'">
-    <button class="btn-entrar" (click)="irEntrar()">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      {{ 'cadastro.entrar' | translate }}
+
+    <ng-container *ngIf="clientIdConfigurado; else semClientId">
+      <!-- Botão renderizado pelo Google Identity Services -->
+      <div class="google-btn-wrapper">
+        <div #googleBtn id="google-signin-btn"></div>
+      </div>
+
+      <div class="separador" *ngIf="carregando">
+        <span class="carregando-txt">Autenticando...</span>
+      </div>
+    </ng-container>
+
+    <ng-template #semClientId>
+      <div class="aviso-config">
+        <span>⚙️</span>
+        <p>Google Client ID ainda não configurado. Consulte o README para configurar o login com Google.</p>
+      </div>
+    </ng-template>
+
+    <div class="separador">
+      <span class="sep-linha"></span>
+      <span class="sep-txt">{{ 'cadastro.ou' | translate }}</span>
+      <span class="sep-linha"></span>
+    </div>
+
+    <button class="btn-convidado" (click)="irModoConvidado()">
+      {{ 'cadastro.continuarSemConta' | translate }}
     </button>
-    <button class="btn-cadastro" (click)="irCadastro()">
+
+    <p class="erro" *ngIf="erro">{{ erro }}</p>
+  </div>
+
+  <!-- Tela: Perfis do usuário Google -->
+  <div class="tela-perfis" *ngIf="tela === 'perfis'">
+
+    <!-- Info do usuário Google -->
+    <div class="usuario-card" *ngIf="usuario">
+      <img *ngIf="usuario.fotoUrl" [src]="usuario.fotoUrl" class="usuario-foto" alt="foto Google" />
+      <div *ngIf="!usuario.fotoUrl" class="usuario-foto-placeholder">{{ usuario.nome[0] }}</div>
+      <div class="usuario-info">
+        <span class="usuario-nome">{{ usuario.nome }}</span>
+        <span class="usuario-email">{{ usuario.email }}</span>
+      </div>
+      <button class="btn-sair" (click)="logout()" title="Sair">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <p class="perfis-titulo">{{ 'cadastro.selecionePerfil' | translate }}</p>
+
+    <p class="empty" *ngIf="perfis.length === 0 && !carregando">
+      {{ 'cadastro.nenhumPerfil' | translate }}
+    </p>
+
+    <div class="perfis-grid" *ngIf="perfis.length > 0">
+      <button class="perfil-card" *ngFor="let p of perfis" (click)="selecionar(p)">
+        <div class="avatar">
+          <img *ngIf="fotoUrl(p)" [src]="fotoUrl(p)" alt="avatar" />
+          <span *ngIf="!fotoUrl(p)" class="avatar-inicial">{{ p.nome[0] }}</span>
+        </div>
+        <span class="perfil-nome">{{ p.nome }}</span>
+        <span class="perfil-rank">{{ p.rank }} · Nv {{ p.nivel }}</span>
+      </button>
+    </div>
+
+    <button class="btn-novo-heroi" *ngIf="podeCriarMais" (click)="irCadastro()">
       <svg viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
         <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      {{ 'cadastro.criarPerfil' | translate }}
+      {{ 'cadastro.novoHeroi' | translate }}
     </button>
+
+    <p class="limite-txt" *ngIf="!podeCriarMais">{{ 'cadastro.limiteAtingido' | translate }}</p>
   </div>
 
-  <!-- Tela: Entrar -->
-  <div class="tela-entrar" *ngIf="tela === 'entrar'">
+  <!-- Tela: Modo convidado (perfis locais) -->
+  <div class="tela-entrar" *ngIf="tela === 'convidado'">
     <div class="tela-header">
       <button class="btn-voltar" (click)="voltar()">
         <svg viewBox="0 0 24 24" fill="none">
@@ -62,7 +125,6 @@
 
     <div class="novo-card">
 
-      <!-- Nome -->
       <label class="input-label">{{ 'cadastro.nomeHeroi' | translate }}</label>
       <input
         type="text"
@@ -73,7 +135,6 @@
         class="input-nome"
       />
 
-      <!-- Foto + Classe + Gênero lado a lado -->
       <div class="foto-genero-row">
         <div class="foto-picker">
           <div class="foto-avatar" (click)="fotoInput.click()" title="Adicionar foto">

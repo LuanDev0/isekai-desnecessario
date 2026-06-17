@@ -26,6 +26,10 @@ export const en = {
     comecarJornada: 'Begin Journey',
     remover: 'Remove',
     selecione: 'Select...',
+    ou: 'or',
+    continuarSemConta: 'Continue without account',
+    novoHeroi: 'New Hero',
+    limiteAtingido: 'Profile limit of 3 per account reached.',
   },
   missoes: {
     titulo: 'Quests',
