@@ -1,6 +1,7 @@
-const API_BASE = 'http://localhost:5008';
+﻿const API_BASE = environment.apiUrl.replace('/api', '');
 
 import { Component, OnInit, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
