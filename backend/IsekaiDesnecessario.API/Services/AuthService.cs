@@ -12,7 +12,7 @@ namespace IsekaiDesnecessario.API.Services;
 public class AuthService(AppDbContext db, IConfiguration config)
 {
     // ── Google OAuth ──────────────────────────────────────────────────────────
-    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginComGoogle(string idToken)
+    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginComGoogle(string idToken, int? perfilOrfaoId = null)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
         {
@@ -36,7 +36,6 @@ public class AuthService(AppDbContext db, IConfiguration config)
         }
         else
         {
-            // Vincula GoogleId se ainda não estava vinculado (conta criada por email/senha)
             usuario.GoogleId    ??= payload.Subject;
             usuario.UltimoLogin   = DateTime.UtcNow;
             usuario.Nome          = payload.Name ?? usuario.Nome;
@@ -47,6 +46,19 @@ public class AuthService(AppDbContext db, IConfiguration config)
         await db.SaveChangesAsync();
 
         var perfis = await db.Perfis.Where(p => p.UsuarioId == usuario.Id).ToListAsync();
+
+        // Se não há perfis vinculados, tenta vincular um perfil órfão (UsuarioId = null)
+        if (perfis.Count == 0 && perfilOrfaoId is int orfaoId)
+        {
+            var orfao = await db.Perfis.FindAsync(orfaoId);
+            if (orfao is not null && orfao.UsuarioId is null)
+            {
+                orfao.UsuarioId = usuario.Id;
+                await db.SaveChangesAsync();
+                perfis = [orfao];
+            }
+        }
+
         return (GerarJwt(usuario), usuario, perfis);
     }
 
