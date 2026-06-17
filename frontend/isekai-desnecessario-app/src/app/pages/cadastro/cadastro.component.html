@@ -1,5 +1,12 @@
 <div class="cadastro-page">
 
+  <!-- Seletor de idioma -->
+  <div class="lang-bar">
+    <select class="lang-select" (change)="onLangChange($event)">
+      <option *ngFor="let l of lang.languages" [value]="l.code" [selected]="lang.current() === l.code">{{ l.flag }} {{ l.code.toUpperCase() }}</option>
+    </select>
+  </div>
+
   <!-- Hero (sempre visível) -->
   <div class="hero">
     <h1 class="logo">ISEKAI DESNECESSÁRIO</h1>
@@ -22,7 +29,7 @@
       <span class="sep-linha"></span>
     </div>
 
-    <button class="btn-email" (click)="tela = 'login'; erro = ''">
+    <button class="btn-email" (click)="irTela('login')">
       <svg viewBox="0 0 24 24" fill="none">
         <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
         <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="2"/>
@@ -32,7 +39,7 @@
 
     <p class="registro-link">
       {{ 'cadastro.semConta' | translate }}
-      <button class="link" (click)="tela = 'registro'; erro = ''">{{ 'cadastro.criarConta' | translate }}</button>
+      <button class="link" (click)="irTela('registro')">{{ 'cadastro.criarConta' | translate }}</button>
     </p>
 
     <p class="erro" *ngIf="erro">{{ erro }}</p>
@@ -87,7 +94,7 @@
 
       <p class="registro-link">
         {{ 'cadastro.semConta' | translate }}
-        <button class="link" (click)="tela = 'registro'; erro = ''">{{ 'cadastro.criarConta' | translate }}</button>
+        <button class="link" (click)="irTela('registro')">{{ 'cadastro.criarConta' | translate }}</button>
       </p>
     </div>
   </div>
@@ -168,7 +175,7 @@
 
       <p class="registro-link">
         {{ 'cadastro.temConta' | translate }}
-        <button class="link" (click)="tela = 'login'; erro = ''">{{ 'cadastro.entrar' | translate }}</button>
+        <button class="link" (click)="irTela('login')">{{ 'cadastro.entrar' | translate }}</button>
       </p>
     </div>
   </div>

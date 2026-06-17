@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
-import { LanguageService } from '../../services/language.service';
+import { LanguageService, LangCode } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Classe, Perfil, Usuario } from '../../models/models';
 
@@ -72,13 +72,24 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     if (environment.googleClientId) this.tentarIniciarGoogle();
   }
 
+  private googlePronto = false;
+
   private tentarIniciarGoogle() {
     if ((window as any)['google']?.accounts?.id) {
       this.auth.initGoogleSignIn(idToken => this.onGoogleToken(idToken));
-      if (this.googleBtnRef) this.auth.renderGoogleButton(this.googleBtnRef.nativeElement);
+      this.googlePronto = true;
+      this.renderizarBotoesGoogle();
     } else {
       setTimeout(() => this.tentarIniciarGoogle(), 150);
     }
+  }
+
+  private renderizarBotoesGoogle() {
+    if (!this.googlePronto) return;
+    setTimeout(() => {
+      this.auth.renderGoogleButtonById('google-signin-btn');
+      this.auth.renderGoogleButtonById('google-signin-btn-login');
+    }, 50);
   }
 
   // ── Autenticação Google ───────────────────────────
@@ -211,9 +222,20 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/']);
   }
 
+  irTela(tela: 'inicio' | 'login' | 'registro') {
+    this.erro = '';
+    this.tela = tela;
+    this.renderizarBotoesGoogle();
+  }
+
   voltar() {
     this.erro = '';
-    this.tela = this.usuario ? 'perfis' : 'inicio';
+    if (this.usuario) {
+      this.tela = 'perfis';
+    } else {
+      this.tela = 'inicio';
+      this.renderizarBotoesGoogle();
+    }
   }
 
   logout() {
@@ -222,7 +244,7 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     this.usuario = null;
     this.perfis = [];
     this.tela = 'inicio';
-    setTimeout(() => this.tentarIniciarGoogle(), 200);
+    this.renderizarBotoesGoogle();
   }
 
   // ── Foto ──────────────────────────────────────────
@@ -249,6 +271,10 @@ export class CadastroComponent implements OnInit, AfterViewInit {
     if (url.startsWith('data:')) return url;
     if (url.startsWith('/')) return `${API_BASE}${url}`;
     return null;
+  }
+
+  onLangChange(event: Event) {
+    this.lang.setLanguage((event.target as HTMLSelectElement).value as LangCode);
   }
 
   get podeCriarMais(): boolean { return this.perfis.length < 3; }
