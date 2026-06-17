@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY ["backend/IsekaiDesnecessario.API/IsekaiDesnecessario.API.csproj", "backend/IsekaiDesnecessario.API/"]
-RUN dotnet restore "backend/IsekaiDesnecessario.API/IsekaiDesnecessario.API.csproj"
-COPY backend/IsekaiDesnecessario.API/ backend/IsekaiDesnecessario.API/
-RUN dotnet publish "backend/IsekaiDesnecessario.API/IsekaiDesnecessario.API.csproj" -c Release -o /app/publish
+COPY ["IsekaiDesnecessario.API.csproj", "."]
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app

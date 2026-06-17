@@ -1,0 +1,6 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npx serve dist/isekai-desnecessario/browser -s -l $PORT"
+restartPolicyType = "on_failure"
