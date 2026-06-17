@@ -36,7 +36,7 @@ export class ProfileSelectorComponent implements OnInit, OnDestroy {
   }
 
   carregarPerfis() {
-    this.api.getPerfis().subscribe({ next: p => this.perfis = p });
+    this.api.getMeusPerfis().subscribe({ next: p => this.perfis = p });
   }
 
   get atual(): Perfil | null {
