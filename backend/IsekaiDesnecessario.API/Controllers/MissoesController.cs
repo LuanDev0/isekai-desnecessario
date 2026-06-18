@@ -10,7 +10,7 @@ namespace IsekaiDesnecessario.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class MissoesController(AppDbContext db, XpService xpService) : ApiControllerBase
+public class MissoesController(AppDbContext db, MissaoService missaoService) : ApiControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int perfilId)
@@ -74,42 +74,7 @@ public class MissoesController(AppDbContext db, XpService xpService) : ApiContro
         if (missao.PerfilId != perfilId) return Forbid();
         if (missao.Concluida) return BadRequest("Missão já concluída.");
 
-        missao.Concluida = true;
-        missao.ConcluidaEm = DateTime.UtcNow;
-        missao.Streak++;
-
-        // Completa missões secundárias vinculadas a esta
-        var vinculadas = await db.Missoes
-            .Where(m => m.MissaoPrincipalId == id && !m.Concluida)
-            .ToListAsync();
-        foreach (var v in vinculadas)
-        {
-            v.Concluida = true;
-            v.ConcluidaEm = DateTime.UtcNow;
-            v.Streak++;
-        }
-
-        await db.SaveChangesAsync();
-
-        await xpService.AdicionarXp(perfilId, missao.RecompensaXp);
-        foreach (var v in vinculadas)
-            await xpService.AdicionarXp(perfilId, v.RecompensaXp);
-
-        var perfil = await db.Perfis.FindAsync(perfilId);
-        if (perfil is not null)
-        {
-            perfil.Moedas += missao.RecompensaMoedas;
-            foreach (var v in vinculadas)
-                perfil.Moedas += v.RecompensaMoedas;
-        }
-
-        db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = "⚔️", Tipo = "missao",
-            Mensagem = $"Concluiu missão \"{missao.Titulo}\" +{missao.RecompensaXp} XP +{missao.RecompensaMoedas} moedas" });
-        foreach (var v in vinculadas)
-            db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = "⚔️", Tipo = "missao",
-                Mensagem = $"Missão vinculada \"{v.Titulo}\" concluída +{v.RecompensaXp} XP +{v.RecompensaMoedas} moedas" });
-
-        await db.SaveChangesAsync();
+        var perfil = await missaoService.ConcluirAsync(missao);
         return Ok(new { missao, perfil });
     }
 

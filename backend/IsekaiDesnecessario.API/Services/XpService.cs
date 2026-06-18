@@ -5,6 +5,9 @@ namespace IsekaiDesnecessario.API.Services;
 
 public class XpService(AppDbContext db)
 {
+    // Fator de crescimento do XP necessário para o próximo nível (XP_próximo = round(XP_atual × 1.036))
+    private const double FatorProximoNivel = 1.036;
+
     // Índice = Nivel / 10  →  1-9=H, 10-19=G, 20-29=F, 30-39=E, 40-49=D, 50-59=C, 60-69=B, 70-79=A, 80-89=S, 90-99=SS, 100+=SSS
     private static readonly string[] Ranks  = ["H", "G", "F", "E", "D", "C", "B", "A", "S", "SS", "SSS"];
     private static readonly string[] Titulos = [
@@ -22,11 +25,7 @@ public class XpService(AppDbContext db)
         perfil.Xp += xpGanho;
 
         // Acumula XP do dia (reseta à meia-noite)
-        if (perfil.DataXpHoje?.Date != DateTime.UtcNow.Date)
-        {
-            perfil.XpHoje    = 0;
-            perfil.DataXpHoje = DateTime.UtcNow;
-        }
+        perfil.ResetarXpDiarioSeNovoDia();
         perfil.XpHoje += xpGanho;
 
         // Subiu de nível
@@ -34,7 +33,7 @@ public class XpService(AppDbContext db)
         {
             perfil.Xp -= perfil.ProximoNivelXp;
             perfil.Nivel++;
-            perfil.ProximoNivelXp = (int)Math.Round(perfil.ProximoNivelXp * 1.036);
+            perfil.ProximoNivelXp = (int)Math.Round(perfil.ProximoNivelXp * FatorProximoNivel);
             AtualizarRank(perfil);
 
             db.DiarioAcoes.Add(new Models.DiarioAcao { PerfilId = perfilId, Emoji = "🎉", Tipo = "nivel",
@@ -56,7 +55,7 @@ public class XpService(AppDbContext db)
         {
             // Recalcula o ProximoNivelXp do nível anterior
             // (inverte a fórmula: xpAnterior = round(xpAtual / 1.036))
-            int xpNivelAnterior = (int)Math.Round(perfil.ProximoNivelXp / 1.036);
+            int xpNivelAnterior = (int)Math.Round(perfil.ProximoNivelXp / FatorProximoNivel);
 
             perfil.Nivel--;
             perfil.ProximoNivelXp = xpNivelAnterior;
