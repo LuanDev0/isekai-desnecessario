@@ -4,12 +4,17 @@ using IsekaiDesnecessario.API.Models;
 
 namespace IsekaiDesnecessario.API.Services;
 
-public class MissaoService(AppDbContext db, XpService xpService)
+public class MissaoService(AppDbContext db, XpService xpService, ILogger<MissaoService> logger)
 {
     // Conclui a missão e suas secundárias vinculadas; credita XP e moedas
     // e registra tudo no diário. Retorna o perfil atualizado.
     public async Task<Perfil?> ConcluirAsync(Missao missao)
     {
+        // Operação multi-tabela (missão + secundárias + XP + moedas + diário):
+        // ou tudo num único commit, ou nada (SKILL.md §3 — transações explícitas).
+        logger.LogInformation("Concluindo missão {MissaoId} ({Titulo}) para perfil {PerfilId}", missao.Id, missao.Titulo, missao.PerfilId);
+        await using var tx = await db.Database.BeginTransactionAsync();
+
         missao.Concluida   = true;
         missao.ConcluidaEm = DateTime.UtcNow;
         missao.Streak++;
@@ -46,6 +51,9 @@ public class MissaoService(AppDbContext db, XpService xpService)
                 Mensagem = $"Missão vinculada \"{v.Titulo}\" concluída +{v.RecompensaXp} XP +{v.RecompensaMoedas} moedas" });
 
         await db.SaveChangesAsync();
+        await tx.CommitAsync();
+
+        logger.LogInformation("Missão {MissaoId} concluída: +{Xp} XP +{Moedas} moedas ({Secundarias} secundárias)", missao.Id, missao.RecompensaXp, missao.RecompensaMoedas, vinculadas.Count);
         return perfil;
     }
 }

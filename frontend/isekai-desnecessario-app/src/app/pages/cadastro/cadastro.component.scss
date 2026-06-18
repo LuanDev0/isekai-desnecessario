@@ -752,3 +752,13 @@ $muted:   #8b949e;
   color: #f85149;
   font-size: 0.82rem;
 }
+
+.version-badge {
+  position: fixed;
+  bottom: 12px;
+  right: 14px;
+  font-size: 0.72rem;
+  color: $muted;
+  pointer-events: none;
+  user-select: none;
+}

@@ -1,6 +1,6 @@
 # SKILL.md — Boas Práticas C# / .NET para este Projeto
 
-> Guia de referência para geração de código C#/.NET neste repositório (Isekai Desnecessário — backend .NET + EF Core + SQL Server, frontend Angular).
+> Guia de referência para geração de código C#/.NET neste repositório (Isekai Desnecessário — backend .NET + EF Core + PostgreSQL, frontend Angular).
 > Use este arquivo como checklist antes de criar/alterar código no backend.
 
 ## Estado atual do projeto

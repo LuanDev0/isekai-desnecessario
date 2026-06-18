@@ -4,7 +4,7 @@ using IsekaiDesnecessario.API.Models;
 
 namespace IsekaiDesnecessario.API.Services;
 
-public class LootboxService(AppDbContext db)
+public class LootboxService(AppDbContext db, ILogger<LootboxService> logger)
 {
     // XP acumulado no dia exigido para abrir a lootbox
     public const int XpDiarioNecessario = 1000;
@@ -52,6 +52,8 @@ public class LootboxService(AppDbContext db)
             Mensagem = $"Abriu lootbox e ganhou \"{ganhador.Nome}\""
         });
         await db.SaveChangesAsync();
+
+        logger.LogInformation("Perfil {PerfilId} abriu lootbox: ganhou \"{Recompensa}\" ({Chance}%)", perfilId, ganhador.Nome, chance);
 
         return LootboxResultado.Ok(ganhador, chance);
     }

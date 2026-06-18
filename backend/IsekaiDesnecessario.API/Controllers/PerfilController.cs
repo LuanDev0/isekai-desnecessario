@@ -18,7 +18,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
         var perfil = await db.Perfis.FindAsync(id);
         return perfil is null ? NotFound() : Ok(perfil);
     }
@@ -38,7 +38,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Perfil perfil)
+    public async Task<IActionResult> Create(CriarPerfilDto dto)
     {
         if (UsuarioId is not int usuarioId) return Unauthorized();
 
@@ -46,17 +46,27 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
         if (qtd >= MaxPerfisPorConta)
             return BadRequest($"Limite de {MaxPerfisPorConta} perfis por conta atingido.");
 
-        perfil.UsuarioId = usuarioId;
+        // Progressão (Xp/Moedas/Nível/Rank) sempre nasce nos defaults do modelo —
+        // nunca vem do corpo da requisição, senão dá pra criar herói nível 100 cheio de moedas.
+        var perfil = new Perfil
+        {
+            UsuarioId = usuarioId,
+            Nome      = dto.Nome.Trim(),
+            ClasseId  = dto.ClasseId,
+            Genero    = dto.Genero,
+        };
         db.Perfis.Add(perfil);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);
     }
 
+    public record CriarPerfilDto(string Nome, int? ClasseId, string? Genero);
+
     // Remove vínculo de um perfil desta conta (vira órfão novamente)
     [HttpPost("{id}/desvincular")]
     public async Task<IActionResult> Desvincular(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -88,7 +98,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpPatch("{id}/info")]
     public async Task<IActionResult> UpdateInfo(int id, UpdatePerfilInfoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -105,7 +115,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -117,7 +127,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpPost("{id}/xp")]
     public async Task<IActionResult> AdicionarXp(int id, [FromQuery] int quantidade)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
         await xpService.AdicionarXpAsync(id, quantidade);
         return Ok(await db.Perfis.FindAsync(id));
     }
@@ -125,7 +135,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpPost("{id}/reset")]
     public async Task<IActionResult> Reset(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -148,7 +158,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpPost("{id}/foto")]
     public async Task<IActionResult> UploadFoto(int id, IFormFile arquivo)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -175,7 +185,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpPost("{id}/desafio/recusar")]
     public async Task<IActionResult> RecusarDesafio(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -187,7 +197,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpPost("{id}/desafio/concluir")]
     public async Task<IActionResult> ConcluirDesafio(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -201,7 +211,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpGet("{id}/lootbox/status")]
     public async Task<IActionResult> LootboxStatus(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
         var status = await lootbox.StatusAsync(id);
         return status is null ? NotFound() : Ok(status);
     }
@@ -209,7 +219,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     [HttpPost("{id}/lootbox/abrir")]
     public async Task<IActionResult> AbrirLootbox(int id)
     {
-        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
         var resultado = await lootbox.AbrirAsync(id);
         return resultado.Sucesso
             ? Ok(new { recompensa = resultado.Recompensa, chance = resultado.Chance })

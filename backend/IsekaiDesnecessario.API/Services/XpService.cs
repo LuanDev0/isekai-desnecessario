@@ -3,7 +3,7 @@ using IsekaiDesnecessario.API.Models;
 
 namespace IsekaiDesnecessario.API.Services;
 
-public class XpService(AppDbContext db)
+public class XpService(AppDbContext db, ILogger<XpService> logger)
 {
     // Fator de crescimento do XP necessário para o próximo nível (XP_próximo = round(XP_atual × 1.036))
     private const double FatorProximoNivel = 1.036;
@@ -36,6 +36,7 @@ public class XpService(AppDbContext db)
             perfil.ProximoNivelXp = (int)Math.Round(perfil.ProximoNivelXp * FatorProximoNivel);
             AtualizarRank(perfil);
 
+            logger.LogInformation("Perfil {PerfilId} subiu para Nível {Nivel} Rank {Rank}", perfilId, perfil.Nivel, perfil.Rank);
             db.DiarioAcoes.Add(new Models.DiarioAcao { PerfilId = perfilId, Emoji = "🎉", Tipo = "nivel",
                 Mensagem = $"Subiu para Nível {perfil.Nivel}! Rank {perfil.Rank}" });
         }

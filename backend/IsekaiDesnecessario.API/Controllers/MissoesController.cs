@@ -15,7 +15,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         return Ok(await db.Missoes.Include(m => m.Tipo)
             .Where(m => m.PerfilId == perfilId)
             .OrderBy(m => m.TipoId)
@@ -28,9 +28,20 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
         Ok(await db.TiposMissao.AsNoTracking().ToListAsync());
 
     [HttpPost]
-    public async Task<IActionResult> Create(Missao missao)
+    public async Task<IActionResult> Create(CriarMissaoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, missao.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
+        var missao = new Missao
+        {
+            PerfilId          = dto.PerfilId,
+            Titulo            = dto.Titulo,
+            TipoId            = dto.TipoId,
+            RecompensaXp      = dto.RecompensaXp,
+            RecompensaMoedas  = dto.RecompensaMoedas,
+            AtributoId        = dto.AtributoId,
+            DataLimite        = dto.DataLimite,
+            MissaoPrincipalId = dto.MissaoPrincipalId,
+        };
         db.Missoes.Add(missao);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetAll), new { perfilId = missao.PerfilId }, missao);
@@ -41,7 +52,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         var m = await db.Missoes.FindAsync(id);
         if (m is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, m.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, m.PerfilId) is { } erro) return erro;
         m.Titulo = missao.Titulo;
         m.TipoId = missao.TipoId;
         m.RecompensaXp = missao.RecompensaXp;
@@ -59,7 +70,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         var missao = await db.Missoes.FindAsync(id);
         if (missao is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, missao.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, missao.PerfilId) is { } erro) return erro;
         db.Missoes.Remove(missao);
         await db.SaveChangesAsync();
         return NoContent();
@@ -70,7 +81,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         var missao = await db.Missoes.FindAsync(id);
         if (missao is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, missao.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, missao.PerfilId) is { } erro) return erro;
         if (missao.PerfilId != perfilId) return Forbid();
         if (missao.Concluida) return BadRequest("Missão já concluída.");
 
@@ -82,7 +93,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     [HttpGet("jornada")]
     public async Task<IActionResult> Jornada([FromQuery] int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
 
         var doze = DateTime.UtcNow.Date.AddDays(-84); // 12 semanas atrás
 
@@ -116,9 +127,14 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         var missao = await db.Missoes.FindAsync(id);
         if (missao is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, missao.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, missao.PerfilId) is { } erro) return erro;
         missao.Concluida = false;
         await db.SaveChangesAsync();
         return Ok(missao);
     }
 }
+
+// Concluida/ConcluidaEm/Streak nunca vêm do cliente — missão nasce "aberta".
+public record CriarMissaoDto(
+    int PerfilId, string Titulo, int TipoId, int RecompensaXp, int RecompensaMoedas,
+    int? AtributoId, DateTime? DataLimite, int? MissaoPrincipalId);

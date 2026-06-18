@@ -34,9 +34,9 @@ O progresso sobe **nível → rank → título**, do rank H ao SSS.
 
 ## Stack
 
-- **Backend:** ASP.NET Core 10 (Web API) + Entity Framework Core + SQL Server
+- **Backend:** ASP.NET Core 10 (Web API) + Entity Framework Core + PostgreSQL (Npgsql)
 - **Frontend:** Angular 19 (standalone components)
-- **Banco:** SQL Server local (`IsekaIDesnecessarioDB`)
+- **Banco:** PostgreSQL local (`isekai`)
 
 ## Rodando rápido
 

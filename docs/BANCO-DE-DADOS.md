@@ -1,8 +1,8 @@
 # 🗄️ Banco de Dados
 
-Banco: **`IsekaIDesnecessarioDB`** (SQL Server). Mapeado por EF Core em `Data/AppDbContext.cs`.
+Banco: **`isekai`** (PostgreSQL). Mapeado por EF Core (provider Npgsql) em `Data/AppDbContext.cs`.
 
-> 💡 Strings com emoji em `INSERT` manual precisam do prefixo **`N`** (`N'🍕'`), senão o SQL Server grava `??`.
+> 💡 PostgreSQL guarda texto em UTF-8 nativamente — emoji em `INSERT` manual **não** precisa de prefixo especial (o `N'🍕'` era exigência do SQL Server).
 
 ---
 

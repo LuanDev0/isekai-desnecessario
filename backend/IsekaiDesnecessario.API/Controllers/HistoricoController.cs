@@ -15,7 +15,7 @@ public class HistoricoController(AppDbContext db) : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> Get(int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
 
         var hist = await db.HistoricoXp
             .Where(h => h.PerfilId == perfilId)
@@ -42,7 +42,7 @@ public class HistoricoController(AppDbContext db) : ApiControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert(int perfilId, [FromBody] UpsertHistoricoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
 
         var hoje = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -66,9 +66,6 @@ public class HistoricoController(AppDbContext db) : ApiControllerBase
         // Atualiza a hora atual no array de 24h
         var horas = entrada.XpPorHora;
         horas[dto.Hora] = dto.XpHoje;
-        // Propaga para horas anteriores que estejam zeradas
-        for (int h = dto.Hora - 1; h >= 0; h--)
-            if (horas[h] == 0) horas[h] = 0; // mantém zero antes do primeiro registro
         entrada.XpPorHora = horas;
 
         await db.SaveChangesAsync();

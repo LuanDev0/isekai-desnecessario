@@ -26,6 +26,8 @@ export class CadastroComponent implements OnInit {
   private router  = inject(Router);
   readonly lang   = inject(LanguageService);
 
+  readonly version = environment.version;
+
   usuario: Usuario | null = null;
   perfis:       Perfil[] = [];
   perfisOrfaos: Perfil[] = [];
