@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
@@ -7,16 +8,19 @@ namespace IsekaiDesnecessario.API.Controllers;
 
 [ApiController]
 [Route("api/experimentos")]
-public class ExperimentosController(AppDbContext db) : ControllerBase
+[Authorize]
+public class ExperimentosController(AppDbContext db) : ApiControllerBase
 {
     // GET /api/experimentos?perfilId=X
     [HttpGet]
     public async Task<IActionResult> Listar([FromQuery] int perfilId)
     {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
         var lista = await db.Experimentos
             .Include(e => e.Dias)
             .Where(e => e.PerfilId == perfilId)
             .OrderByDescending(e => e.DataInicio)
+            .AsNoTracking()
             .ToListAsync();
         return Ok(lista);
     }
@@ -25,6 +29,7 @@ public class ExperimentosController(AppDbContext db) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Criar([FromBody] CriarExperimentoDto dto)
     {
+        if (await GarantirDonoDoPerfil(db, dto.PerfilId) is { } erro) return erro;
         var exp = new Experimento
         {
             PerfilId    = dto.PerfilId,
@@ -46,6 +51,7 @@ public class ExperimentosController(AppDbContext db) : ControllerBase
     {
         var exp = await db.Experimentos.FindAsync(id);
         if (exp is null) return NotFound();
+        if (await GarantirDonoDoPerfil(db, exp.PerfilId) is { } erro) return erro;
         db.Experimentos.Remove(exp);
         await db.SaveChangesAsync();
         return NoContent();
@@ -57,6 +63,7 @@ public class ExperimentosController(AppDbContext db) : ControllerBase
     {
         var exp = await db.Experimentos.Include(e => e.Dias).FirstOrDefaultAsync(e => e.Id == id);
         if (exp is null) return NotFound();
+        if (await GarantirDonoDoPerfil(db, exp.PerfilId) is { } erro) return erro;
 
         var hoje = DateTime.UtcNow.Date;
         if (exp.Dias.Any(d => d.Data.Date == hoje))
@@ -79,6 +86,8 @@ public class ExperimentosController(AppDbContext db) : ControllerBase
     {
         var exp = await db.Experimentos.FindAsync(id);
         if (exp is null) return NotFound();
+        if (await GarantirDonoDoPerfil(db, exp.PerfilId) is { } erro) return erro;
+        if (exp.PerfilId != perfilId) return Forbid();
 
         exp.Ativo      = false;
         exp.Convertido = true;

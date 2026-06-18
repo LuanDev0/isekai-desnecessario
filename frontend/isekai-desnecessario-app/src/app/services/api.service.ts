@@ -9,10 +9,6 @@ const BASE = environment.apiUrl;
 export class ApiService {
   private http = inject(HttpClient);
 
-  getPerfis() {
-    return this.http.get<Perfil[]>(`${BASE}/perfil`);
-  }
-
   getMeusPerfis() {
     return this.http.get<Perfil[]>(`${BASE}/perfil/meus`);
   }
@@ -29,10 +25,6 @@ export class ApiService {
 
   getPerfil(id: number) {
     return this.http.get<Perfil>(`${BASE}/perfil/${id}`);
-  }
-
-  getPerfilMe() {
-    return this.http.get<Perfil>(`${BASE}/perfil/me`);
   }
 
   criarPerfil(nome: string, classeId?: number | null, genero?: string | null) {

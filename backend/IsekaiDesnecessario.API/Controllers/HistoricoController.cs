@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
@@ -7,15 +8,19 @@ namespace IsekaiDesnecessario.API.Controllers;
 
 [ApiController]
 [Route("api/perfil/{perfilId}/historico")]
-public class HistoricoController(AppDbContext db) : ControllerBase
+[Authorize]
+public class HistoricoController(AppDbContext db) : ApiControllerBase
 {
     // GET api/perfil/{perfilId}/historico
     [HttpGet]
     public async Task<IActionResult> Get(int perfilId)
     {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+
         var hist = await db.HistoricoXp
             .Where(h => h.PerfilId == perfilId)
             .OrderBy(h => h.Data)
+            .AsNoTracking()
             .ToListAsync();
 
         // Retorna sem o campo Json interno
@@ -37,6 +42,8 @@ public class HistoricoController(AppDbContext db) : ControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert(int perfilId, [FromBody] UpsertHistoricoDto dto)
     {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+
         var hoje = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var entrada = await db.HistoricoXp

@@ -1,28 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
-using System.Linq;
 
 namespace IsekaiDesnecessario.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RecompensasController(AppDbContext db) : ControllerBase
+[Authorize]
+public class RecompensasController(AppDbContext db) : ApiControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int perfilId) =>
-        Ok(await db.Recompensas
+    public async Task<IActionResult> GetAll([FromQuery] int perfilId)
+    {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        return Ok(await db.Recompensas
             .Where(r => r.PerfilId == perfilId)
             .OrderBy(r => r.Preco)
+            .AsNoTracking()
             .ToListAsync());
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(Recompensa recompensa)
     {
+        if (await GarantirDonoDoPerfil(db, recompensa.PerfilId) is { } erro) return erro;
         db.Recompensas.Add(recompensa);
         await db.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetAll), recompensa);
+        return CreatedAtAction(nameof(GetAll), new { perfilId = recompensa.PerfilId }, recompensa);
     }
 
     [HttpPut("{id}")]
@@ -30,6 +36,7 @@ public class RecompensasController(AppDbContext db) : ControllerBase
     {
         var r = await db.Recompensas.FindAsync(id);
         if (r is null) return NotFound();
+        if (await GarantirDonoDoPerfil(db, r.PerfilId) is { } erro) return erro;
         r.Nome              = recompensa.Nome;
         r.Descricao         = recompensa.Descricao;
         r.Emoji             = recompensa.Emoji;
@@ -46,6 +53,7 @@ public class RecompensasController(AppDbContext db) : ControllerBase
     {
         var r = await db.Recompensas.FindAsync(id);
         if (r is null) return NotFound();
+        if (await GarantirDonoDoPerfil(db, r.PerfilId) is { } erro) return erro;
         db.Recompensas.Remove(r);
         await db.SaveChangesAsync();
         return NoContent();
@@ -56,6 +64,8 @@ public class RecompensasController(AppDbContext db) : ControllerBase
     {
         var recompensa = await db.Recompensas.FindAsync(id);
         if (recompensa is null) return NotFound();
+        if (await GarantirDonoDoPerfil(db, recompensa.PerfilId) is { } erro) return erro;
+        if (recompensa.PerfilId != perfilId) return Forbid();
 
         var perfil = await db.Perfis.FindAsync(perfilId);
         if (perfil is null) return NotFound("Perfil não encontrado.");
@@ -85,15 +95,15 @@ public class RecompensasController(AppDbContext db) : ControllerBase
             Mensagem = $"Resgatou \"{recompensa.Nome}\" por {recompensa.Preco} moedas" });
 
         // Adiciona ao inventário
-        db.Inventario.Add(new IsekaiDesnecessario.API.Models.ItemInventario
+        db.Inventario.Add(new ItemInventario
         {
-            PerfilId    = perfilId,
+            PerfilId     = perfilId,
             RecompensaId = recompensa.Id,
-            Nome        = recompensa.Nome,
-            Emoji       = recompensa.Emoji,
-            Descricao   = recompensa.Descricao,
-            Preco       = recompensa.Preco,
-            DataCompra  = DateTime.UtcNow,
+            Nome         = recompensa.Nome,
+            Emoji        = recompensa.Emoji,
+            Descricao    = recompensa.Descricao,
+            Preco        = recompensa.Preco,
+            DataCompra   = DateTime.UtcNow,
         });
 
         await db.SaveChangesAsync();
