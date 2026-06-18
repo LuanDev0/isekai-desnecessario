@@ -180,7 +180,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   get desafioConcluido(): boolean {
-    const concluidoEm = this.perfil?.desafioConcluídoEm;
+    const concluidoEm = this.perfil?.desafioConcluidoEm;
     if (!concluidoEm) return false;
     return new Date(concluidoEm).toDateString() === new Date().toDateString();
   }

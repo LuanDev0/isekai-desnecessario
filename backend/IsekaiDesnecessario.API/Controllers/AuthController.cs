@@ -13,7 +13,7 @@ public class AuthController(AuthService authService) : ControllerBase
     {
         try
         {
-            var (jwt, usuario, perfis) = await authService.LoginComGoogle(dto.IdToken);
+            var (jwt, usuario, perfis) = await authService.LoginComGoogleAsync(dto.IdToken);
             return Ok(new { token = jwt, usuario, perfis });
         }
         catch (InvalidJwtException)
@@ -29,7 +29,7 @@ public class AuthController(AuthService authService) : ControllerBase
     {
         try
         {
-            var (jwt, usuario, perfis) = await authService.Registrar(dto.Nome, dto.Email, dto.Senha);
+            var (jwt, usuario, perfis) = await authService.RegistrarAsync(dto.Nome, dto.Email, dto.Senha);
             return Ok(new { token = jwt, usuario, perfis });
         }
         catch (InvalidOperationException ex)
@@ -47,7 +47,7 @@ public class AuthController(AuthService authService) : ControllerBase
     {
         try
         {
-            var (jwt, usuario, perfis) = await authService.Login(dto.Email, dto.Senha);
+            var (jwt, usuario, perfis) = await authService.LoginAsync(dto.Email, dto.Senha);
             return Ok(new { token = jwt, usuario, perfis });
         }
         catch (UnauthorizedAccessException ex)

@@ -40,7 +40,7 @@ public class Perfil
 
     // ── Desafio do dia ────────────────────────────────
     public DateTime? DesafioRecusadoEm  { get; set; }
-    public DateTime? DesafioConcluídoEm { get; set; }
+    public DateTime? DesafioConcluidoEm { get; set; }
 
     [JsonIgnore]
     public ICollection<BomHabito> BonsHabitos { get; set; } = [];

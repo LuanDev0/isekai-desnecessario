@@ -86,7 +86,7 @@ Usuario (conta Google)
 | XpHoje | int | 0 | XP acumulado no dia (lootbox) |
 | DataXpHoje | DateTime? | | reseta `XpHoje` à meia-noite |
 | UltimaLootbox | DateTime? | | controla 1×/dia |
-| DesafioRecusadoEm / DesafioConcluídoEm | DateTime? | | desafio do dia |
+| DesafioRecusadoEm / DesafioConcluidoEm | DateTime? | | desafio do dia |
 
 ### Classe — seed fixo (6)
 | Id | Nome | Feminino | Emoji | AtributoId |

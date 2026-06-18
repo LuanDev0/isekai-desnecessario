@@ -151,7 +151,7 @@ Implementada em `PerfilController` (`/lootbox/status` e `/lootbox/abrir`):
 
 ## Desafio do dia
 
-O perfil tem `DesafioRecusadoEm` e `DesafioConcluídoEm`. Endpoints `/desafio/recusar` e `/desafio/concluir` registram a interação do dia. A sugestão é montada no frontend a partir do **atributo mais fraco**.
+O perfil tem `DesafioRecusadoEm` e `DesafioConcluidoEm`. Endpoints `/desafio/recusar` e `/desafio/concluir` registram a interação do dia. A sugestão é montada no frontend a partir do **atributo mais fraco**.
 
 ---
 
