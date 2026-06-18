@@ -22,9 +22,17 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     }
 
     [HttpPost("bons")]
-    public async Task<IActionResult> CreateBom(BomHabito habito)
+    public async Task<IActionResult> CreateBom(CriarHabitoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, habito.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfil(db, dto.PerfilId) is { } erro) return erro;
+        var habito = new BomHabito
+        {
+            PerfilId   = dto.PerfilId,
+            Habito     = dto.Habito,
+            Xp         = dto.Xp,
+            Frequencia = dto.Frequencia,
+            AtributoId = dto.AtributoId,
+        };
         db.BonsHabitos.Add(habito);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetBons), new { perfilId = habito.PerfilId }, habito);
@@ -90,9 +98,17 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     }
 
     [HttpPost("maus")]
-    public async Task<IActionResult> CreateMau(MauHabito habito)
+    public async Task<IActionResult> CreateMau(CriarHabitoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, habito.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfil(db, dto.PerfilId) is { } erro) return erro;
+        var habito = new MauHabito
+        {
+            PerfilId   = dto.PerfilId,
+            Habito     = dto.Habito,
+            Xp         = dto.Xp,
+            Frequencia = dto.Frequencia,
+            AtributoId = dto.AtributoId,
+        };
         db.MausHabitos.Add(habito);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetMaus), new { perfilId = habito.PerfilId }, habito);
@@ -171,3 +187,6 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
         return referencia.Date.AddDays(-diff);
     }
 }
+
+// Streak/UltimaExecucao nunca vêm do cliente — começam zerados/nulos no servidor.
+public record CriarHabitoDto(int PerfilId, string Habito, int Xp, string Frequencia, int? AtributoId);

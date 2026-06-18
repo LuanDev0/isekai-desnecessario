@@ -38,7 +38,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Perfil perfil)
+    public async Task<IActionResult> Create(CriarPerfilDto dto)
     {
         if (UsuarioId is not int usuarioId) return Unauthorized();
 
@@ -46,11 +46,21 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
         if (qtd >= MaxPerfisPorConta)
             return BadRequest($"Limite de {MaxPerfisPorConta} perfis por conta atingido.");
 
-        perfil.UsuarioId = usuarioId;
+        // Progressão (Xp/Moedas/Nível/Rank) sempre nasce nos defaults do modelo —
+        // nunca vem do corpo da requisição, senão dá pra criar herói nível 100 cheio de moedas.
+        var perfil = new Perfil
+        {
+            UsuarioId = usuarioId,
+            Nome      = dto.Nome.Trim(),
+            ClasseId  = dto.ClasseId,
+            Genero    = dto.Genero,
+        };
         db.Perfis.Add(perfil);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);
     }
+
+    public record CriarPerfilDto(string Nome, int? ClasseId, string? Genero);
 
     // Remove vínculo de um perfil desta conta (vira órfão novamente)
     [HttpPost("{id}/desvincular")]

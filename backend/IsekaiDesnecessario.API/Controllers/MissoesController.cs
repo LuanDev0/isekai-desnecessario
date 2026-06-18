@@ -28,9 +28,20 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
         Ok(await db.TiposMissao.AsNoTracking().ToListAsync());
 
     [HttpPost]
-    public async Task<IActionResult> Create(Missao missao)
+    public async Task<IActionResult> Create(CriarMissaoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, missao.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfil(db, dto.PerfilId) is { } erro) return erro;
+        var missao = new Missao
+        {
+            PerfilId          = dto.PerfilId,
+            Titulo            = dto.Titulo,
+            TipoId            = dto.TipoId,
+            RecompensaXp      = dto.RecompensaXp,
+            RecompensaMoedas  = dto.RecompensaMoedas,
+            AtributoId        = dto.AtributoId,
+            DataLimite        = dto.DataLimite,
+            MissaoPrincipalId = dto.MissaoPrincipalId,
+        };
         db.Missoes.Add(missao);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetAll), new { perfilId = missao.PerfilId }, missao);
@@ -122,3 +133,8 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
         return Ok(missao);
     }
 }
+
+// Concluida/ConcluidaEm/Streak nunca vêm do cliente — missão nasce "aberta".
+public record CriarMissaoDto(
+    int PerfilId, string Titulo, int TipoId, int RecompensaXp, int RecompensaMoedas,
+    int? AtributoId, DateTime? DataLimite, int? MissaoPrincipalId);

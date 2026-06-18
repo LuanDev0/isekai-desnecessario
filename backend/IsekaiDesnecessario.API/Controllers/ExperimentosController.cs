@@ -97,7 +97,7 @@ public class ExperimentosController(AppDbContext db) : ApiControllerBase
             PerfilId  = perfilId,
             Habito    = exp.Titulo,
             Xp        = 10,
-            Frequencia = "Diária",
+            Frequencia = "Diário",
             Streak    = 0,
         };
         db.BonsHabitos.Add(habito);

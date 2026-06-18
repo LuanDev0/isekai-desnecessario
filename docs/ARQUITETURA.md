@@ -5,8 +5,8 @@
 | Camada | Tecnologia |
 |--------|-----------|
 | Backend | ASP.NET Core 10 — Web API (controllers) |
-| ORM | Entity Framework Core (SQL Server provider) |
-| Banco | SQL Server local (`IsekaIDesnecessarioDB`) |
+| ORM | Entity Framework Core (PostgreSQL provider — Npgsql) |
+| Banco | PostgreSQL local (`isekai`) |
 | Frontend | Angular 19 — standalone components, signals |
 | HTTP | `HttpClient` (frontend) ↔ REST/JSON (backend) |
 | Docs API | Swagger / Swagger UI (em Development) |
@@ -76,10 +76,10 @@ const BASE = 'http://localhost:5008/api';
 ## Connection string (appsettings.json)
 
 ```
-Server=localhost;Database=IsekaIDesnecessarioDB;Trusted_Connection=True;TrustServerCertificate=True;
+Host=localhost;Database=isekai;Username=postgres;Password=postgres
 ```
 
-Usa autenticação integrada do Windows (`Trusted_Connection`). Não há senha no arquivo.
+Autenticação por usuário/senha do PostgreSQL. As credenciais de dev ficam no `appsettings.json`; em produção use variáveis de ambiente ou user-secrets.
 
 ---
 
@@ -87,7 +87,7 @@ Usa autenticação integrada do Windows (`Trusted_Connection`). Não há senha n
 
 ### Pré-requisitos
 - .NET SDK 10
-- SQL Server (LocalDB ou instância `localhost`)
+- PostgreSQL (instância local `localhost:5432`)
 - Node.js + npm
 
 ### Backend
@@ -126,7 +126,7 @@ dotnet ef database update
 [AppDbContext] ←──── EF Core ────┘
       │
       ▼
-[SQL Server: IsekaIDesnecessarioDB]
+[PostgreSQL: isekai]
 ```
 
 O frontend guarda apenas o **id do perfil ativo** em `localStorage` (`solo_perfil_id`); todo o resto do estado vem da API a cada navegação.

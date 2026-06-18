@@ -66,9 +66,6 @@ public class HistoricoController(AppDbContext db) : ApiControllerBase
         // Atualiza a hora atual no array de 24h
         var horas = entrada.XpPorHora;
         horas[dto.Hora] = dto.XpHoje;
-        // Propaga para horas anteriores que estejam zeradas
-        for (int h = dto.Hora - 1; h >= 0; h--)
-            if (horas[h] == 0) horas[h] = 0; // mantém zero antes do primeiro registro
         entrada.XpPorHora = horas;
 
         await db.SaveChangesAsync();

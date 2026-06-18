@@ -7,9 +7,9 @@ completa missões, junta moedas e troca por recompensas reais.
 > 📖 **Documentação completa em [`docs/`](docs/README.md)** — arquitetura, banco, API, mecânicas e frontend.
 
 ## Stack
-- **Backend:** ASP.NET Core 10 (Web API) + EF Core + SQL Server — porta `5008`
+- **Backend:** ASP.NET Core 10 (Web API) + EF Core + PostgreSQL (Npgsql) — porta `5008`
 - **Frontend:** Angular 19 (standalone) — porta `4200`
-- **Banco:** `IsekaIDesnecessarioDB` (SQL Server local, Trusted_Connection)
+- **Banco:** `isekai` (PostgreSQL local, usuário/senha)
 
 ## Estrutura
 - `backend/IsekaiDesnecessario.API/` — API (Controllers, Models, Services, Data, Migrations)
@@ -48,5 +48,5 @@ Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · b
 ## Notas de ambiente (Windows)
 - O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.
 - Após `git pull` com migrations novas: `dotnet ef database update` em `backend/IsekaiDesnecessario.API`.
-- Strings com emoji em INSERT manual precisam do prefixo `N` (`N'🍕'`).
+- PostgreSQL guarda texto em UTF-8 nativamente — emoji em INSERT manual **não** precisa do prefixo `N` (isso era do SQL Server).
 - `TiposMissao` ainda **não tem seed** — popular `Principal`/`Secundária`/`Desafio` antes de criar missões.
