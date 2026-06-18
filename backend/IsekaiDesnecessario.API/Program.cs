@@ -37,8 +37,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
+// Origens permitidas vêm do config (Cors:AllowedOrigins). Em produção, defina
+// as URLs do app; sem configuração cai para permissivo (útil em dev).
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 builder.Services.AddCors(opt =>
-    opt.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+    opt.AddDefaultPolicy(p =>
+    {
+        if (corsOrigins is { Length: > 0 })
+            p.WithOrigins(corsOrigins).AllowAnyMethod().AllowAnyHeader();
+        else
+            p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    }));
 
 builder.Services.Configure<FormOptions>(opt => opt.MultipartBodyLengthLimit = Limites.TamanhoMaxFotoBytes);
 

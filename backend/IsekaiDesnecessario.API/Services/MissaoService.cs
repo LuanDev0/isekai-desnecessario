@@ -27,9 +27,9 @@ public class MissaoService(AppDbContext db, XpService xpService)
 
         await db.SaveChangesAsync();
 
-        await xpService.AdicionarXp(missao.PerfilId, missao.RecompensaXp);
+        await xpService.AdicionarXpAsync(missao.PerfilId, missao.RecompensaXp);
         foreach (var v in vinculadas)
-            await xpService.AdicionarXp(missao.PerfilId, v.RecompensaXp);
+            await xpService.AdicionarXpAsync(missao.PerfilId, v.RecompensaXp);
 
         var perfil = await db.Perfis.FindAsync(missao.PerfilId);
         if (perfil is not null)

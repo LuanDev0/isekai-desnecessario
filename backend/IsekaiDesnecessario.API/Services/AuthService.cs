@@ -3,6 +3,7 @@ using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,7 +13,7 @@ namespace IsekaiDesnecessario.API.Services;
 public class AuthService(AppDbContext db, IConfiguration config)
 {
     // ── Google OAuth ──────────────────────────────────────────────────────────
-    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginComGoogle(string idToken)
+    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginComGoogleAsync(string idToken)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
         {
@@ -50,7 +51,7 @@ public class AuthService(AppDbContext db, IConfiguration config)
     }
 
     // ── Registro email/senha ──────────────────────────────────────────────────
-    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> Registrar(string nome, string email, string senha)
+    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> RegistrarAsync(string nome, string email, string senha)
     {
         if (await db.Usuarios.AnyAsync(u => u.Email == email))
             throw new InvalidOperationException("E-mail já cadastrado.");
@@ -72,7 +73,7 @@ public class AuthService(AppDbContext db, IConfiguration config)
     }
 
     // ── Login email/senha ─────────────────────────────────────────────────────
-    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> Login(string email, string senha)
+    public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginAsync(string email, string senha)
     {
         var usuario = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == email.Trim().ToLowerInvariant());
 
@@ -91,7 +92,7 @@ public class AuthService(AppDbContext db, IConfiguration config)
     {
         var key    = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Secret"]!));
         var creds  = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var horas  = double.Parse(config["Jwt:ExpiresHours"] ?? "168");
+        var horas  = double.Parse(config["Jwt:ExpiresHours"] ?? "168", CultureInfo.InvariantCulture);
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub,   usuario.Id.ToString()),

@@ -17,7 +17,7 @@ public class XpService(AppDbContext db)
         "Deus Único"
     ];
 
-    public async Task AdicionarXp(int perfilId, int xpGanho)
+    public async Task AdicionarXpAsync(int perfilId, int xpGanho)
     {
         var perfil = await db.Perfis.FindAsync(perfilId)
             ?? throw new KeyNotFoundException("Perfil não encontrado.");
@@ -43,7 +43,7 @@ public class XpService(AppDbContext db)
         await db.SaveChangesAsync();
     }
 
-    public async Task DeduzerXp(int perfilId, int penalidade)
+    public async Task DeduzerXpAsync(int perfilId, int penalidade)
     {
         var perfil = await db.Perfis.FindAsync(perfilId)
             ?? throw new KeyNotFoundException("Perfil não encontrado.");

@@ -32,7 +32,7 @@ export interface Perfil {
   dataXpHoje?: string | null;
   ultimaLootbox?: string | null;
   desafioRecusadoEm?: string | null;
-  desafioConcluídoEm?: string | null;
+  desafioConcluidoEm?: string | null;
 }
 
 export interface Recompensa {

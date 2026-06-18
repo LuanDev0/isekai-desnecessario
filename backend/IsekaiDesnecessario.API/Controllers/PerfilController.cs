@@ -118,7 +118,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     public async Task<IActionResult> AdicionarXp(int id, [FromQuery] int quantidade)
     {
         if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
-        await xpService.AdicionarXp(id, quantidade);
+        await xpService.AdicionarXpAsync(id, quantidade);
         return Ok(await db.Perfis.FindAsync(id));
     }
 
@@ -191,7 +191,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
-        perfil.DesafioConcluídoEm = DateTime.UtcNow;
+        perfil.DesafioConcluidoEm = DateTime.UtcNow;
         await db.SaveChangesAsync();
         return Ok(perfil);
     }

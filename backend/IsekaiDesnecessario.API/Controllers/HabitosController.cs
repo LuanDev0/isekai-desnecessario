@@ -71,7 +71,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
         if (habito.Frequencia != "Livre")
             habito.UltimaExecucao = DateTime.UtcNow;
 
-        await xpService.AdicionarXp(perfilId, habito.Xp);
+        await xpService.AdicionarXpAsync(perfilId, habito.Xp);
 
         db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = "✅", Tipo = "habito_bom",
             Mensagem = $"Completou \"{habito.Habito}\" +{habito.Xp} XP" });
@@ -142,7 +142,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
             Mensagem = $"Registrou \"{habito.Habito}\" -{habito.Xp} XP" });
 
         await db.SaveChangesAsync();
-        await xpService.DeduzerXp(perfilId, habito.Xp);
+        await xpService.DeduzerXpAsync(perfilId, habito.Xp);
 
         var perfil = await db.Perfis.FindAsync(perfilId);
         return Ok(new { habito, perfil });
