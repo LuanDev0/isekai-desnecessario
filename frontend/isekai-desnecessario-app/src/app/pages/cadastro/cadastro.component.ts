@@ -64,6 +64,10 @@ export class CadastroComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.auth.isLogado() && this.profile.getSavedId()) {
+      this.router.navigate(['/']);
+      return;
+    }
     this.api.getClasses().subscribe({ next: c => this.classes = c });
     this.usuario = this.auth.usuario();
     if (this.usuario) this.carregarPerfisDoUsuario();
