@@ -15,7 +15,7 @@ public class HistoricoController(AppDbContext db) : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> Get(int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
 
         var hist = await db.HistoricoXp
             .Where(h => h.PerfilId == perfilId)
@@ -42,7 +42,7 @@ public class HistoricoController(AppDbContext db) : ApiControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert(int perfilId, [FromBody] UpsertHistoricoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
 
         var hoje = DateOnly.FromDateTime(DateTime.UtcNow);
 

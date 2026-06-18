@@ -14,7 +14,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         return Ok(await db.Recompensas
             .Where(r => r.PerfilId == perfilId)
             .OrderBy(r => r.Preco)
@@ -25,7 +25,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(Recompensa recompensa)
     {
-        if (await GarantirDonoDoPerfil(db, recompensa.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, recompensa.PerfilId) is { } erro) return erro;
         db.Recompensas.Add(recompensa);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetAll), new { perfilId = recompensa.PerfilId }, recompensa);
@@ -36,7 +36,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     {
         var r = await db.Recompensas.FindAsync(id);
         if (r is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, r.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, r.PerfilId) is { } erro) return erro;
         r.Nome              = recompensa.Nome;
         r.Descricao         = recompensa.Descricao;
         r.Emoji             = recompensa.Emoji;
@@ -53,7 +53,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     {
         var r = await db.Recompensas.FindAsync(id);
         if (r is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, r.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, r.PerfilId) is { } erro) return erro;
         db.Recompensas.Remove(r);
         await db.SaveChangesAsync();
         return NoContent();
@@ -64,7 +64,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     {
         var recompensa = await db.Recompensas.FindAsync(id);
         if (recompensa is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, recompensa.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, recompensa.PerfilId) is { } erro) return erro;
         if (recompensa.PerfilId != perfilId) return Forbid();
 
         var perfil = await db.Perfis.FindAsync(perfilId);

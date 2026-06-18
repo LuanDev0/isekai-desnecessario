@@ -16,7 +16,7 @@ public class SnapshotsController(AppDbContext db) : ApiControllerBase
     [HttpGet("anterior")]
     public async Task<IActionResult> GetAnterior([FromQuery] int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
 
         var hoje = DateTime.UtcNow.Date;
 
@@ -47,7 +47,7 @@ public class SnapshotsController(AppDbContext db) : ApiControllerBase
     [HttpPost("salvar")]
     public async Task<IActionResult> Salvar([FromQuery] int perfilId, [FromBody] List<SnapshotDto> dados)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
 
         var hoje = DateTime.UtcNow.Date;
 

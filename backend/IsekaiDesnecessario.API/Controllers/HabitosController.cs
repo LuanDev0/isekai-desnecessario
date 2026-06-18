@@ -17,14 +17,14 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     [HttpGet("bons")]
     public async Task<IActionResult> GetBons([FromQuery] int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         return Ok(await db.BonsHabitos.Where(h => h.PerfilId == perfilId).AsNoTracking().ToListAsync());
     }
 
     [HttpPost("bons")]
     public async Task<IActionResult> CreateBom(CriarHabitoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, dto.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
         var habito = new BomHabito
         {
             PerfilId   = dto.PerfilId,
@@ -43,7 +43,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var h = await db.BonsHabitos.FindAsync(id);
         if (h is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, h.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, h.PerfilId) is { } erro) return erro;
         h.Habito = habito.Habito;
         h.Xp = habito.Xp;
         h.Frequencia = habito.Frequencia;
@@ -57,7 +57,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var h = await db.BonsHabitos.FindAsync(id);
         if (h is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, h.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, h.PerfilId) is { } erro) return erro;
         db.BonsHabitos.Remove(h);
         await db.SaveChangesAsync();
         return NoContent();
@@ -68,7 +68,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var habito = await db.BonsHabitos.FindAsync(id);
         if (habito is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, habito.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, habito.PerfilId) is { } erro) return erro;
         if (habito.PerfilId != perfilId) return Forbid();
 
         // Livre pode sempre completar; outros só se disponível
@@ -93,14 +93,14 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     [HttpGet("maus")]
     public async Task<IActionResult> GetMaus([FromQuery] int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         return Ok(await db.MausHabitos.Where(h => h.PerfilId == perfilId).AsNoTracking().ToListAsync());
     }
 
     [HttpPost("maus")]
     public async Task<IActionResult> CreateMau(CriarHabitoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, dto.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
         var habito = new MauHabito
         {
             PerfilId   = dto.PerfilId,
@@ -119,7 +119,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var h = await db.MausHabitos.FindAsync(id);
         if (h is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, h.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, h.PerfilId) is { } erro) return erro;
         h.Habito = habito.Habito;
         h.Xp = habito.Xp;
         h.Frequencia = habito.Frequencia;
@@ -133,7 +133,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var h = await db.MausHabitos.FindAsync(id);
         if (h is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, h.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, h.PerfilId) is { } erro) return erro;
         db.MausHabitos.Remove(h);
         await db.SaveChangesAsync();
         return NoContent();
@@ -144,7 +144,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var habito = await db.MausHabitos.FindAsync(id);
         if (habito is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, habito.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, habito.PerfilId) is { } erro) return erro;
         if (habito.PerfilId != perfilId) return Forbid();
 
         if (habito.Frequencia != "Livre" && !EstaDisponivel(habito.Frequencia, habito.UltimaExecucao))

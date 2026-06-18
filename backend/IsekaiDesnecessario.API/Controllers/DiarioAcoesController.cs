@@ -13,7 +13,7 @@ public class DiarioAcoesController(AppDbContext db) : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> GetRecentes([FromQuery] int perfilId, [FromQuery] int limit = 30)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         return Ok(await db.DiarioAcoes
             .Where(d => d.PerfilId == perfilId)
             .OrderByDescending(d => d.Data)

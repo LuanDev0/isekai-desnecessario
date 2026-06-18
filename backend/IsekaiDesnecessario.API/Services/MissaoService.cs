@@ -10,6 +10,10 @@ public class MissaoService(AppDbContext db, XpService xpService)
     // e registra tudo no diário. Retorna o perfil atualizado.
     public async Task<Perfil?> ConcluirAsync(Missao missao)
     {
+        // Operação multi-tabela (missão + secundárias + XP + moedas + diário):
+        // ou tudo num único commit, ou nada (SKILL.md §3 — transações explícitas).
+        await using var tx = await db.Database.BeginTransactionAsync();
+
         missao.Concluida   = true;
         missao.ConcluidaEm = DateTime.UtcNow;
         missao.Streak++;
@@ -46,6 +50,7 @@ public class MissaoService(AppDbContext db, XpService xpService)
                 Mensagem = $"Missão vinculada \"{v.Titulo}\" concluída +{v.RecompensaXp} XP +{v.RecompensaMoedas} moedas" });
 
         await db.SaveChangesAsync();
+        await tx.CommitAsync();
         return perfil;
     }
 }

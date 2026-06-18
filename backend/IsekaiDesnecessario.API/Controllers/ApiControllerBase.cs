@@ -17,8 +17,8 @@ public abstract class ApiControllerBase : ControllerBase
         int.TryParse(User.FindFirstValue(JwtRegisteredClaimNames.Sub), out var id) ? id : null;
 
     // Retorna null se o perfil pertence ao usuário logado; senão o erro HTTP a devolver.
-    // Uso: if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
-    protected async Task<IActionResult?> GarantirDonoDoPerfil(AppDbContext db, int perfilId)
+    // Uso: if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
+    protected async Task<IActionResult?> GarantirDonoDoPerfilAsync(AppDbContext db, int perfilId)
     {
         if (UsuarioId is not int usuarioId) return Unauthorized();
         var ehDono = await db.Perfis.AnyAsync(p => p.Id == perfilId && p.UsuarioId == usuarioId);

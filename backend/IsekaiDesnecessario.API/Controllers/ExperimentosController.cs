@@ -15,7 +15,7 @@ public class ExperimentosController(AppDbContext db) : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> Listar([FromQuery] int perfilId)
     {
-        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var lista = await db.Experimentos
             .Include(e => e.Dias)
             .Where(e => e.PerfilId == perfilId)
@@ -29,7 +29,7 @@ public class ExperimentosController(AppDbContext db) : ApiControllerBase
     [HttpPost]
     public async Task<IActionResult> Criar([FromBody] CriarExperimentoDto dto)
     {
-        if (await GarantirDonoDoPerfil(db, dto.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
         var exp = new Experimento
         {
             PerfilId    = dto.PerfilId,
@@ -51,7 +51,7 @@ public class ExperimentosController(AppDbContext db) : ApiControllerBase
     {
         var exp = await db.Experimentos.FindAsync(id);
         if (exp is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, exp.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, exp.PerfilId) is { } erro) return erro;
         db.Experimentos.Remove(exp);
         await db.SaveChangesAsync();
         return NoContent();
@@ -63,7 +63,7 @@ public class ExperimentosController(AppDbContext db) : ApiControllerBase
     {
         var exp = await db.Experimentos.Include(e => e.Dias).FirstOrDefaultAsync(e => e.Id == id);
         if (exp is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, exp.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, exp.PerfilId) is { } erro) return erro;
 
         var hoje = DateTime.UtcNow.Date;
         if (exp.Dias.Any(d => d.Data.Date == hoje))
@@ -86,7 +86,7 @@ public class ExperimentosController(AppDbContext db) : ApiControllerBase
     {
         var exp = await db.Experimentos.FindAsync(id);
         if (exp is null) return NotFound();
-        if (await GarantirDonoDoPerfil(db, exp.PerfilId) is { } erro) return erro;
+        if (await GarantirDonoDoPerfilAsync(db, exp.PerfilId) is { } erro) return erro;
         if (exp.PerfilId != perfilId) return Forbid();
 
         exp.Ativo      = false;
