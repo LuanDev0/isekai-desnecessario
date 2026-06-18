@@ -17,12 +17,9 @@
   <!-- Perfil -->
   <section class="profile" *ngIf="perfil">
     <div class="profile-left">
-      <div class="avatar" (click)="fotoInput.click()" title="Trocar foto">
+      <div class="avatar">
         <img *ngIf="fotoAtual" [src]="fotoAtual" alt="" (error)="onFotoErro()" />
         <span class="avatar-fallback" *ngIf="!fotoAtual">{{ perfil.nome[0] }}</span>
-        <div class="avatar-overlay"><span>📷</span></div>
-        <input #fotoInput type="file" accept="image/jpeg,image/png,image/webp"
-               style="display:none" (change)="onFotoSelecionada($event)" />
       </div>
       <div class="profile-info">
         <p class="player-name">{{ perfil.nome }}</p>
