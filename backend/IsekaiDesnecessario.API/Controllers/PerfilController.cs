@@ -10,13 +10,10 @@ namespace IsekaiDesnecessario.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class PerfilController(AppDbContext db, XpService xpService) : ApiControllerBase
+public class PerfilController(AppDbContext db, XpService xpService, LootboxService lootbox) : ApiControllerBase
 {
     // Máximo de heróis (perfis) que uma conta Google pode ter
     public const int MaxPerfisPorConta = 3;
-
-    // XP acumulado no dia exigido para abrir a lootbox
-    private const int XpDiarioParaLootbox = 1000;
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
@@ -161,7 +158,7 @@ public class PerfilController(AppDbContext db, XpService xpService) : ApiControl
         if (!mimePermitidos.Contains(mime))
             return BadRequest("Formato inválido. Use JPG, PNG, GIF ou WebP.");
 
-        if (arquivo.Length > 5 * 1024 * 1024)
+        if (arquivo.Length > Limites.TamanhoMaxFotoBytes)
             return BadRequest("Arquivo muito grande. Máximo 5MB.");
 
         using var ms = new MemoryStream();
@@ -205,79 +202,17 @@ public class PerfilController(AppDbContext db, XpService xpService) : ApiControl
     public async Task<IActionResult> LootboxStatus(int id)
     {
         if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
-
-        var perfil = await db.Perfis.FindAsync(id);
-        if (perfil is null) return NotFound();
-
-        // Reseta XpHoje se for um dia novo
-        if (perfil.DataXpHoje?.Date != DateTime.UtcNow.Date)
-        {
-            perfil.XpHoje     = 0;
-            perfil.DataXpHoje = DateTime.UtcNow;
-            await db.SaveChangesAsync();
-        }
-
-        bool xpSuficiente = perfil.XpHoje >= XpDiarioParaLootbox;
-        bool naoPegouHoje = perfil.UltimaLootbox?.Date != DateTime.UtcNow.Date;
-        bool disponivel   = xpSuficiente && naoPegouHoje;
-
-        return Ok(new
-        {
-            disponivel,
-            xpHoje       = perfil.XpHoje,
-            xpNecessario = XpDiarioParaLootbox,
-            jaAbriuHoje  = !naoPegouHoje
-        });
+        var status = await lootbox.StatusAsync(id);
+        return status is null ? NotFound() : Ok(status);
     }
 
     [HttpPost("{id}/lootbox/abrir")]
     public async Task<IActionResult> AbrirLootbox(int id)
     {
         if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
-
-        var perfil = await db.Perfis.FindAsync(id);
-        if (perfil is null) return NotFound();
-
-        if (perfil.DataXpHoje?.Date != DateTime.UtcNow.Date)
-        { perfil.XpHoje = 0; perfil.DataXpHoje = DateTime.UtcNow; }
-
-        if (perfil.XpHoje < XpDiarioParaLootbox)
-            return BadRequest($"XP insuficiente. Ganhe {XpDiarioParaLootbox} XP hoje para abrir a lootbox.");
-
-        if (perfil.UltimaLootbox?.Date == DateTime.UtcNow.Date)
-            return BadRequest("Lootbox já aberta hoje. Volte amanhã!");
-
-        var recompensas = await db.Recompensas
-            .Where(r => r.PerfilId == id && r.Ativa)
-            .ToListAsync();
-
-        if (recompensas.Count == 0)
-            return BadRequest("Nenhuma recompensa cadastrada.");
-
-        // Seleção ponderada: peso = precoMaximo - preco + 1 (mais barato = mais chance)
-        int precoMax  = recompensas.Max(r => r.Preco);
-        var pesos     = recompensas.Select(r => new { r, peso = precoMax - r.Preco + 1 }).ToList();
-        int totalPeso = pesos.Sum(p => p.peso);
-        int roll      = Random.Shared.Next(totalPeso);
-        int acumulado = 0;
-        Recompensa? ganhador = null;
-
-        foreach (var p in pesos)
-        {
-            acumulado += p.peso;
-            if (roll < acumulado) { ganhador = p.r; break; }
-        }
-
-        perfil.UltimaLootbox = DateTime.UtcNow;
-
-        db.DiarioAcoes.Add(new DiarioAcao { PerfilId = id, Emoji = "📦", Tipo = "lootbox",
-            Mensagem = $"Abriu lootbox e ganhou \"{ganhador!.Nome}\"" });
-
-        await db.SaveChangesAsync();
-
-        int pesoGanhador = precoMax - ganhador!.Preco + 1;
-        double chance    = Math.Round((double)pesoGanhador / totalPeso * 100, 1);
-
-        return Ok(new { recompensa = ganhador, chance });
+        var resultado = await lootbox.AbrirAsync(id);
+        return resultado.Sucesso
+            ? Ok(new { recompensa = resultado.Recompensa, chance = resultado.Chance })
+            : BadRequest(resultado.Erro);
     }
 }

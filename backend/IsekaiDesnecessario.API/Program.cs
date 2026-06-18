@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using IsekaiDesnecessario.API;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Services;
 using System.Text;
@@ -14,7 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<XpService>();
-builder.Services.AddScoped<GachaService>();
+builder.Services.AddScoped<LootboxService>();
+builder.Services.AddScoped<MissaoService>();
 builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -38,7 +40,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(opt =>
     opt.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-builder.Services.Configure<FormOptions>(opt => opt.MultipartBodyLengthLimit = 5 * 1024 * 1024);
+builder.Services.Configure<FormOptions>(opt => opt.MultipartBodyLengthLimit = Limites.TamanhoMaxFotoBytes);
 
 var app = builder.Build();
 

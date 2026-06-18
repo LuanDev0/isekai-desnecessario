@@ -29,6 +29,15 @@ public class Perfil
     public DateTime? DataXpHoje { get; set; }
     public DateTime? UltimaLootbox { get; set; }
 
+    // Zera o XP acumulado do dia se virou um novo dia (UTC). Retorna true se resetou.
+    public bool ResetarXpDiarioSeNovoDia()
+    {
+        if (DataXpHoje?.Date == DateTime.UtcNow.Date) return false;
+        XpHoje     = 0;
+        DataXpHoje = DateTime.UtcNow;
+        return true;
+    }
+
     // ── Desafio do dia ────────────────────────────────
     public DateTime? DesafioRecusadoEm  { get; set; }
     public DateTime? DesafioConcluídoEm { get; set; }
