@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 
@@ -6,15 +7,18 @@ namespace IsekaiDesnecessario.API.Controllers;
 
 [ApiController]
 [Route("api/inventario")]
-public class InventarioController(AppDbContext db) : ControllerBase
+[Authorize]
+public class InventarioController(AppDbContext db) : ApiControllerBase
 {
     // GET api/inventario?perfilId=X
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] int perfilId)
     {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
         var itens = await db.Inventario
             .Where(i => i.PerfilId == perfilId)
             .OrderByDescending(i => i.DataCompra)
+            .AsNoTracking()
             .ToListAsync();
         return Ok(itens);
     }
@@ -23,6 +27,7 @@ public class InventarioController(AppDbContext db) : ControllerBase
     [HttpPost("{id}/usar")]
     public async Task<IActionResult> Usar(int id, [FromQuery] int perfilId)
     {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
         var item = await db.Inventario.FirstOrDefaultAsync(i => i.Id == id && i.PerfilId == perfilId);
         if (item is null) return NotFound();
         if (item.Usado) return BadRequest("Item já foi usado.");

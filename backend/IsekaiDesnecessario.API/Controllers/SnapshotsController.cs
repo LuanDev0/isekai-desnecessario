@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
@@ -7,13 +8,16 @@ namespace IsekaiDesnecessario.API.Controllers;
 
 [ApiController]
 [Route("api/snapshots")]
-public class SnapshotsController(AppDbContext db) : ControllerBase
+[Authorize]
+public class SnapshotsController(AppDbContext db) : ApiControllerBase
 {
     // GET /api/snapshots/anterior?perfilId=1
     // Retorna o snapshot mais recente (antes de hoje) para cada atributo
     [HttpGet("anterior")]
     public async Task<IActionResult> GetAnterior([FromQuery] int perfilId)
     {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+
         var hoje = DateTime.UtcNow.Date;
 
         // Pega o dia mais recente que tenha snapshot antes de hoje
@@ -43,6 +47,8 @@ public class SnapshotsController(AppDbContext db) : ControllerBase
     [HttpPost("salvar")]
     public async Task<IActionResult> Salvar([FromQuery] int perfilId, [FromBody] List<SnapshotDto> dados)
     {
+        if (await GarantirDonoDoPerfil(db, perfilId) is { } erro) return erro;
+
         var hoje = DateTime.UtcNow.Date;
 
         // Verifica se já salvou hoje

@@ -1,82 +1,49 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
 using IsekaiDesnecessario.API.Services;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace IsekaiDesnecessario.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PerfilController(AppDbContext db, XpService xpService) : ControllerBase
+[Authorize]
+public class PerfilController(AppDbContext db, XpService xpService) : ApiControllerBase
 {
     // Máximo de heróis (perfis) que uma conta Google pode ter
     public const int MaxPerfisPorConta = 3;
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll() =>
-        Ok(await db.Perfis.ToListAsync());
-
-    [HttpGet("me")]
-    public async Task<IActionResult> GetOrCreate()
-    {
-        var perfil = await db.Perfis.FirstOrDefaultAsync();
-
-        if (perfil is null)
-        {
-            perfil = new Perfil
-            {
-                Nome = "Jogador",
-                Titulo = "Iniciante",
-                Rank = "H",
-                Nivel = 1,
-                Xp = 0,
-                ProximoNivelXp = 100,
-                Moedas = 0,
-            };
-            db.Perfis.Add(perfil);
-            await db.SaveChangesAsync();
-        }
-
-        return Ok(perfil);
-    }
+    // XP acumulado no dia exigido para abrir a lootbox
+    private const int XpDiarioParaLootbox = 1000;
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
         var perfil = await db.Perfis.FindAsync(id);
         return perfil is null ? NotFound() : Ok(perfil);
     }
 
     // Retorna perfis sem dono — para o usuário reivindicar os seus após login
     [HttpGet("orfaos")]
-    [Authorize]
-    public async Task<IActionResult> GetOrfaos()
-    {
-        var perfis = await db.Perfis.Where(p => p.UsuarioId == null).ToListAsync();
-        return Ok(perfis);
-    }
+    public async Task<IActionResult> GetOrfaos() =>
+        Ok(await db.Perfis.Where(p => p.UsuarioId == null).AsNoTracking().ToListAsync());
 
     // Retorna perfis do usuário autenticado
     [HttpGet("meus")]
-    [Authorize]
     public async Task<IActionResult> GetMeus()
     {
-        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
-        var perfis = await db.Perfis.Where(p => p.UsuarioId == usuarioId).ToListAsync();
+        if (UsuarioId is not int usuarioId) return Unauthorized();
+        var perfis = await db.Perfis.Where(p => p.UsuarioId == usuarioId).AsNoTracking().ToListAsync();
         return Ok(perfis);
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> Create(Perfil perfil)
     {
-        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
+        if (UsuarioId is not int usuarioId) return Unauthorized();
 
         var qtd = await db.Perfis.CountAsync(p => p.UsuarioId == usuarioId);
         if (qtd >= MaxPerfisPorConta)
@@ -90,15 +57,12 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
 
     // Remove vínculo de um perfil desta conta (vira órfão novamente)
     [HttpPost("{id}/desvincular")]
-    [Authorize]
     public async Task<IActionResult> Desvincular(int id)
     {
-        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
-        if (perfil.UsuarioId != usuarioId) return Forbid();
 
         perfil.UsuarioId = null;
         await db.SaveChangesAsync();
@@ -107,11 +71,9 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
 
     // Vincula um perfil convidado (UsuarioId = null) à conta Google autenticada
     [HttpPost("{id}/vincular")]
-    [Authorize]
     public async Task<IActionResult> Vincular(int id)
     {
-        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        if (!int.TryParse(sub, out int usuarioId)) return Unauthorized();
+        if (UsuarioId is not int usuarioId) return Unauthorized();
 
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
@@ -126,18 +88,11 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
         return Ok(perfil);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Perfil perfil)
-    {
-        if (id != perfil.Id) return BadRequest();
-        db.Entry(perfil).State = EntityState.Modified;
-        await db.SaveChangesAsync();
-        return NoContent();
-    }
-
     [HttpPatch("{id}/info")]
     public async Task<IActionResult> UpdateInfo(int id, UpdatePerfilInfoDto dto)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
         if (!string.IsNullOrWhiteSpace(dto.Nome))
@@ -153,6 +108,8 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
         db.Perfis.Remove(perfil);
@@ -163,6 +120,7 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpPost("{id}/xp")]
     public async Task<IActionResult> AdicionarXp(int id, [FromQuery] int quantidade)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
         await xpService.AdicionarXp(id, quantidade);
         return Ok(await db.Perfis.FindAsync(id));
     }
@@ -170,6 +128,8 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpPost("{id}/reset")]
     public async Task<IActionResult> Reset(int id)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
 
@@ -191,6 +151,8 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpPost("{id}/foto")]
     public async Task<IActionResult> UploadFoto(int id, IFormFile arquivo)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
 
@@ -216,6 +178,8 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpPost("{id}/desafio/recusar")]
     public async Task<IActionResult> RecusarDesafio(int id)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
         perfil.DesafioRecusadoEm = DateTime.UtcNow;
@@ -226,6 +190,8 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpPost("{id}/desafio/concluir")]
     public async Task<IActionResult> ConcluirDesafio(int id)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
         perfil.DesafioConcluídoEm = DateTime.UtcNow;
@@ -238,6 +204,8 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpGet("{id}/lootbox/status")]
     public async Task<IActionResult> LootboxStatus(int id)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
 
@@ -249,15 +217,15 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
             await db.SaveChangesAsync();
         }
 
-        bool xpSuficiente  = perfil.XpHoje >= 1000;
-        bool naoPegouHoje  = perfil.UltimaLootbox?.Date != DateTime.UtcNow.Date;
-        bool disponivel    = xpSuficiente && naoPegouHoje;
+        bool xpSuficiente = perfil.XpHoje >= XpDiarioParaLootbox;
+        bool naoPegouHoje = perfil.UltimaLootbox?.Date != DateTime.UtcNow.Date;
+        bool disponivel   = xpSuficiente && naoPegouHoje;
 
         return Ok(new
         {
             disponivel,
-            xpHoje      = perfil.XpHoje,
-            xpNecessario = 1000,
+            xpHoje       = perfil.XpHoje,
+            xpNecessario = XpDiarioParaLootbox,
             jaAbriuHoje  = !naoPegouHoje
         });
     }
@@ -265,14 +233,16 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
     [HttpPost("{id}/lootbox/abrir")]
     public async Task<IActionResult> AbrirLootbox(int id)
     {
+        if (await GarantirDonoDoPerfil(db, id) is { } erro) return erro;
+
         var perfil = await db.Perfis.FindAsync(id);
         if (perfil is null) return NotFound();
 
         if (perfil.DataXpHoje?.Date != DateTime.UtcNow.Date)
         { perfil.XpHoje = 0; perfil.DataXpHoje = DateTime.UtcNow; }
 
-        if (perfil.XpHoje < 1000)
-            return BadRequest("XP insuficiente. Ganhe 1000 XP hoje para abrir a lootbox.");
+        if (perfil.XpHoje < XpDiarioParaLootbox)
+            return BadRequest($"XP insuficiente. Ganhe {XpDiarioParaLootbox} XP hoje para abrir a lootbox.");
 
         if (perfil.UltimaLootbox?.Date == DateTime.UtcNow.Date)
             return BadRequest("Lootbox já aberta hoje. Volte amanhã!");
@@ -285,11 +255,11 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
             return BadRequest("Nenhuma recompensa cadastrada.");
 
         // Seleção ponderada: peso = precoMaximo - preco + 1 (mais barato = mais chance)
-        int precoMax   = recompensas.Max(r => r.Preco);
-        var pesos      = recompensas.Select(r => new { r, peso = precoMax - r.Preco + 1 }).ToList();
-        int totalPeso  = pesos.Sum(p => p.peso);
-        int roll       = Random.Shared.Next(totalPeso);
-        int acumulado  = 0;
+        int precoMax  = recompensas.Max(r => r.Preco);
+        var pesos     = recompensas.Select(r => new { r, peso = precoMax - r.Preco + 1 }).ToList();
+        int totalPeso = pesos.Sum(p => p.peso);
+        int roll      = Random.Shared.Next(totalPeso);
+        int acumulado = 0;
         Recompensa? ganhador = null;
 
         foreach (var p in pesos)
@@ -300,13 +270,13 @@ public class PerfilController(AppDbContext db, XpService xpService) : Controller
 
         perfil.UltimaLootbox = DateTime.UtcNow;
 
-        db.DiarioAcoes.Add(new IsekaiDesnecessario.API.Models.DiarioAcao { PerfilId = id, Emoji = "📦", Tipo = "lootbox",
+        db.DiarioAcoes.Add(new DiarioAcao { PerfilId = id, Emoji = "📦", Tipo = "lootbox",
             Mensagem = $"Abriu lootbox e ganhou \"{ganhador!.Nome}\"" });
 
         await db.SaveChangesAsync();
 
-        int pesoGanhador  = precoMax - ganhador!.Preco + 1;
-        double chance     = Math.Round((double)pesoGanhador / totalPeso * 100, 1);
+        int pesoGanhador = precoMax - ganhador!.Preco + 1;
+        double chance    = Math.Round((double)pesoGanhador / totalPeso * 100, 1);
 
         return Ok(new { recompensa = ganhador, chance });
     }
