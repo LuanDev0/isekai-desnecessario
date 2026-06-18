@@ -10,7 +10,7 @@ using System.Text;
 
 namespace IsekaiDesnecessario.API.Services;
 
-public class AuthService(AppDbContext db, IConfiguration config)
+public class AuthService(AppDbContext db, IConfiguration config, ILogger<AuthService> logger)
 {
     // ── Google OAuth ──────────────────────────────────────────────────────────
     public async Task<(string jwt, Usuario usuario, List<Perfil> perfis)> LoginComGoogleAsync(string idToken)
@@ -47,6 +47,7 @@ public class AuthService(AppDbContext db, IConfiguration config)
         await db.SaveChangesAsync();
 
         var perfis = await db.Perfis.Where(p => p.UsuarioId == usuario.Id).ToListAsync();
+        logger.LogInformation("Login Google: usuário {UsuarioId} ({Email})", usuario.Id, usuario.Email);
         return (GerarJwt(usuario), usuario, perfis);
     }
 
@@ -69,6 +70,7 @@ public class AuthService(AppDbContext db, IConfiguration config)
         db.Usuarios.Add(usuario);
         await db.SaveChangesAsync();
 
+        logger.LogInformation("Novo usuário registrado: {UsuarioId} ({Email})", usuario.Id, usuario.Email);
         return (GerarJwt(usuario), usuario, []);
     }
 
@@ -78,12 +80,16 @@ public class AuthService(AppDbContext db, IConfiguration config)
         var usuario = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == email.Trim().ToLowerInvariant());
 
         if (usuario is null || usuario.SenhaHash is null || !BCrypt.Net.BCrypt.Verify(senha, usuario.SenhaHash))
+        {
+            logger.LogWarning("Tentativa de login falhou para e-mail {Email}", email.Trim().ToLowerInvariant());
             throw new UnauthorizedAccessException("E-mail ou senha incorretos.");
+        }
 
         usuario.UltimoLogin = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
         var perfis = await db.Perfis.Where(p => p.UsuarioId == usuario.Id).ToListAsync();
+        logger.LogInformation("Login: usuário {UsuarioId} ({Email})", usuario.Id, usuario.Email);
         return (GerarJwt(usuario), usuario, perfis);
     }
 
