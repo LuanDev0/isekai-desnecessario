@@ -9,6 +9,8 @@ import { AuthService } from '../../services/auth.service';
 import { LanguageService, LangCode } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Classe, Perfil, Usuario } from '../../models/models';
+import { Capacitor } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 const API_BASE = environment.apiUrl.replace('/api', '');
 
@@ -71,10 +73,17 @@ export class CadastroComponent implements OnInit {
     this.api.getClasses().subscribe({ next: c => this.classes = c });
     this.usuario = this.auth.usuario();
     if (this.usuario) this.carregarPerfisDoUsuario();
-    if (environment.googleClientId) this.tentarIniciarGoogle();
+    if (environment.googleClientId) {
+      if (Capacitor.isNativePlatform()) {
+        GoogleAuth.initialize({ clientId: environment.googleClientId, scopes: ['profile', 'email'] });
+      } else {
+        this.tentarIniciarGoogle();
+      }
+    }
   }
 
   private tentarIniciarGoogle() {
+    if (Capacitor.isNativePlatform()) return; // plugin nativo não precisa de init
     if ((window as any)['google']?.accounts?.id) {
       this.auth.initGoogleSignIn(idToken => this.onGoogleToken(idToken));
     } else {
@@ -82,9 +91,20 @@ export class CadastroComponent implements OnInit {
     }
   }
 
-  loginGoogle() {
-    if (!this.auth.abrirPopupGoogle()) {
-      this.erro = 'Google ainda carregando, tente novamente em instantes.';
+  async loginGoogle() {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const user = await GoogleAuth.signIn();
+        const idToken = user.authentication.idToken;
+        if (idToken) this.onGoogleToken(idToken);
+        else this.erro = 'Não foi possível obter o token do Google.';
+      } catch {
+        this.erro = 'Login com Google cancelado ou falhou.';
+      }
+    } else {
+      if (!this.auth.abrirPopupGoogle()) {
+        this.erro = 'Google ainda carregando, tente novamente em instantes.';
+      }
     }
   }
 
