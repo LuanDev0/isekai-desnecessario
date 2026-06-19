@@ -55,6 +55,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             new Classe { Id = 6, Nome = "Clérigo",   NomeFeminino = "Clériga",   Emoji = "✨", AtributoId = 6 }
         );
 
+        modelBuilder.Entity<TipoMissao>().HasData(
+            new TipoMissao { Id = 1, Nome = "Principal"  },
+            new TipoMissao { Id = 2, Nome = "Secundária" },
+            new TipoMissao { Id = 3, Nome = "Desafio"    }
+        );
+
         modelBuilder.Entity<Missao>()
             .HasOne(m => m.Tipo)
             .WithMany(t => t.Missoes)

@@ -119,7 +119,7 @@ Uma secundária aponta para uma principal via `MissaoPrincipalId`. **Ao concluir
 ### Jornada
 `GET /missoes/jornada` agrega as conclusões das **últimas 12 semanas** (agrupadas por segunda-feira) — alimenta a timeline SVG na página de Missões.
 
-> ⚠️ `TiposMissao` precisa ser populada manualmente (ver [BANCO-DE-DADOS.md](BANCO-DE-DADOS.md)). A página de Missões filtra por `tipo?.nome` igual a `Principal`, `Secundária` e `Desafio`.
+> `TiposMissao` tem seed fixo (migration `SeedTiposMissao`) — aplicado automaticamente. A página de Missões filtra por `tipo?.nome` igual a `Principal`, `Secundária` e `Desafio`.
 
 ---
 
