@@ -13,6 +13,7 @@
 | [API.md](API.md) | Todos os endpoints REST |
 | [MECANICAS.md](MECANICAS.md) | Regras do jogo: XP, ranks, atributos, classes, lootbox, missões, hábitos, experimentos |
 | [FRONTEND.md](FRONTEND.md) | Páginas, componentes, serviços e rotas |
+| [SKILLS.md](SKILLS.md) | Boas práticas de código C#/.NET — checklist antes de gerar/alterar código no backend |
 
 ---
 
