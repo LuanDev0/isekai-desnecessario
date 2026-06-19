@@ -16,19 +16,20 @@
 
   <!-- Perfil -->
   <section class="profile" *ngIf="perfil">
-    <div class="profile-left">
+    <!-- Linha 1: avatar + nome/título + rank -->
+    <div class="profile-top">
       <div class="avatar">
         <img *ngIf="fotoAtual" [src]="fotoAtual" alt="" (error)="onFotoErro()" />
         <span class="avatar-fallback" *ngIf="!fotoAtual">{{ perfil.nome[0] }}</span>
       </div>
-      <div class="profile-info">
+      <div class="profile-identity">
         <p class="player-name">{{ perfil.nome }}</p>
         <p class="player-title">{{ perfil.titulo }}</p>
-        <div class="xp-track">
-          <div class="xp-fill" [style.width.%]="xpPercent"></div>
-        </div>
-        <p class="xp-label">{{ 'dashboard.nivel' | translate: { nivel: perfil.nivel, xp: perfil.xp } }}</p>
       </div>
+      <div class="rank-letter" [class]="'rank-' + perfil.rank">{{ perfil.rank }}</div>
+    </div>
+    <!-- Linha 2: moedas + xp -->
+    <div class="profile-xp-row">
       <div class="coins-badge">
         <svg class="coins-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="12" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/>
@@ -36,8 +37,13 @@
         </svg>
         <span class="coins-value">{{ perfil.moedas }}</span>
       </div>
+      <div class="xp-section">
+        <p class="xp-label">{{ 'dashboard.nivel' | translate: { nivel: perfil.nivel, xp: perfil.xp } }}</p>
+        <div class="xp-track">
+          <div class="xp-fill" [style.width.%]="xpPercent"></div>
+        </div>
+      </div>
     </div>
-    <div class="rank-letter" [class]="'rank-' + perfil.rank">{{ perfil.rank }}</div>
   </section>
 
   <!-- Hábitos -->

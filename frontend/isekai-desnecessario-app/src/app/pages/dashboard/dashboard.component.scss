@@ -83,22 +83,21 @@ $muted:   #8b949e;   // fg.subtle
   border-radius: 8px;
   padding: 14px 16px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
 }
 
-.profile-left {
+// Linha 1: avatar + nome/título + rank
+.profile-top {
   display: flex;
   align-items: center;
   gap: 14px;
-  flex: 1;
 }
 
 .avatar {
   position: relative;
-  width: 76px;
-  height: 76px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: $card;
   border: 2px solid $border;
@@ -113,7 +112,7 @@ $muted:   #8b949e;   // fg.subtle
 
 .avatar-fallback {
   position: absolute;
-  font-size: 2rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: $muted;
 }
@@ -139,30 +138,60 @@ $muted:   #8b949e;   // fg.subtle
   .avatar-overlay { opacity: 1; background: rgba(0,0,0,0.35); }
 }
 
-.profile-info {
+.profile-identity {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .player-name {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: $white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .player-title {
-  font-size: 1rem;
+  font-size: 0.82rem;
   color: $muted;
 }
 
+// Linha 2: moedas + xp
+.profile-xp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coins-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 6px 10px;
+  flex-shrink: 0;
+}
+
+.xp-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
 .xp-track {
-  width: min(200px, 100%);
+  width: 100%;
   height: 8px;
   background: $card;
   border-radius: 99px;
   overflow: hidden;
-  margin-top: 6px;
 }
 
 .xp-fill {
@@ -173,24 +202,8 @@ $muted:   #8b949e;   // fg.subtle
 }
 
 .xp-label {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   color: $muted;
-  margin-top: 3px;
-}
-
-.coins-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  background: $card;
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 6px 10px;
-  width: 76px;
-  height: 76px;
-  flex-shrink: 0;
 }
 
 .coins-icon { width: 36px; height: 36px; }
@@ -206,6 +219,10 @@ $muted:   #8b949e;   // fg.subtle
   font-weight: 900;
   line-height: 1;
   font-family: 'Audiowide', sans-serif;
+
+  @media (max-width: 768px) {
+    font-size: 3rem;
+  }
 
   // ── Cores por rank ──────────────────────────────
   &.rank-SSS { color: #ff1744; }
@@ -225,6 +242,10 @@ $muted:   #8b949e;   // fg.subtle
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .card {
@@ -312,6 +333,13 @@ $muted:   #8b949e;   // fg.subtle
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: 768px) {
+    white-space: normal;
+    word-break: break-word;
+    overflow: visible;
+    text-overflow: unset;
+  }
 }
 
 .habit-reset {
