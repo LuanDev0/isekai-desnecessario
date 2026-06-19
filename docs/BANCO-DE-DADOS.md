@@ -57,16 +57,17 @@ Usuario (conta Google)
 
 ## Modelos
 
-### Usuario — conta Google
+### Usuario — conta (Google **ou** e-mail/senha)
 | Campo | Tipo | Observação |
 |-------|------|-----------|
 | Id | int | PK |
-| GoogleId | string | `sub` do token Google — **índice único** |
+| GoogleId | string? | `sub` do token Google — **índice único**; null em conta criada por e-mail/senha |
 | Email | string | **índice único** |
 | EmailVerificado | bool | |
-| Nome | string | nome da conta Google |
-| FotoUrl | string? | avatar do Google |
-| CriadoEm / UltimoLogin | DateTime | auditoria |
+| Nome | string | nome da conta |
+| FotoUrl | string? | avatar (Google) |
+| SenhaHash | string? | hash **BCrypt** do login próprio; null em conta só-Google. `[JsonIgnore]` — nunca sai na API |
+| CriadoEm / UltimoLogin | DateTime | auditoria (UTC) |
 
 ### Perfil — o herói
 | Campo | Tipo | Default | Observação |
@@ -170,31 +171,20 @@ Guarda cópia de Nome/Emoji/Descricao/Preco para sobreviver à exclusão da reco
 
 ---
 
-## Migrations (27)
+## Migrations
 
-Histórico cronológico em `Migrations/`. Destaques:
+O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro — perfis, hábitos, missões, recompensas, inventário, atributos, classes, usuários, experimentos, snapshots, diário — nasce nele, já com o seed de atributos e classes). Estado atual em `Migrations/`:
 
-| Migration | O que adicionou |
-|-----------|-----------------|
-| `InitialCreate` | esquema base (perfil, hábitos, missões, recompensas) |
-| `AddFotoUrlToPerfil` | foto de perfil |
-| `AddLootboxToPerfil` | XpHoje/DataXpHoje/UltimaLootbox |
-| `AddHistoricoXp` | telemetria diária |
-| `AddInventario` | inventário de itens |
-| `AddAtributos` | 6 atributos + seed |
-| `AddAtributoMissao` / `AddRecompensaAtributo` | FKs de atributo |
-| `AddDiarioAcoes` | feed de conquistas |
-| `AddDesafioStatus` / `AddDesafioRecusadoEm` | desafio do dia |
-| `AddSnapshotAtributo` | snapshots p/ gráficos |
-| `AddExperimentos` | hábitos em teste |
-| `AddMissaoDataLimite` / `AddMissaoPrincipalId` | prazo e vínculo de missões |
-| `AddMissaoConcluidaEm` | data de conclusão (Jornada) |
-| `AddUsuarios` | conta Google (auth) |
-| `AddClasseEGenero` | classes + gênero |
-| `AddClasseNomeFeminino` | nome feminino das classes |
+| Migration | O que traz |
+|-----------|-----------|
+| `InitialCreate` | esquema completo do banco + seed de atributos e classes |
+| `AddSenhaHashEGoogleIdNullable` | login por e-mail/senha — coluna `SenhaHash` em `Usuario` e `GoogleId` agora nullable |
+| `RenameDesafioConcluidoEm` | renomeia a coluna do desafio do dia |
 
-Comandos:
+> Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
+
+Comandos (dev):
 ```bash
 dotnet ef migrations add NomeDaMigration   # criar
-dotnet ef database update                   # aplicar
+dotnet ef database update                   # aplicar manualmente
 ```

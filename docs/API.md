@@ -1,20 +1,38 @@
 # 🔌 API REST
 
-Base: **`http://localhost:5008/api`** · Swagger UI: `http://localhost:5008/swagger`
+Base (dev): **`http://localhost:5008/api`** · Swagger UI: `http://localhost:5008/swagger`
+Base (produção): **`https://isekai-desnecessario-production.up.railway.app/api`**
 
-A maioria das rotas escopa pelo perfil via query string `?perfilId=X`.
+A maioria das rotas escopa pelo perfil via query string `?perfilId=X` e **exige JWT** (`Authorization: Bearer <token>`) — ver [Autenticação](#autenticação--apiauth).
 
 ---
 
-## Perfil — `/api/perfil`
+## Autenticação — `/api/auth`
+
+Rotas **públicas** (sem token). Todas devolvem `{ token, usuario, perfis }`.
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET | `/perfil` | Lista todos os perfis |
-| GET | `/perfil/{id}` | Busca um perfil |
-| GET | `/perfil/me` | Retorna o 1º perfil; **cria** um "Jogador" se não houver nenhum |
-| POST | `/perfil` | Cria perfil (respeita limite de **3 por conta** Google; convidados não contam) |
-| PUT | `/perfil/{id}` | Atualiza o perfil inteiro |
+| POST | `/auth/google` | Login Google — valida o `idToken` (Google Identity Services), faz upsert do `Usuario` e emite JWT próprio |
+| POST | `/auth/registrar` | Cria conta por e-mail/senha (`{ nome, email, senha }`) — senha guardada com **BCrypt** |
+| POST | `/auth/login` | Login por e-mail/senha (`{ email, senha }`) |
+
+O JWT leva o `UsuarioId` no claim `sub` e expira em **168h** (`Jwt:ExpiresHours`). O frontend o injeta via interceptor em todas as chamadas.
+
+---
+
+## Perfil — `/api/perfil`  *(exige token)*
+
+Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil de outro usuário (anti-IDOR).
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/perfil/{id}` | Busca um perfil (valida que pertence ao usuário logado) |
+| GET | `/perfil/meus` | Lista os perfis **da conta autenticada** |
+| GET | `/perfil/orfaos` | Lista perfis **sem dono** (convidados), para reivindicar após login |
+| POST | `/perfil` | Cria perfil na conta logada (limite de **3 por conta**; progressão sempre nasce nos defaults do modelo) |
+| POST | `/perfil/{id}/vincular` | Reivindica um perfil órfão para a conta logada |
+| POST | `/perfil/{id}/desvincular` | Remove o vínculo (perfil volta a convidado; **não** é excluído) |
 | PATCH | `/perfil/{id}/info` | Atualiza só **nome, classe e gênero** (`{ nome, classeId, genero }`) |
 | DELETE | `/perfil/{id}` | Exclui o perfil |
 | POST | `/perfil/{id}/xp?quantidade=N` | Adiciona XP manualmente |
@@ -145,7 +163,7 @@ A maioria das rotas escopa pelo perfil via query string `?perfilId=X`.
 
 ## Convenções
 
-- **Escopo por perfil:** quase tudo exige `?perfilId=X`.
-- **Erros:** `400` (regra de negócio — ex.: "Moedas insuficientes", "cooldown", "XP insuficiente"), `404` (não encontrado).
-- **Sem autenticação ainda:** todas as rotas são abertas (auth Google em construção).
+- **Autenticação:** quase tudo exige `Authorization: Bearer <jwt>`. Públicas: `/auth/*`, `/classes`, `/atributos`. Sem token → `401`; perfil de outra conta → `403`.
+- **Escopo por perfil:** quase tudo exige `?perfilId=X` (e o backend confirma que o perfil pertence ao usuário do token).
+- **Erros:** `400` (regra de negócio — ex.: "Moedas insuficientes", "cooldown", "XP insuficiente"), `401` (token ausente/inválido), `403` (perfil alheio), `404` (não encontrado).
 - **Diário automático:** ações relevantes geram uma `DiarioAcao` no backend, sem chamada extra do frontend.

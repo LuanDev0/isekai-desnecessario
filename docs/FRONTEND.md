@@ -19,6 +19,8 @@ App standalone (sem NgModules), componentes com `inject()` e signals. Estado mí
 | `/laboratorio` | `LaboratorioComponent` | Experimentos (hábitos em teste) |
 | `/mundo` | `MundoComponent` | Mapa de ranks / mundo |
 
+**Guards (`services/auth.guard.ts`):** todas as rotas internas usam `canActivate: [authGuard]` — sem JWT, redireciona para `/cadastro`. A rota `/cadastro` usa `guestGuard` — quem já está logado **e** tem perfil ativo é mandado para `/`.
+
 > A **navbar inferior** linka 7 páginas: Início, Missões, Status, Inventário, Loja, Gráfico, Config. As páginas **Laboratório** e **Mundo** são rotas acessadas a partir de outras telas (não ficam na navbar).
 
 ---
@@ -26,7 +28,7 @@ App standalone (sem NgModules), componentes com `inject()` e signals. Estado mí
 ## Páginas
 
 ### Cadastro (`/cadastro`)
-Porta de entrada. Cria o herói (nome, classe, gênero, foto) ou seleciona um perfil existente. Mostra o logo/ícone e o subtítulo *"Seu isekai começa aqui. Nenhum caminhão-chan necessário."*. O nome da classe no combobox muda conforme o gênero (masculino/feminino).
+Porta de entrada. Faz **login** (Google ou e-mail/senha), **registro** de conta, **seleção de perfil** e **criação de herói** (nome, classe, gênero, foto) — tudo numa máquina de estados (`tela: 'inicio' | 'login' | 'registro' | 'perfis' | 'cadastro'`). Após logar, lista os perfis da conta e os **órfãos** (convidados) para reivindicar. Mostra o logo e o subtítulo *"Seu isekai começa aqui. Nenhum caminhão-chan necessário."*. O nome da classe no combobox muda conforme o gênero.
 
 ### Dashboard / Início (`/`)
 Visão geral: barra de XP, nível, rank, moedas, lista de bons/maus hábitos para marcar no dia, desafio do dia e diário de conquistas.
@@ -69,7 +71,13 @@ Visão do progresso por **rank** (H → SSS), com faixas de nível, cor e ícone
 ## Serviços
 
 ### `ApiService` (`services/api.service.ts`)
-Fachada única para a API REST. `BASE = http://localhost:5008/api`. Métodos cobrem perfil, classes, hábitos, missões, recompensas, inventário, atributos, lootbox, desafio, diário, jornada, snapshots, experimentos e histórico. Ver [API.md](API.md) para o mapa completo.
+Fachada única para a API REST. `BASE = environment.apiUrl` (localhost em dev, Railway em produção). Métodos cobrem perfil, classes, hábitos, missões, recompensas, inventário, atributos, lootbox, desafio, diário, jornada, snapshots, experimentos e histórico. Ver [API.md](API.md) para o mapa completo.
+
+### `AuthService` (`services/auth.service.ts`)
+Sessão e login. Guarda o JWT e o usuário no `localStorage` (`isekai_jwt`, `isekai_usuario`); expõe `usuario` (signal), `getToken()`, `isLogado()`, `logout()`. Métodos `loginComGoogle()`, `login()`, `registrar()` e a integração com Google Identity Services (`initGoogleSignIn`, `abrirPopupGoogle`).
+
+- **`auth.interceptor.ts`** — injeta `Authorization: Bearer <token>` em toda requisição HTTP.
+- **`auth.guard.ts`** — `authGuard` (protege rotas internas) e `guestGuard` (afasta logados da tela de login).
 
 ### `ProfileService` (`services/profile.service.ts`)
 Estado do **perfil ativo** com signal:
@@ -90,11 +98,11 @@ Espelham as entidades do backend (camelCase): `Perfil`, `Classe`, `Atributo`, `B
 
 ## Padrão de carregamento das páginas
 
-Quase todas seguem o mesmo `ngOnInit`:
+O **`authGuard`** já barra acesso sem JWT (redireciona a `/cadastro`). Dentro da página, o `ngOnInit` garante o **perfil ativo**:
 
 ```ts
 const savedId = this.profile.getSavedId();
-if (!savedId) { this.router.navigate(['/cadastro']); return; }   // sem perfil → cadastro
+if (!savedId) { this.router.navigate(['/cadastro']); return; }   // logado, mas sem perfil escolhido
 if (!this.profile.perfilAtivo()) {
   this.api.getPerfil(savedId).subscribe(p => { this.profile.setPerfilAtivo(p); this.carregar(); });
 } else {

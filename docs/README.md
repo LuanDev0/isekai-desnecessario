@@ -36,7 +36,9 @@ O progresso sobe **nível → rank → título**, do rank H ao SSS.
 
 - **Backend:** ASP.NET Core 10 (Web API) + Entity Framework Core + PostgreSQL (Npgsql)
 - **Frontend:** Angular 19 (standalone components)
-- **Banco:** PostgreSQL local (`isekai`)
+- **Banco:** PostgreSQL — `isekai` local em dev, instância hospedada (Railway) em produção
+- **Auth:** login Google + e-mail/senha, JWT (`[Authorize]` nas rotas de dados)
+- **Hospedagem:** API + banco no Railway
 
 ## Rodando rápido
 
@@ -59,7 +61,9 @@ Detalhes completos em [ARQUITETURA.md](ARQUITETURA.md).
 ## Estado do projeto
 
 - ✅ Núcleo do jogo (perfis, hábitos, missões, recompensas, inventário, lootbox, atributos, classes, experimentos)
-- 🚧 **Autenticação Google** — modelo `Usuario` já existe no banco; backend de auth e frontend ainda em construção. Ver [MECANICAS.md → Contas e perfis](MECANICAS.md#contas-e-perfis-google-auth).
+- ✅ **Autenticação** — login Google **e** e-mail/senha, JWT no backend, todas as rotas de dados protegidas (`[Authorize]` + checagem de dono por perfil contra IDOR), guards no frontend (`authGuard`/`guestGuard`) e reivindicação de perfis convidados. Ver [MECANICAS.md → Contas e perfis](MECANICAS.md#contas-e-perfis-google-auth).
+- ✅ **Hospedado em produção** — API + banco no Railway; o app aponta para a URL de produção em `environment.prod.ts`.
 - 📌 `TiposMissao` precisa ser populada no banco (`Principal`, `Secundária`, `Desafio`) — ainda não há seed.
+- 🚧 **Mobile (Play Store)** — empacotamento com Capacitor ainda não iniciado; responsivo parcial. Login Google exigirá plugin nativo dentro da WebView.
 
 > **Fonte da verdade:** o código sempre vence esta documentação. Se algo divergir, o comportamento real está nos arquivos `.cs`/`.ts` referenciados em cada seção.

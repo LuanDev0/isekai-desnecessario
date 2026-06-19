@@ -9,16 +9,17 @@ import { InventarioComponent } from './pages/inventario/inventario.component';
 import { StatusComponent } from './pages/status/status.component';
 import { LaboratorioComponent } from './pages/laboratorio/laboratorio.component';
 import { MundoComponent } from './pages/mundo/mundo.component';
+import { authGuard, guestGuard } from './services/auth.guard';
 
 export const routes: Routes = [
-  { path: 'cadastro',      component: CadastroComponent },
-  { path: '',              component: DashboardComponent },
-  { path: 'missoes',       component: MissoesComponent },
-  { path: 'status',        component: StatusComponent },
-  { path: 'loja',          component: LojaComponent },
-  { path: 'grafico',       component: GraficoComponent },
-  { path: 'inventario',    component: InventarioComponent },
-  { path: 'configuracoes', component: ConfiguracoesComponent },
-  { path: 'laboratorio',   component: LaboratorioComponent },
-  { path: 'mundo',         component: MundoComponent },
+  { path: 'cadastro',      component: CadastroComponent,      canActivate: [guestGuard] },
+  { path: '',              component: DashboardComponent,     canActivate: [authGuard] },
+  { path: 'missoes',       component: MissoesComponent,       canActivate: [authGuard] },
+  { path: 'status',        component: StatusComponent,        canActivate: [authGuard] },
+  { path: 'loja',          component: LojaComponent,          canActivate: [authGuard] },
+  { path: 'grafico',       component: GraficoComponent,       canActivate: [authGuard] },
+  { path: 'inventario',    component: InventarioComponent,    canActivate: [authGuard] },
+  { path: 'configuracoes', component: ConfiguracoesComponent, canActivate: [authGuard] },
+  { path: 'laboratorio',   component: LaboratorioComponent,   canActivate: [authGuard] },
+  { path: 'mundo',         component: MundoComponent,         canActivate: [authGuard] },
 ];
