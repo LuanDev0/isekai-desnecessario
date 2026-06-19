@@ -10,14 +10,16 @@ $muted:   #8b949e;
 :host {
   display: flex;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100svh;
   background: $bg;
+  padding-top: env(safe-area-inset-top);
 }
 
 .cadastro-page {
   width: 100%;
   max-width: 480px;
-  padding: 64px 20px 40px;
+  padding: 64px max(20px, env(safe-area-inset-left)) 40px;
+  padding-right: max(20px, env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -616,6 +618,7 @@ $muted:   #8b949e;
   display: flex;
   align-items: flex-end;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .genero-col {
@@ -755,8 +758,8 @@ $muted:   #8b949e;
 
 .version-badge {
   position: fixed;
-  bottom: 12px;
-  right: 14px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  right: max(14px, env(safe-area-inset-right));
   font-size: 0.72rem;
   color: $muted;
   pointer-events: none;

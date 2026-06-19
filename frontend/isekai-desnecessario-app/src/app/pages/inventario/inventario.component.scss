@@ -11,10 +11,11 @@ $text:    #c9d1d9;
 $muted:   #8b949e;
 $gold:    #ffd700;
 
-:host { display: block; min-height: 100vh; background: $bg; }
+:host { display: block; min-height: 100svh; background: $bg; }
 
 .inv-page {
-  padding: 16px 16px 0;
+  padding: 16px max(16px, env(safe-area-inset-left)) calc(84px + env(safe-area-inset-bottom));
+  padding-right: max(16px, env(safe-area-inset-right));
   color: $text;
   font-family: 'Inter', sans-serif;
 }
@@ -34,6 +35,8 @@ $gold:    #ffd700;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-bottom: 14px;
+
+  @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); }
 }
 
 .stat-card {
@@ -127,7 +130,7 @@ $gold:    #ffd700;
 // ── Grid ───────────────────────────────────────────────
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(155px, 45vw), 1fr));
   gap: 12px;
 }
 
@@ -144,9 +147,11 @@ $gold:    #ffd700;
   transition: border-color 0.2s, transform 0.15s;
   position: relative;
 
-  &:hover:not(.usado) {
-    border-color: $purple;
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    &:hover:not(.usado) {
+      border-color: $purple;
+      transform: translateY(-2px);
+    }
   }
 
   &.usado {
@@ -239,9 +244,11 @@ $gold:    #ffd700;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 
-  &:hover:not(:disabled) {
-    background: $purple;
-    color: #fff;
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background: $purple;
+      color: #fff;
+    }
   }
 
   &:disabled { cursor: not-allowed; opacity: 0.5; }
@@ -266,4 +273,4 @@ $gold:    #ffd700;
   100% { box-shadow: 0 0 0 0 rgba(63,185,80,0); }
 }
 
-.bottom-spacer { height: 80px; }
+.bottom-spacer { height: 20px; }

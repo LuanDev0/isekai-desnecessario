@@ -12,12 +12,13 @@ $gold:    #ffd700;
 
 :host {
   display: block;
-  min-height: 100vh;
+  min-height: 100svh;
   background: $bg;
 }
 
 .grafico-page {
-  padding: 12px 14px 0;
+  padding: 12px max(14px, env(safe-area-inset-left)) calc(84px + env(safe-area-inset-bottom));
+  padding-right: max(14px, env(safe-area-inset-right));
   color: $text;
   font-family: 'Inter', sans-serif;
 }
@@ -37,6 +38,8 @@ $gold:    #ffd700;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin-bottom: 8px;
+
+  @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); }
 }
 
 .stat-card {
@@ -231,6 +234,8 @@ $gold:    #ffd700;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-bottom: 8px;
+
+  @media (max-width: 360px) { grid-template-columns: repeat(2, 1fr); }
 }
 
 .resumo-card {
@@ -264,4 +269,4 @@ $gold:    #ffd700;
   color: $muted;
 }
 
-.bottom-spacer { height: 80px; }
+.bottom-spacer { height: 20px; }

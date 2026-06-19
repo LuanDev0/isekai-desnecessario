@@ -7,12 +7,14 @@ $text:    #c9d1d9;
 $muted:   #8b949e;
 
 .page {
-  padding: 24px 20px 84px;
+  padding: 24px 20px calc(84px + env(safe-area-inset-bottom));
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
   gap: 20px;
   background: $bg;
-  min-height: 100vh;
+  min-height: 100svh;
   font-family: 'Inter', sans-serif;
 }
 

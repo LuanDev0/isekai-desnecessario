@@ -13,12 +13,13 @@ $muted:   #8b949e;
 
 :host {
   display: block;
-  min-height: 100vh;
+  min-height: 100svh;
   background: $bg;
 }
 
 .loja-page {
-  padding: 16px 16px 0;
+  padding: 16px max(16px, env(safe-area-inset-left)) calc(84px + env(safe-area-inset-bottom));
+  padding-right: max(16px, env(safe-area-inset-right));
   color: $text;
   font-family: 'Inter', sans-serif;
 }
@@ -142,6 +143,7 @@ $muted:   #8b949e;
 .lootbox-modal {
   position: fixed;
   inset: 0;
+  inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   background: rgba(0,0,0,0.75);
   display: flex;
   align-items: center;
@@ -264,7 +266,7 @@ $muted:   #8b949e;
 // ── Grid ──────────────────────────────────────────────
 .recompensas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(160px, 45vw), 1fr));
   gap: 12px;
 }
 
@@ -279,9 +281,11 @@ $muted:   #8b949e;
   gap: 10px;
   transition: border-color 0.2s, transform 0.15s;
 
-  &:hover:not(.sem-saldo) {
-    border-color: $blue;
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    &:hover:not(.sem-saldo) {
+      border-color: $blue;
+      transform: translateY(-2px);
+    }
   }
 
   &.sem-saldo {
@@ -412,4 +416,4 @@ $muted:   #8b949e;
   80%       { transform: translateX(3px); }
 }
 
-.bottom-spacer { height: 80px; }
+.bottom-spacer { height: 20px; }
