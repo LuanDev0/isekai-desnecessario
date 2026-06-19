@@ -27,11 +27,11 @@ Isekai-Desnecessario/
 │   └── IsekaiDesnecessario.API/
 │       ├── Program.cs                # bootstrap, DI, CORS, Swagger, static files
 │       ├── appsettings.json          # connection string
-│       ├── Controllers/              # endpoints REST (12 controllers)
-│       ├── Models/                   # entidades EF (15 modelos)
-│       ├── Services/                 # XpService, GachaService
+│       ├── Controllers/              # endpoints REST (12 + ApiControllerBase)
+│       ├── Models/                   # entidades EF
+│       ├── Services/                 # XpService, LootboxService, MissaoService, AuthService
 │       ├── Data/AppDbContext.cs      # DbContext + seed (atributos, classes)
-│       ├── Migrations/               # 27 migrations EF
+│       ├── Migrations/               # migrations EF (histórico squashado em InitialCreate)
 │       └── wwwroot/uploads/          # fotos de perfil enviadas
 │
 └── frontend/
@@ -39,7 +39,7 @@ Isekai-Desnecessario/
         ├── src/app/
         │   ├── app.routes.ts         # rotas
         │   ├── models/models.ts      # interfaces TypeScript (espelham os Models C#)
-        │   ├── services/             # api.service, profile.service
+        │   ├── services/             # api, profile, auth, auth.interceptor, auth.guard, language
         │   ├── components/           # navbar, profile-selector
         │   └── pages/                # 10 páginas (dashboard, missoes, loja, ...)
         ├── public/                   # favicon.ico, icon-256.png
@@ -50,7 +50,7 @@ Isekai-Desnecessario/
 
 ## Portas e endereços
 
-| Serviço | URL |
+| Serviço | URL (dev) |
 |---------|-----|
 | Backend (HTTP) | `http://localhost:5008` |
 | Backend — base da API | `http://localhost:5008/api` |
@@ -58,20 +58,29 @@ Isekai-Desnecessario/
 | Frontend (dev) | `http://localhost:4200` |
 | Uploads (fotos) | `http://localhost:5008/uploads/...` |
 
-A base da API está **hardcoded** no frontend em `src/app/services/api.service.ts`:
+**Produção:** API hospedada no Railway — `https://isekai-desnecessario-production.up.railway.app`.
+
+A base da API vem do **environment** (não é mais hardcoded). Em `src/app/services/api.service.ts`:
 
 ```ts
-const BASE = 'http://localhost:5008/api';
+import { environment } from '../../environments/environment';
+const BASE = environment.apiUrl;   // dev: localhost:5008/api · prod: Railway
 ```
+
+Os valores ficam em `environment.ts` (dev) e `environment.prod.ts` (produção).
 
 ---
 
 ## Configuração relevante (Program.cs)
 
-- **CORS:** política default liberada (`AllowAnyOrigin/Method/Header`) — ok para dev local.
+- **Autenticação:** JWT Bearer (`AddAuthentication`/`AddJwtBearer`) validando issuer, audience, lifetime e assinatura (`Jwt:Secret`). `app.UseAuthentication()`/`UseAuthorization()` no pipeline.
+- **CORS:** origens vêm de `Cors:AllowedOrigins` (config). Se vazio, cai para permissivo (`AllowAnyOrigin`) — **defina as origens em produção**.
+- **Migrations automáticas:** `Database.Migrate()` roda na inicialização — aplica migrations pendentes sem comando manual (vale para produção também).
+- **HTTPS:** `app.UseHttpsRedirection()`.
 - **Upload:** limite de **5 MB** por arquivo (`MultipartBodyLengthLimit`).
 - **Static files:** `app.UseStaticFiles()` serve `wwwroot/uploads/` para as fotos de perfil.
-- **DI:** `XpService` e `GachaService` registrados como `Scoped`.
+- **DI:** `XpService`, `LootboxService`, `MissaoService` e `AuthService` registrados como `Scoped`.
+- **Health check:** `GET /health` retorna `healthy`.
 
 ## Connection string (appsettings.json)
 
@@ -79,7 +88,7 @@ const BASE = 'http://localhost:5008/api';
 Host=localhost;Database=isekai;Username=postgres;Password=postgres
 ```
 
-Autenticação por usuário/senha do PostgreSQL. As credenciais de dev ficam no `appsettings.json`; em produção use variáveis de ambiente ou user-secrets.
+Autenticação por usuário/senha do PostgreSQL. As credenciais de dev ficam no `appsettings.json`; em produção, o Railway injeta a connection string (e o `Jwt:Secret`) via **variáveis de ambiente** — nada de credenciais reais no repositório.
 
 ---
 
@@ -107,6 +116,7 @@ npm start                     # ng serve em http://localhost:4200
 ```
 
 ### Após dar `git pull` com novas migrations
+O `dotnet run` já aplica migrations pendentes no startup (`Database.Migrate()`). Para aplicar sem subir a API:
 ```bash
 cd backend/IsekaiDesnecessario.API
 dotnet ef database update
@@ -120,7 +130,7 @@ dotnet ef database update
 [Angular page] → ApiService (HttpClient)
       │  GET/POST http://localhost:5008/api/...
       ▼
-[Controller] ── valida ──→ [Service: XpService/GachaService]
+[Controller] ─ valida + checa dono ─→ [Service: Xp/Lootbox/Missao/Auth]
       │                          │
       ▼                          ▼
 [AppDbContext] ←──── EF Core ────┘

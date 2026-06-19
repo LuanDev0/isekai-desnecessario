@@ -137,7 +137,7 @@ Uma secundária aponta para uma principal via `MissaoPrincipalId`. **Ao concluir
 
 ## Lootbox diária
 
-Implementada em `PerfilController` (`/lootbox/status` e `/lootbox/abrir`):
+Implementada no `LootboxService`, exposta pelo `PerfilController` (`/lootbox/status` e `/lootbox/abrir`):
 
 - **Requisito:** acumular **1000 XP no mesmo dia** (`XpHoje`), que reseta à meia-noite.
 - **Frequência:** **1× por dia** (`UltimaLootbox`).
@@ -145,7 +145,7 @@ Implementada em `PerfilController` (`/lootbox/status` e `/lootbox/abrir`):
   `peso = precoMáximo − preço + 1`. Retorna a recompensa sorteada e a **chance %**.
 - Registra 📦 no diário.
 
-> `Services/GachaService.cs` contém um sorteio simples (uniforme) — legado; a lootbox real (ponderada, 1000 XP/dia) é a do `PerfilController`.
+> O "dia" da lootbox e do XP diário usa **UTC** (`DateTime.UtcNow.Date`) — consistente entre usuários de qualquer fuso. *(O antigo `GachaService` de sorteio uniforme foi removido.)*
 
 ---
 
@@ -164,15 +164,18 @@ Para testar um hábito antes de adotá-lo de vez:
 
 ---
 
-## Contas e perfis (Google Auth)
+## Contas e perfis
 
-> 🚧 **Em construção.** O modelo de dados já existe; o fluxo de login ainda não.
+> ✅ **Implementado** (web). Login por **Google** e por **e-mail/senha**.
 
-- Modelo: **`Usuario`** (conta Google) **1 → N** `Perfil` (heróis).
+- Modelo: **`Usuario`** (conta) **1 → N** `Perfil` (heróis). A conta pode ser Google (`GoogleId`), e-mail/senha (`SenhaHash` BCrypt) ou ambos no mesmo e-mail.
 - `Perfil.UsuarioId` é nullable: **null = convidado**, preenchido = pertence à conta.
 - **Limite de 3 perfis** por conta (`PerfilController.MaxPerfisPorConta`); convidados não contam.
 - Apagar a conta **não apaga** os heróis — eles viram convidados (progresso preservado).
+- **Reivindicar convidados:** após logar, o usuário vê perfis órfãos (`/perfil/orfaos`) e pode vinculá-los à conta (`/perfil/{id}/vincular`).
 
-**Fluxo planejado:** frontend obtém ID Token (Google Identity Services) → `POST /api/auth/google` → backend valida (`Google.Apis.Auth`, audience = Client ID) → upsert `Usuario` → emite JWT próprio com `UsuarioId`.
+**Fluxo Google:** frontend obtém ID Token (Google Identity Services) → `POST /api/auth/google` → backend valida (`Google.Apis.Auth`) → upsert `Usuario` → emite JWT próprio com `UsuarioId` no claim `sub`. O JWT protege todas as rotas de dados, e cada acesso a perfil confere o dono (anti-IDOR via `GarantirDonoDoPerfilAsync`).
 
-**Fases:** 1-Banco ✅ · 2-Google Cloud OAuth Client ID (externo) · 3-Backend (AuthController/JWT) · 4-Frontend (botão Google, interceptor, guard) · 5-vincular convidados a contas.
+**Fases:** 1-Banco ✅ · 2-OAuth Client ID ✅ · 3-Backend JWT ✅ · 4-Frontend (botão, interceptor, guards) ✅ · 5-Vincular convidados ✅.
+
+> 📱 **Mobile:** dentro de uma WebView (Capacitor) o login Google via JS é bloqueado pelo Google — exigirá plugin nativo. Login por e-mail/senha funciona normalmente.

@@ -20,9 +20,11 @@ completa missões, junta moedas e troca por recompensas reais.
 ## Git e versionamento (regras de subida)
 - **Branch:** toda alteração sobe **sempre** na branch `temp-luan-casa` — nunca commitar/pushar direto na `main`.
 - **Antes de subir:** ao chegar num ponto de subida, **perguntar** se quer (a) commitar/pushar agora ou (b) continuar com mais alterações. Só commitar/pushar após o "ok".
-- **Versionamento (SemVer):** toda subida **muda a versão** nos dois arquivos, mantendo-os iguais:
+- **Versionamento (SemVer):** toda subida **muda a versão** nos quatro lugares, mantendo-os iguais:
   - `backend/IsekaiDesnecessario.API/IsekaiDesnecessario.API.csproj` → `<Version>`
   - `frontend/isekai-desnecessario-app/package.json` → `"version"`
+  - `frontend/isekai-desnecessario-app/src/environments/environment.ts` → `version` (exibida na tela de cadastro)
+  - `frontend/isekai-desnecessario-app/src/environments/environment.prod.ts` → `version`
   - Regra do incremento: `patch` (fix/refactor/docs) · `minor` (feature nova compatível) · `major` (quebra compatibilidade).
 
 ## Progressão (código: `Services/XpService.cs`)
