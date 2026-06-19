@@ -20,6 +20,7 @@ completa missões, junta moedas e troca por recompensas reais.
 ## Git e versionamento (regras de subida)
 - **Branch:** toda alteração sobe **sempre** na branch `temp-luan-casa` — nunca commitar/pushar direto na `main`.
 - **Antes de subir:** ao chegar num ponto de subida, **perguntar** se quer (a) commitar/pushar agora ou (b) continuar com mais alterações. Só commitar/pushar após o "ok".
+- **Documentação antes do commit:** ao receber pedido de commit/push, **antes de commitar**, varrer todos os arquivos de `docs/` e o `CLAUDE.md` e atualizar qualquer informação que diverge do código alterado na sessão. A documentação deve refletir o estado real — só então commitar tudo junto.
 - **Versionamento (SemVer):** toda subida **muda a versão** nos quatro lugares, mantendo-os iguais:
   - `backend/IsekaiDesnecessario.API/IsekaiDesnecessario.API.csproj` → `<Version>`
   - `frontend/isekai-desnecessario-app/package.json` → `"version"`
