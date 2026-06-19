@@ -14,6 +14,7 @@
 | [MECANICAS.md](MECANICAS.md) | Regras do jogo: XP, ranks, atributos, classes, lootbox, missões, hábitos, experimentos |
 | [FRONTEND.md](FRONTEND.md) | Páginas, componentes, serviços e rotas |
 | [SKILLS.md](SKILLS.md) | Boas práticas de código C#/.NET — checklist antes de gerar/alterar código no backend |
+| [MOBILE.md](MOBILE.md) | Plano Play Store, responsividade implementada, Capacitor e Google Sign-In nativo |
 
 ---
 
@@ -64,7 +65,8 @@ Detalhes completos em [ARQUITETURA.md](ARQUITETURA.md).
 - ✅ Núcleo do jogo (perfis, hábitos, missões, recompensas, inventário, lootbox, atributos, classes, experimentos)
 - ✅ **Autenticação** — login Google **e** e-mail/senha, JWT no backend, todas as rotas de dados protegidas (`[Authorize]` + checagem de dono por perfil contra IDOR), guards no frontend (`authGuard`/`guestGuard`) e reivindicação de perfis convidados. Ver [MECANICAS.md → Contas e perfis](MECANICAS.md#contas-e-perfis-google-auth).
 - ✅ **Hospedado em produção** — API + banco no Railway; o app aponta para a URL de produção em `environment.prod.ts`.
-- 📌 `TiposMissao` precisa ser populada no banco (`Principal`, `Secundária`, `Desafio`) — ainda não há seed.
-- 🚧 **Mobile (Play Store)** — empacotamento com Capacitor ainda não iniciado; responsivo parcial. Login Google exigirá plugin nativo dentro da WebView.
+- ✅ `TiposMissao` com seed (`Principal`, `Secundária`, `Desafio`) — migration `SeedTiposMissao` aplicada automaticamente no startup.
+- ✅ **Responsividade mobile** — todas as páginas adaptadas: `100svh`, safe-area (`env(safe-area-inset-*)`), grids 4→2 colunas em telas pequenas, `minmax` fluidos, hover só em dispositivos que suportam (v0.3.0). Ver [MOBILE.md](MOBILE.md).
+- 🚧 **Play Store** — empacotamento com Capacitor ainda não iniciado. Login Google exigirá plugin nativo dentro da WebView (ver [MOBILE.md](MOBILE.md)).
 
 > **Fonte da verdade:** o código sempre vence esta documentação. Se algo divergir, o comportamento real está nos arquivos `.cs`/`.ts` referenciados em cada seção.

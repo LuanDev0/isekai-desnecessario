@@ -13,12 +13,14 @@ $text:    #c9d1d9;   // fg.muted
 $muted:   #8b949e;   // fg.subtle
 
 .page {
-  padding: 24px 20px 84px;
+  padding: 24px 20px calc(84px + env(safe-area-inset-bottom));
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
   gap: 20px;
   background: $bg;
-  min-height: 100vh;
+  min-height: 100svh;
 }
 
 .top-bar {
@@ -130,7 +132,12 @@ $muted:   #8b949e;   // fg.subtle
   cursor: pointer;
 }
 
-.avatar:hover .avatar-overlay { opacity: 1; }
+@media (hover: hover) {
+  .avatar:hover .avatar-overlay { opacity: 1; }
+}
+@media (hover: none) {
+  .avatar-overlay { opacity: 1; background: rgba(0,0,0,0.35); }
+}
 
 .profile-info {
   display: flex;
@@ -150,7 +157,7 @@ $muted:   #8b949e;   // fg.subtle
 }
 
 .xp-track {
-  width: 200px;
+  width: min(200px, 100%);
   height: 8px;
   background: $card;
   border-radius: 99px;
@@ -415,7 +422,7 @@ $muted:   #8b949e;   // fg.subtle
     color: $muted;
     border: 1px solid $border;
     font-weight: 400;
-    &:hover { color: $red; border-color: $red; }
+    @media (hover: hover) { &:hover { color: $red; border-color: $red; } }
   }
 
   &:disabled { opacity: 0.7; }

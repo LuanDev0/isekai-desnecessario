@@ -3,14 +3,16 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
   background: #161b22;
   border-top: 1px solid #30363d;
   border-radius: 12px 12px 0 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-around;
   z-index: 100;
+  padding-top: 8px;
 }
 
 .nav-item {
@@ -35,5 +37,7 @@
     span { color: #58a6ff; }
   }
 
-  &:hover:not(.active) { color: #8b949e; }
+  @media (hover: hover) {
+    &:hover:not(.active) { color: #8b949e; }
+  }
 }

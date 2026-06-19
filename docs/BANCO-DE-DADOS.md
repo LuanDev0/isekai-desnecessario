@@ -137,10 +137,7 @@ Usuario (conta Google)
 | MissaoPrincipalId | int? | vincula secundária a uma principal |
 | AtributoId | int? | FK → Atributo |
 
-> ⚠️ **`TipoMissao` está vazia no banco** — não há seed. Popule antes de criar missões:
-> ```sql
-> INSERT INTO TiposMissao (Id, Nome) VALUES (1,'Principal'),(2,'Secundária'),(3,'Desafio');
-> ```
+> `TipoMissao` tem seed fixo via migration `SeedTiposMissao` — aplicado automaticamente no startup.
 
 ### Recompensa
 | Campo | Tipo | Default | Observação |
@@ -180,6 +177,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `InitialCreate` | esquema completo do banco + seed de atributos e classes |
 | `AddSenhaHashEGoogleIdNullable` | login por e-mail/senha — coluna `SenhaHash` em `Usuario` e `GoogleId` agora nullable |
 | `RenameDesafioConcluidoEm` | renomeia a coluna do desafio do dia |
+| `SeedTiposMissao` | seed dos 3 tipos de missão: `Principal`, `Secundária`, `Desafio` |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 
