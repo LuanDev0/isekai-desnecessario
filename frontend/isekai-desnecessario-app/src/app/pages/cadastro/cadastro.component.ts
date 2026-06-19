@@ -75,7 +75,7 @@ export class CadastroComponent implements OnInit {
     if (this.usuario) this.carregarPerfisDoUsuario();
     if (environment.googleClientId) {
       if (Capacitor.isNativePlatform()) {
-        GoogleAuth.initialize({ clientId: environment.googleClientId, scopes: ['profile', 'email'] });
+        GoogleAuth.initialize({ clientId: environment.googleAndroidClientId, scopes: ['profile', 'email'], grantOfflineAccess: true });
       } else {
         this.tentarIniciarGoogle();
       }
