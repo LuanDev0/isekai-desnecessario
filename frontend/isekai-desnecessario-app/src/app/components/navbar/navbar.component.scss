@@ -14,6 +14,15 @@
   z-index: 1000;
   padding-top: 8px;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar { display: none; }
+  }
 }
 
 .nav-item {
@@ -40,5 +49,10 @@
 
   @media (hover: hover) {
     &:hover:not(.active) { color: #8b949e; }
+  }
+
+  @media (max-width: 768px) {
+    flex: 0 0 20%;
+    min-width: 64px;
   }
 }
