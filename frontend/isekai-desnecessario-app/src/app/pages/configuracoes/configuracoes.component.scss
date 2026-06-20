@@ -349,6 +349,7 @@ $muted:   #8b949e;
   flex-direction: column;
   gap: 4px;
   margin-bottom: 10px;
+  min-width: 0;
 
   label {
     font-size: 0.73rem;
@@ -358,6 +359,8 @@ $muted:   #8b949e;
   }
 
   input, select {
+    width: 100%;
+    box-sizing: border-box;
     background: $card;
     border: 1px solid $border;
     border-radius: 8px;
@@ -375,7 +378,8 @@ $muted:   #8b949e;
 .row {
   display: flex;
   gap: 10px;
-  .field { flex: 1; }
+  flex-wrap: wrap;
+  .field { flex: 1; min-width: min(140px, 100%); }
 }
 
 .label-opt {

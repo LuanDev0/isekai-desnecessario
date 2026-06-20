@@ -141,7 +141,7 @@ $muted:   #8b949e;   // fg.subtle
 .profile-identity {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   flex: 1;
   min-width: 0;
 }
@@ -160,7 +160,7 @@ $muted:   #8b949e;   // fg.subtle
   color: $muted;
 }
 
-// Linha 2: moedas + xp
+// Linha 2: xp
 .profile-xp-row {
   display: flex;
   align-items: center;
@@ -168,14 +168,15 @@ $muted:   #8b949e;   // fg.subtle
 }
 
 .coins-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: $card;
   border: 1px solid $border;
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 3px 8px;
   flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .xp-section {
@@ -206,7 +207,7 @@ $muted:   #8b949e;   // fg.subtle
   color: $muted;
 }
 
-.coins-icon { width: 36px; height: 36px; }
+.coins-icon { width: 20px; height: 20px; }
 
 .coins-value {
   font-size: 1rem;
