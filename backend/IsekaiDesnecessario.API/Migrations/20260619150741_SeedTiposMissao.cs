@@ -12,15 +12,13 @@ namespace IsekaiDesnecessario.API.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.InsertData(
-                table: "TiposMissao",
-                columns: new[] { "Id", "Nome" },
-                values: new object[,]
-                {
-                    { 1, "Principal" },
-                    { 2, "Secundária" },
-                    { 3, "Desafio" }
-                });
+            migrationBuilder.Sql(@"
+                INSERT INTO ""TiposMissao"" (""Id"", ""Nome"") VALUES
+                (1, 'Principal'),
+                (2, 'Secundária'),
+                (3, 'Desafio')
+                ON CONFLICT (""Id"") DO NOTHING;
+            ");
         }
 
         /// <inheritdoc />
