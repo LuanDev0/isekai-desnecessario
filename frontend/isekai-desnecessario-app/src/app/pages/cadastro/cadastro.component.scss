@@ -760,11 +760,11 @@ $muted:   #8b949e;
 }
 
 .version-badge {
-  position: fixed;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  right: max(14px, env(safe-area-inset-right));
   font-size: 0.72rem;
   color: $muted;
   pointer-events: none;
   user-select: none;
+  text-align: right;
+  padding-top: 8px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
