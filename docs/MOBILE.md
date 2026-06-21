@@ -4,7 +4,7 @@ Documentação do plano de publicação na Google Play Store via Capacitor.
 
 ---
 
-## Estado atual (v0.3.0)
+## Estado atual (v0.5.0)
 
 | Etapa | Status | Detalhe |
 |-------|--------|---------|
@@ -12,12 +12,13 @@ Documentação do plano de publicação na Google Play Store via Capacitor.
 | Safe-area (notch/home indicator) | ✅ | `env(safe-area-inset-*)` + `viewport-fit=cover` |
 | Viewport estável | ✅ | `100svh` em todos os `:host`/`.page` |
 | Hover só em dispositivos com mouse | ✅ | `@media (hover: hover)` em todos os componentes |
-| Capacitor instalado | 🚧 | Próximo passo |
+| Capacitor instalado | ✅ | `@capacitor/core`, `@capacitor/cli`, `@capacitor/android` |
+| Ícones do app (Android) | ✅ | Gerados via `@capacitor/assets` a partir de `assets/icon.png` (1024×1024) |
+| Splash screen (Android) | ✅ | Gerada automaticamente pelo `@capacitor/assets` |
 | Google Sign-In nativo (WebView) | 🚧 | Exige plugin nativo |
 | Conta Play Store | 🚧 | Taxa única de $25 |
 | Política de privacidade | 🚧 | Obrigatória para publicação |
 | Keystore (assinatura APK) | 🚧 | Gerar e guardar com segurança |
-| `build.gradle` + ícones | 🚧 | Após Capacitor |
 
 ---
 
