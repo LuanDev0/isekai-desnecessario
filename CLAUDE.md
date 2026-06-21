@@ -52,9 +52,11 @@ Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · b
 ## Papéis de acesso (Role) — na conta `Usuario`
 - Campo `Role` em `Usuario` (não no `Perfil`): `Usuario` (default) · `VIP` · `Moderador` · `Admin`. **Não confundir com Classe RPG** (Mago, Bardo… que é do `Perfil`).
 - Gravado como texto (`varchar(20)`) — ajuste manual no banco é fácil. `UsuarioId = 1` é forçado a `Admin` no login (`AuthService.GarantirAdminInicialAsync`, hardcoded por enquanto).
-- **Criação de conteúdo por papel (backend, v0.7):** Admin → global aprovado · Moderador → global pendente · VIP → próprio aprovado · Usuário comum → **403**. Editar/excluir definição: só o autor ou Admin. Front expõe `auth.role()`/`isAdmin()`/`podeCatalogoGlobal()` etc.
+- **Criação por papel + escopo (backend, v0.9):** na criação o autor escolhe `proprio` (privado) ou global. Admin → global aprovado / próprio aprovado · Moderador → global **pendente** / próprio aprovado · VIP → **só** próprio aprovado · Usuário comum → **403**. Editar/excluir definição: Admin sempre · autor de próprio sempre · autor (Moderador) de global **só enquanto Pendente** (`PodeMutarDefinicaoAsync`). Front expõe `auth.role()`/`isAdmin()`/`podeCatalogoGlobal()` etc.
 - **Multi-classe (v0.8):** itens globais podem ser exclusivos de uma ou mais Classes RPG (N:N). Item sem classe = vale pra todos; com classe = só ativa quem tem a classe (catálogo marca `bloqueado` para os demais). Conteúdo próprio não usa classe. Definido na **criação** via `classeIds` (editar vínculo = Parte 7).
-- Falta a **UI de catálogo** (navegar/ativar/desativar + seletor de classe) por papel → **Parte 7**. Fluxo de aprovação Moderador→Admin → **Parte 5**. Notificações → **Parte 6**.
+- **Aprovação (v0.9):** `AprovacoesController` (só Admin) — `GET /aprovacoes/pendentes`, `aprovar`/`rejeitar`. Itens globais do Moderador nascem Pendente (fora do catálogo) até aprovação.
+- **Trava/timer (v0.9):** `TravaDias` na definição; concluir (`completar`/`registrar`/`resgatar`) seta `TravadoAte`; `desativar` bloqueia enquanto travado (vale p/ todos).
+- Falta a **UI de catálogo** (navegar/ativar/desativar + seletor de classe + tela de aprovação) por papel → **Parte 7**. Notificações dos eventos de aprovação → **Parte 6**.
 
 ## Notas de ambiente (Windows)
 - O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.

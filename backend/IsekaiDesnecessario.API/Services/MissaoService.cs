@@ -20,6 +20,7 @@ public class MissaoService(AppDbContext db, XpService xpService, ILogger<MissaoS
         ativacao.Concluida   = true;
         ativacao.ConcluidaEm = DateTime.UtcNow;
         ativacao.Streak++;
+        if (def?.TravaDias > 0) ativacao.TravadoAte = DateTime.UtcNow.AddDays(def.TravaDias);
 
         // Secundárias vinculadas a esta principal (definições) que este perfil tem ativas e abertas
         var secundariasIds = await db.Missoes

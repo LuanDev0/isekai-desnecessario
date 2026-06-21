@@ -69,6 +69,13 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 > conteúdo próprio ignora). O `catalogo` devolve `classeIds` + `bloqueado` (item exclusivo de classe
 > que o perfil não tem → vem bloqueado, sem sumir). `ativar` recusa (`400`) item exclusivo de outra classe.
 > O `PUT` ainda **não** edita os vínculos de classe (Parte 7). Vale para missões e recompensas também.
+>
+> **Próprio + trava (v0.9):** `POST` aceita `proprio` (bool — true = conteúdo privado da conta) e
+> `travaDias` (int). Escopo/status pelo papel + escolha: Admin global→aprovado/próprio→aprovado ·
+> Moderador global→**pendente**/próprio→aprovado · VIP **só** próprio · Usuário `403`.
+> Ao concluir um item com `travaDias>0`, a ativação trava por N dias e `desativar` recusa (`400`)
+> até a trava expirar. Editar/excluir definição: Admin sempre · autor de próprio sempre ·
+> autor (Moderador) de global **só enquanto Pendente**.
 
 ### Bons
 | Método | Rota | Descrição |
@@ -128,6 +135,20 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | POST | `/recompensas/{id}/ativar?perfilId=X` | Ativa na loja do perfil |
 | POST | `/recompensas/{id}/desativar?perfilId=X` | Desativa da loja |
 | POST | `/recompensas/{id}/resgatar?perfilId=X` | Gasta moedas, valida requisito de atributo, **adiciona ao inventário** |
+
+---
+
+## Aprovações — `/api/aprovacoes`  *(só Admin)*
+
+Fluxo Moderador → Admin. Itens globais criados por Moderador entram como **Pendente** e ficam fora do catálogo até serem aprovados.
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/aprovacoes/pendentes` | Lista unificada de itens globais pendentes (`{ tipo, id, titulo, criadoPorUsuarioId, autorNome }`); `tipo` ∈ `bomhabito`/`mauhabito`/`missao`/`recompensa` |
+| POST | `/aprovacoes/{tipo}/{id}/aprovar` | Aprova (vira visível no catálogo) |
+| POST | `/aprovacoes/{tipo}/{id}/rejeitar` | Rejeita |
+
+> Notificações dos eventos (admin avisado de novo pendente; moderador avisado de rejeição/modificação) → **Parte 6**.
 
 ---
 

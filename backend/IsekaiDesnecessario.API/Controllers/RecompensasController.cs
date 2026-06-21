@@ -47,16 +47,16 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     public async Task<IActionResult> Create(CriarRecompensaDto dto)
     {
         if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
-        var autoria = DefinirAutoria(await ObterRoleAsync(db));
+        var autoria = DefinirAutoria(await ObterRoleAsync(db), dto.Proprio);
         if (autoria is null)
-            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar conteúdo.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar esse conteúdo.");
         var (escopo, status) = autoria.Value;
 
         var def = new Recompensa
         {
             Nome = dto.Nome, Descricao = dto.Descricao, Emoji = string.IsNullOrWhiteSpace(dto.Emoji) ? "🎁" : dto.Emoji,
             Preco = dto.Preco, AtributoId = dto.AtributoId, PontosNecessarios = dto.PontosNecessarios,
-            Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
+            TravaDias = dto.TravaDias, Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
         if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
             def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
@@ -75,7 +75,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     {
         var d = await db.Recompensas.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         d.Nome              = recompensa.Nome;
         d.Descricao         = recompensa.Descricao;
         d.Emoji             = recompensa.Emoji;
@@ -92,7 +92,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     {
         var d = await db.Recompensas.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         db.Recompensas.Remove(d); // ativações e nada mais (inventário é desnormalizado)
         await db.SaveChangesAsync();
         return NoContent();
@@ -137,6 +137,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
         }
 
         perfil.Moedas -= recompensa.Preco;
+        if (recompensa.TravaDias > 0) ativacao.TravadoAte = DateTime.UtcNow.AddDays(recompensa.TravaDias);
 
         db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = recompensa.Emoji, Tipo = "recompensa",
             Mensagem = $"Resgatou \"{recompensa.Nome}\" por {recompensa.Preco} moedas" });
@@ -174,23 +175,18 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
         }
 
         var a = await db.PerfilRecompensas.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.RecompensaId == defId);
+        if (!ativar && Travado(a?.TravadoAte) is { } travaErro) return travaErro;
         if (a is null) db.PerfilRecompensas.Add(new() { PerfilId = perfilId, RecompensaId = defId, Ativo = ativar });
         else a.Ativo = ativar;
         await db.SaveChangesAsync();
         return Ok();
     }
-
-    private async Task<bool> PodeMutarDefAsync(int? autorId)
-    {
-        if (UsuarioId is not int uid) return false;
-        if (autorId == uid) return true;
-        return await ObterRoleAsync(db) == Role.Admin;
-    }
 }
 
 // ClasseIds: vínculo multi-classe (só aplicado a conteúdo global).
+// Proprio: true = conteúdo privado da conta (VIP/Mod/Admin); false = catálogo global.
 public record CriarRecompensaDto(int PerfilId, string Nome, string Descricao, string Emoji,
-    int Preco, int? AtributoId, int PontosNecessarios, List<int>? ClasseIds);
+    int Preco, int? AtributoId, int PontosNecessarios, List<int>? ClasseIds, bool Proprio, int TravaDias);
 
 // Recompensa ativa na loja do perfil (definição achatada).
 public record RecompensaDto(int Id, int PerfilId, string Nome, string Descricao, string Emoji,

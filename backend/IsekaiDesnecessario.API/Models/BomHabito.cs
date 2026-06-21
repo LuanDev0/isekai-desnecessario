@@ -4,7 +4,7 @@ namespace IsekaiDesnecessario.API.Models;
 
 // Definição (molde) de um bom hábito — global (catálogo) ou próprio (privado).
 // O estado por-perfil (streak, última execução, ativo) vive em PerfilBomHabito.
-public class BomHabito
+public class BomHabito : IDefinicaoConteudo
 {
     public int Id { get; set; }
     public string Habito { get; set; } = string.Empty;
@@ -12,6 +12,10 @@ public class BomHabito
     public string Frequencia { get; set; } = string.Empty;
     public int? AtributoId { get; set; }
     public Atributo? Atributo { get; set; }
+
+    // Trava por timer (dias): ao concluir, a ativação fica travada por N dias e não
+    // pode ser desativada. 0 = sem trava. Definido pelo criador do item.
+    public int TravaDias { get; set; }
 
     // ── Catálogo / autoria ───────────────────────────────
     public EscopoConteudo Escopo { get; set; } = EscopoConteudo.Global;

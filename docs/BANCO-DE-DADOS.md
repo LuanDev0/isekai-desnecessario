@@ -125,7 +125,9 @@ Catálogo (definições — global ou próprio; sem PerfilId):
 
 > **Campos de catálogo** (presentes em **BomHabito, MauHabito, Missao e Recompensa**): `Escopo`
 > (`Global`/`Proprio`, texto, default `Global`), `Status` (`Aprovado`/`Pendente`/`Rejeitado`, texto,
-> default `Aprovado`) e `CriadoPorUsuarioId` (int? → `Usuario`, autor; `SetNull`). Definições **não têm `PerfilId`**.
+> default `Aprovado`), `CriadoPorUsuarioId` (int? → `Usuario`, autor; `SetNull`) e `TravaDias`
+> (int, default 0 — dias de trava ao concluir; 0 = sem trava). Definições **não têm `PerfilId`**.
+> Os 4 tipos implementam `IDefinicaoConteudo` (Escopo/Status/autor) — usado no fluxo de aprovação.
 
 ### BomHabito / MauHabito — definição (mesma estrutura)
 | Campo | Tipo | Observação |
@@ -180,7 +182,7 @@ Estado por-perfil de cada definição ativada. Índice **único** `(PerfilId, <D
 | Streak | int | hábitos e missões |
 | UltimaExecucao | DateTime? | cooldown (hábitos) |
 | Concluida / ConcluidaEm | bool / DateTime? | missões |
-| TravadoAte | DateTime? | trava por timer (enforcement na Parte 5) |
+| TravadoAte | DateTime? | trava por timer — setado ao concluir (`hoje + TravaDias`); enquanto `> agora`, não pode desativar |
 
 ### ItemInventario — recompensa comprada (desnormalizada)
 Guarda cópia de Nome/Emoji/Descricao/Preco para sobreviver à exclusão da recompensa. Campos: `RecompensaId`, `DataCompra`, `DataUso`, `Usado`.
@@ -212,6 +214,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `AddRoleUsuario` | papel de acesso — coluna `Role` (`varchar(20)`, default `Usuario`) em `Usuario` |
 | `CatalogoGlobalEAtivacoes` | catálogo: definições ganham `Escopo`/`Status`/`CriadoPorUsuarioId` e perdem `PerfilId`; cria as 4 tabelas `Perfil*` (ativações). **Apaga o conteúdo antigo** (virada limpa) |
 | `VinculoMultiClasse` | vínculo N:N item ↔ Classe — join tables `BomHabitoClasse`, `ClasseMauHabito`, `ClasseMissao`, `ClasseRecompensa` |
+| `TravaDiasNoConteudo` | coluna `TravaDias` (int, default 0) nas 4 definições — trava por timer |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 

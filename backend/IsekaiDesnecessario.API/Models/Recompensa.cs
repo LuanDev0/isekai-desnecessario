@@ -4,7 +4,7 @@ namespace IsekaiDesnecessario.API.Models;
 
 // Definição (molde) de uma recompensa — global (catálogo) ou própria (privada).
 // A ativação no perfil (estar na loja do perfil) vive em PerfilRecompensa.
-public class Recompensa
+public class Recompensa : IDefinicaoConteudo
 {
     public int Id { get; set; }
     public string Nome { get; set; } = string.Empty;
@@ -17,6 +17,10 @@ public class Recompensa
     public int? AtributoId { get; set; }
     [JsonIgnore] public Atributo? Atributo { get; set; }
     public int PontosNecessarios { get; set; } = 0;
+
+    // Trava por timer (dias): ao resgatar, a ativação fica travada por N dias e não
+    // pode ser desativada. 0 = sem trava. Definido pelo criador do item.
+    public int TravaDias { get; set; }
 
     // ── Catálogo / autoria ───────────────────────────────
     public EscopoConteudo Escopo { get; set; } = EscopoConteudo.Global;
