@@ -49,15 +49,15 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     public async Task<IActionResult> CreateBom(CriarHabitoDto dto)
     {
         if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
-        var autoria = DefinirAutoria(await ObterRoleAsync(db));
+        var autoria = DefinirAutoria(await ObterRoleAsync(db), dto.Proprio);
         if (autoria is null)
-            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar conteúdo.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar esse conteúdo.");
         var (escopo, status) = autoria.Value;
 
         var def = new BomHabito
         {
             Habito = dto.Habito, Xp = dto.Xp, Frequencia = dto.Frequencia, AtributoId = dto.AtributoId,
-            Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
+            TravaDias = dto.TravaDias, Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
         if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
             def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
@@ -78,7 +78,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var d = await db.BonsHabitos.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         d.Habito = habito.Habito;
         d.Xp = habito.Xp;
         d.Frequencia = habito.Frequencia;
@@ -92,7 +92,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var d = await db.BonsHabitos.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         db.BonsHabitos.Remove(d); // ativações caem em cascata
         await db.SaveChangesAsync();
         return NoContent();
@@ -120,6 +120,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
 
         a.Streak++;
         if (def.Frequencia != "Livre") a.UltimaExecucao = DateTime.UtcNow;
+        if (def.TravaDias > 0) a.TravadoAte = DateTime.UtcNow.AddDays(def.TravaDias);
 
         await xpService.AdicionarXpAsync(perfilId, def.Xp);
         db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = "✅", Tipo = "habito_bom",
@@ -164,15 +165,15 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     public async Task<IActionResult> CreateMau(CriarHabitoDto dto)
     {
         if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
-        var autoria = DefinirAutoria(await ObterRoleAsync(db));
+        var autoria = DefinirAutoria(await ObterRoleAsync(db), dto.Proprio);
         if (autoria is null)
-            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar conteúdo.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar esse conteúdo.");
         var (escopo, status) = autoria.Value;
 
         var def = new MauHabito
         {
             Habito = dto.Habito, Xp = dto.Xp, Frequencia = dto.Frequencia, AtributoId = dto.AtributoId,
-            Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
+            TravaDias = dto.TravaDias, Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
         if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
             def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
@@ -191,7 +192,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var d = await db.MausHabitos.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         d.Habito = habito.Habito;
         d.Xp = habito.Xp;
         d.Frequencia = habito.Frequencia;
@@ -205,7 +206,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         var d = await db.MausHabitos.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         db.MausHabitos.Remove(d);
         await db.SaveChangesAsync();
         return NoContent();
@@ -233,6 +234,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
 
         a.Streak++;
         if (def.Frequencia != "Livre") a.UltimaExecucao = DateTime.UtcNow;
+        if (def.TravaDias > 0) a.TravadoAte = DateTime.UtcNow.AddDays(def.TravaDias);
 
         db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = "❌", Tipo = "habito_mau",
             Mensagem = $"Registrou \"{def.Habito}\" -{def.Xp} XP" });
@@ -273,25 +275,19 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
         if (bom)
         {
             var a = await db.PerfilBonsHabitos.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.BomHabitoId == defId);
+            if (!ativar && Travado(a?.TravadoAte) is { } travaErro) return travaErro;
             if (a is null) db.PerfilBonsHabitos.Add(new() { PerfilId = perfilId, BomHabitoId = defId, Ativo = ativar });
             else a.Ativo = ativar;
         }
         else
         {
             var a = await db.PerfilMausHabitos.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.MauHabitoId == defId);
+            if (!ativar && Travado(a?.TravadoAte) is { } travaErro) return travaErro;
             if (a is null) db.PerfilMausHabitos.Add(new() { PerfilId = perfilId, MauHabitoId = defId, Ativo = ativar });
             else a.Ativo = ativar;
         }
         await db.SaveChangesAsync();
         return Ok();
-    }
-
-    // Pode editar/excluir a definição: o autor ou um Admin.
-    private async Task<bool> PodeMutarDefAsync(int? autorId)
-    {
-        if (UsuarioId is not int uid) return false;
-        if (autorId == uid) return true;
-        return await ObterRoleAsync(db) == Role.Admin;
     }
 
     // ── Cooldown por frequência (reaproveitado da versão anterior) ──
@@ -318,8 +314,9 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
 
 // Streak/UltimaExecucao nunca vêm do cliente — começam zerados/nulos no servidor.
 // ClasseIds: vínculo multi-classe (só aplicado a conteúdo global).
+// Proprio: true = conteúdo privado da conta (VIP/Mod/Admin); false = catálogo global.
 public record CriarHabitoDto(int PerfilId, string Habito, int Xp, string Frequencia, int? AtributoId,
-    List<int>? ClasseIds);
+    List<int>? ClasseIds, bool Proprio, int TravaDias);
 
 // Item ativo no perfil (definição achatada + estado da ativação).
 public record HabitoDto(int Id, int PerfilId, string Habito, int Xp, string Frequencia,

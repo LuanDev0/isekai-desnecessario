@@ -53,9 +53,9 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     public async Task<IActionResult> Create(CriarMissaoDto dto)
     {
         if (await GarantirDonoDoPerfilAsync(db, dto.PerfilId) is { } erro) return erro;
-        var autoria = DefinirAutoria(await ObterRoleAsync(db));
+        var autoria = DefinirAutoria(await ObterRoleAsync(db), dto.Proprio);
         if (autoria is null)
-            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar conteúdo.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Seu papel não pode criar esse conteúdo.");
         var (escopo, status) = autoria.Value;
 
         var def = new Missao
@@ -63,7 +63,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
             Titulo = dto.Titulo, TipoId = dto.TipoId, RecompensaXp = dto.RecompensaXp,
             RecompensaMoedas = dto.RecompensaMoedas, AtributoId = dto.AtributoId,
             DataLimite = dto.DataLimite, MissaoPrincipalId = dto.MissaoPrincipalId,
-            Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
+            TravaDias = dto.TravaDias, Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
         if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
             def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
@@ -83,7 +83,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         var d = await db.Missoes.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         d.Titulo = missao.Titulo;
         d.TipoId = missao.TipoId;
         d.RecompensaXp = missao.RecompensaXp;
@@ -100,7 +100,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         var d = await db.Missoes.FindAsync(id);
         if (d is null) return NotFound();
-        if (!await PodeMutarDefAsync(d.CriadoPorUsuarioId)) return Forbid();
+        if (!await PodeMutarDefinicaoAsync(db, d.CriadoPorUsuarioId, d.Escopo, d.Status)) return Forbid();
         db.Missoes.Remove(d); // ativações caem em cascata
         await db.SaveChangesAsync();
         return NoContent();
@@ -192,25 +192,21 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
         }
 
         var a = await db.PerfilMissoes.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.MissaoId == defId);
+        if (!ativar && Travado(a?.TravadoAte) is { } travaErro) return travaErro;
         if (a is null) db.PerfilMissoes.Add(new() { PerfilId = perfilId, MissaoId = defId, Ativo = ativar });
         else a.Ativo = ativar;
         await db.SaveChangesAsync();
         return Ok();
     }
-
-    private async Task<bool> PodeMutarDefAsync(int? autorId)
-    {
-        if (UsuarioId is not int uid) return false;
-        if (autorId == uid) return true;
-        return await ObterRoleAsync(db) == Role.Admin;
-    }
 }
 
 // Concluida/ConcluidaEm/Streak nunca vêm do cliente — missão nasce "aberta".
 // ClasseIds: vínculo multi-classe (só aplicado a conteúdo global).
+// Proprio: true = conteúdo privado da conta (VIP/Mod/Admin); false = catálogo global.
 public record CriarMissaoDto(
     int PerfilId, string Titulo, int TipoId, int RecompensaXp, int RecompensaMoedas,
-    int? AtributoId, DateTime? DataLimite, int? MissaoPrincipalId, List<int>? ClasseIds);
+    int? AtributoId, DateTime? DataLimite, int? MissaoPrincipalId, List<int>? ClasseIds, bool Proprio,
+    int TravaDias);
 
 // Missão ativa no perfil (definição achatada + estado da ativação).
 public record MissaoDto(int Id, int PerfilId, string Titulo, int TipoId, TipoMissao? Tipo,

@@ -26,9 +26,28 @@ public abstract class ApiControllerBase : ControllerBase
         return ehDono ? null : Forbid();
     }
 
+    // Trava por timer: enquanto TravadoAte > agora, a ativação não pode ser desativada.
+    // Retorna o erro HTTP a devolver, ou null se está livre.
+    protected IActionResult? Travado(DateTime? travadoAte) =>
+        travadoAte is { } t && t > DateTime.UtcNow
+            ? BadRequest($"Item travado até {t:dd/MM/yyyy}. Não pode desativar agora.")
+            : null;
+
     // Classe RPG do perfil (null = sem classe definida). Usado no vínculo multi-classe.
     protected static Task<int?> ClasseDoPerfilAsync(AppDbContext db, int perfilId) =>
         db.Perfis.Where(p => p.Id == perfilId).Select(p => p.ClasseId).FirstOrDefaultAsync();
+
+    // Quem pode editar/excluir uma definição:
+    //   Admin → sempre · não-autor → nunca · autor de conteúdo próprio → sempre ·
+    //   autor (Moderador) de conteúdo global → só enquanto Pendente ("após aprovado, já era").
+    protected async Task<bool> PodeMutarDefinicaoAsync(AppDbContext db, int? autorId, EscopoConteudo escopo, StatusConteudo status)
+    {
+        if (UsuarioId is not int uid) return false;
+        if (await ObterRoleAsync(db) == Role.Admin) return true;
+        if (autorId != uid) return false;
+        if (escopo == EscopoConteudo.Proprio) return true;
+        return status == StatusConteudo.Pendente;
+    }
 
     // Papel de acesso do usuário logado. UsuarioId = 1 é sempre Admin (hardcoded).
     protected async Task<Role> ObterRoleAsync(AppDbContext db)
@@ -39,13 +58,20 @@ public abstract class ApiControllerBase : ControllerBase
             .Select(u => u.Role).FirstOrDefaultAsync();
     }
 
-    // Escopo/status de um item recém-criado conforme o papel. null = papel não pode criar.
-    // Admin → global aprovado · Moderador → global pendente · VIP → próprio aprovado · Usuário → ✗
-    protected static (EscopoConteudo escopo, StatusConteudo status)? DefinirAutoria(Role role) => role switch
+    // Escopo/status de um item recém-criado conforme o papel + escolha do autor.
+    // null = papel não pode criar nesse escopo.
+    //   próprio (privado): VIP, Moderador e Admin → sempre Aprovado (sem aprovação)
+    //   global  (catálogo): Admin → Aprovado · Moderador → Pendente · VIP → ✗
+    //   Usuário comum → ✗ em qualquer escopo
+    protected static (EscopoConteudo escopo, StatusConteudo status)? DefinirAutoria(Role role, bool proprio)
     {
-        Role.Admin     => (EscopoConteudo.Global,  StatusConteudo.Aprovado),
-        Role.Moderador => (EscopoConteudo.Global,  StatusConteudo.Pendente),
-        Role.VIP       => (EscopoConteudo.Proprio, StatusConteudo.Aprovado),
-        _              => null,
-    };
+        if (role == Role.Usuario) return null;
+        if (proprio) return (EscopoConteudo.Proprio, StatusConteudo.Aprovado);
+        return role switch
+        {
+            Role.Admin     => (EscopoConteudo.Global, StatusConteudo.Aprovado),
+            Role.Moderador => (EscopoConteudo.Global, StatusConteudo.Pendente),
+            _              => null, // VIP não cria conteúdo global
+        };
+    }
 }
