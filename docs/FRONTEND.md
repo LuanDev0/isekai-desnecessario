@@ -28,7 +28,7 @@ App standalone (sem NgModules), componentes com `inject()` e signals. Estado mí
 ## Páginas
 
 ### Cadastro (`/cadastro`)
-Porta de entrada. Faz **login** (Google ou e-mail/senha), **registro** de conta, **seleção de perfil** e **criação de herói** (nome, classe, gênero, foto) — tudo numa máquina de estados (`tela: 'inicio' | 'login' | 'registro' | 'perfis' | 'cadastro'`). Após logar, lista os perfis da conta e os **órfãos** (convidados) para reivindicar. Mostra o logo e o subtítulo *"Seu isekai começa aqui. Nenhum caminhão-chan necessário."*. O nome da classe no combobox muda conforme o gênero.
+Porta de entrada. Faz **login** (Google ou e-mail/senha), **registro** de conta, **seleção de perfil** e **criação de herói** (nome, classe, gênero, foto) — tudo numa máquina de estados (`tela: 'inicio' | 'login' | 'registro' | 'perfis' | 'cadastro'`). Após logar, lista os perfis da conta e os **órfãos** (convidados) para reivindicar. Mostra o logo e o subtítulo *"Seu isekai começa aqui. Nenhum caminhão-kun necessário."*. O nome da classe no combobox muda conforme o gênero.
 
 ### Dashboard / Início (`/`)
 Visão geral: barra de XP, nível, rank, moedas, lista de bons/maus hábitos para marcar no dia, desafio do dia e diário de conquistas.

@@ -9,7 +9,7 @@ export const pt = {
     config: 'Config.',
   },
   cadastro: {
-    sub: 'Seu isekai começa aqui. Nenhum caminhão-chan necessário.',
+    sub: 'Seu isekai começa aqui. Nenhum caminhão-kun necessário.',
     entrar: 'Entrar',
     criarPerfil: 'Criar Perfil',
     selecionePerfil: 'Selecione seu perfil',
