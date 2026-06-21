@@ -19,5 +19,8 @@ public class BomHabito
     public int? CriadoPorUsuarioId { get; set; }
     [JsonIgnore] public Usuario? CriadoPor { get; set; }
 
+    // Classes RPG às quais o item é exclusivo (vazio = vale para todas). Só conteúdo global usa.
+    [JsonIgnore] public ICollection<Classe> Classes { get; set; } = [];
+
     [JsonIgnore] public ICollection<PerfilBomHabito> Ativacoes { get; set; } = [];
 }

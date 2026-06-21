@@ -33,11 +33,14 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var uid = UsuarioId;
+        var classeId = await ClasseDoPerfilAsync(db, perfilId);
         var lista = await db.BonsHabitos
             .Where(d => d.Status == StatusConteudo.Aprovado
                      && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
             .Select(d => new HabitoCatalogoDto(d.Id, d.Habito, d.Xp, d.Frequencia, d.AtributoId, d.Escopo, d.Status,
-                db.PerfilBonsHabitos.Any(a => a.PerfilId == perfilId && a.BomHabitoId == d.Id && a.Ativo)))
+                db.PerfilBonsHabitos.Any(a => a.PerfilId == perfilId && a.BomHabitoId == d.Id && a.Ativo),
+                d.Classes.Select(c => c.Id).ToArray(),
+                d.Classes.Any() && !d.Classes.Any(c => c.Id == classeId)))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -56,9 +59,14 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
             Habito = dto.Habito, Xp = dto.Xp, Frequencia = dto.Frequencia, AtributoId = dto.AtributoId,
             Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
-        // Auto-ativa para o perfil que criou (mantém UX atual: criou → aparece)
-        var ativacao = new PerfilBomHabito { PerfilId = dto.PerfilId, Ativo = true };
-        def.Ativacoes.Add(ativacao);
+        if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
+            def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
+
+        // Auto-ativa para o perfil que criou (mantém UX atual: criou → aparece),
+        // mas só se o perfil puder usar (item sem classe ou classe do perfil casa).
+        var classeId = await ClasseDoPerfilAsync(db, dto.PerfilId);
+        if (def.Classes.Count == 0 || (classeId != null && def.Classes.Any(c => c.Id == classeId)))
+            def.Ativacoes.Add(new PerfilBomHabito { PerfilId = dto.PerfilId, Ativo = true });
         db.BonsHabitos.Add(def);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetBons), new { perfilId = dto.PerfilId },
@@ -140,11 +148,14 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
     {
         if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var uid = UsuarioId;
+        var classeId = await ClasseDoPerfilAsync(db, perfilId);
         var lista = await db.MausHabitos
             .Where(d => d.Status == StatusConteudo.Aprovado
                      && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
             .Select(d => new HabitoCatalogoDto(d.Id, d.Habito, d.Xp, d.Frequencia, d.AtributoId, d.Escopo, d.Status,
-                db.PerfilMausHabitos.Any(a => a.PerfilId == perfilId && a.MauHabitoId == d.Id && a.Ativo)))
+                db.PerfilMausHabitos.Any(a => a.PerfilId == perfilId && a.MauHabitoId == d.Id && a.Ativo),
+                d.Classes.Select(c => c.Id).ToArray(),
+                d.Classes.Any() && !d.Classes.Any(c => c.Id == classeId)))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -163,7 +174,12 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
             Habito = dto.Habito, Xp = dto.Xp, Frequencia = dto.Frequencia, AtributoId = dto.AtributoId,
             Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
-        def.Ativacoes.Add(new PerfilMauHabito { PerfilId = dto.PerfilId, Ativo = true });
+        if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
+            def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
+
+        var classeId = await ClasseDoPerfilAsync(db, dto.PerfilId);
+        if (def.Classes.Count == 0 || (classeId != null && def.Classes.Any(c => c.Id == classeId)))
+            def.Ativacoes.Add(new PerfilMauHabito { PerfilId = dto.PerfilId, Ativo = true });
         db.MausHabitos.Add(def);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetMaus), new { perfilId = dto.PerfilId },
@@ -234,22 +250,34 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
         if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var uid = UsuarioId;
 
+        // Visibilidade (aprovado + global ou próprio) + classes da definição
+        var info = bom
+            ? await db.BonsHabitos
+                .Where(d => d.Id == defId && d.Status == StatusConteudo.Aprovado
+                         && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
+                .Select(d => new { Classes = d.Classes.Select(c => c.Id).ToArray() }).FirstOrDefaultAsync()
+            : await db.MausHabitos
+                .Where(d => d.Id == defId && d.Status == StatusConteudo.Aprovado
+                         && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
+                .Select(d => new { Classes = d.Classes.Select(c => c.Id).ToArray() }).FirstOrDefaultAsync();
+        if (info is null) return NotFound();
+
+        // Item exclusivo de classe(s): só ativa se a classe do perfil casar
+        if (ativar && info.Classes.Length > 0)
+        {
+            var classeId = await ClasseDoPerfilAsync(db, perfilId);
+            if (classeId is null || !info.Classes.Contains(classeId.Value))
+                return BadRequest("Item exclusivo de outra classe.");
+        }
+
         if (bom)
         {
-            var visivel = await db.BonsHabitos.AnyAsync(d => d.Id == defId
-                && d.Status == StatusConteudo.Aprovado
-                && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid));
-            if (!visivel) return NotFound();
             var a = await db.PerfilBonsHabitos.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.BomHabitoId == defId);
             if (a is null) db.PerfilBonsHabitos.Add(new() { PerfilId = perfilId, BomHabitoId = defId, Ativo = ativar });
             else a.Ativo = ativar;
         }
         else
         {
-            var visivel = await db.MausHabitos.AnyAsync(d => d.Id == defId
-                && d.Status == StatusConteudo.Aprovado
-                && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid));
-            if (!visivel) return NotFound();
             var a = await db.PerfilMausHabitos.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.MauHabitoId == defId);
             if (a is null) db.PerfilMausHabitos.Add(new() { PerfilId = perfilId, MauHabitoId = defId, Ativo = ativar });
             else a.Ativo = ativar;
@@ -289,12 +317,15 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
 }
 
 // Streak/UltimaExecucao nunca vêm do cliente — começam zerados/nulos no servidor.
-public record CriarHabitoDto(int PerfilId, string Habito, int Xp, string Frequencia, int? AtributoId);
+// ClasseIds: vínculo multi-classe (só aplicado a conteúdo global).
+public record CriarHabitoDto(int PerfilId, string Habito, int Xp, string Frequencia, int? AtributoId,
+    List<int>? ClasseIds);
 
 // Item ativo no perfil (definição achatada + estado da ativação).
 public record HabitoDto(int Id, int PerfilId, string Habito, int Xp, string Frequencia,
     int Streak, DateTime? UltimaExecucao, int? AtributoId);
 
-// Item do catálogo (definição + se já está ativo no perfil).
+// Item do catálogo (definição + se já está ativo no perfil + classes/bloqueio).
+// Bloqueado = item exclusivo de classe(s) e o perfil não tem nenhuma delas.
 public record HabitoCatalogoDto(int Id, string Habito, int Xp, string Frequencia, int? AtributoId,
-    EscopoConteudo Escopo, StatusConteudo Status, bool Ativo);
+    EscopoConteudo Escopo, StatusConteudo Status, bool Ativo, int[] ClasseIds, bool Bloqueado);

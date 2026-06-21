@@ -36,12 +36,15 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var uid = UsuarioId;
+        var classeId = await ClasseDoPerfilAsync(db, perfilId);
         var lista = await db.Missoes
             .Where(d => d.Status == StatusConteudo.Aprovado
                      && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
             .Select(d => new MissaoCatalogoDto(d.Id, d.Titulo, d.TipoId, d.Tipo, d.RecompensaXp, d.RecompensaMoedas,
                 d.DataLimite, d.MissaoPrincipalId, d.AtributoId, d.Escopo, d.Status,
-                db.PerfilMissoes.Any(a => a.PerfilId == perfilId && a.MissaoId == d.Id && a.Ativo)))
+                db.PerfilMissoes.Any(a => a.PerfilId == perfilId && a.MissaoId == d.Id && a.Ativo),
+                d.Classes.Select(c => c.Id).ToArray(),
+                d.Classes.Any() && !d.Classes.Any(c => c.Id == classeId)))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -62,7 +65,12 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
             DataLimite = dto.DataLimite, MissaoPrincipalId = dto.MissaoPrincipalId,
             Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
-        def.Ativacoes.Add(new PerfilMissao { PerfilId = dto.PerfilId, Ativo = true });
+        if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
+            def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
+
+        var classeId = await ClasseDoPerfilAsync(db, dto.PerfilId);
+        if (def.Classes.Count == 0 || (classeId != null && def.Classes.Any(c => c.Id == classeId)))
+            def.Ativacoes.Add(new PerfilMissao { PerfilId = dto.PerfilId, Ativo = true });
         db.Missoes.Add(def);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetAll), new { perfilId = dto.PerfilId },
@@ -170,10 +178,18 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
     {
         if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var uid = UsuarioId;
-        var visivel = await db.Missoes.AnyAsync(d => d.Id == defId
-            && d.Status == StatusConteudo.Aprovado
-            && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid));
-        if (!visivel) return NotFound();
+        var info = await db.Missoes
+            .Where(d => d.Id == defId && d.Status == StatusConteudo.Aprovado
+                     && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
+            .Select(d => new { Classes = d.Classes.Select(c => c.Id).ToArray() }).FirstOrDefaultAsync();
+        if (info is null) return NotFound();
+
+        if (ativar && info.Classes.Length > 0)
+        {
+            var classeId = await ClasseDoPerfilAsync(db, perfilId);
+            if (classeId is null || !info.Classes.Contains(classeId.Value))
+                return BadRequest("Item exclusivo de outra classe.");
+        }
 
         var a = await db.PerfilMissoes.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.MissaoId == defId);
         if (a is null) db.PerfilMissoes.Add(new() { PerfilId = perfilId, MissaoId = defId, Ativo = ativar });
@@ -191,16 +207,17 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
 }
 
 // Concluida/ConcluidaEm/Streak nunca vêm do cliente — missão nasce "aberta".
+// ClasseIds: vínculo multi-classe (só aplicado a conteúdo global).
 public record CriarMissaoDto(
     int PerfilId, string Titulo, int TipoId, int RecompensaXp, int RecompensaMoedas,
-    int? AtributoId, DateTime? DataLimite, int? MissaoPrincipalId);
+    int? AtributoId, DateTime? DataLimite, int? MissaoPrincipalId, List<int>? ClasseIds);
 
 // Missão ativa no perfil (definição achatada + estado da ativação).
 public record MissaoDto(int Id, int PerfilId, string Titulo, int TipoId, TipoMissao? Tipo,
     int RecompensaXp, int RecompensaMoedas, int Streak, bool Concluida, DateTime? ConcluidaEm,
     DateTime? DataLimite, int? MissaoPrincipalId, int? AtributoId);
 
-// Missão do catálogo (definição + se já está ativa no perfil).
+// Missão do catálogo (definição + se já está ativa no perfil + classes/bloqueio).
 public record MissaoCatalogoDto(int Id, string Titulo, int TipoId, TipoMissao? Tipo,
     int RecompensaXp, int RecompensaMoedas, DateTime? DataLimite, int? MissaoPrincipalId, int? AtributoId,
-    EscopoConteudo Escopo, StatusConteudo Status, bool Ativo);
+    EscopoConteudo Escopo, StatusConteudo Status, bool Ativo, int[] ClasseIds, bool Bloqueado);

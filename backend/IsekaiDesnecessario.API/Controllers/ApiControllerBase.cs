@@ -26,6 +26,10 @@ public abstract class ApiControllerBase : ControllerBase
         return ehDono ? null : Forbid();
     }
 
+    // Classe RPG do perfil (null = sem classe definida). Usado no vínculo multi-classe.
+    protected static Task<int?> ClasseDoPerfilAsync(AppDbContext db, int perfilId) =>
+        db.Perfis.Where(p => p.Id == perfilId).Select(p => p.ClasseId).FirstOrDefaultAsync();
+
     // Papel de acesso do usuário logado. UsuarioId = 1 é sempre Admin (hardcoded).
     protected async Task<Role> ObterRoleAsync(AppDbContext db)
     {

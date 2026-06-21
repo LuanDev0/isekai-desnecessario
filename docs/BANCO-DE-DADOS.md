@@ -52,6 +52,7 @@ Catálogo (definições — global ou próprio; sem PerfilId):
     ── AtributoId ─→ Atributo
     ── CriadoPorUsuarioId ─→ Usuario (autor; SetNull)
     ── Escopo (Global/Proprio) · Status (Aprovado/Pendente/Rejeitado)
+    ── N:N ─→ Classe (vínculo multi-classe; vazio = vale p/ todas)
   Missao ── TipoId ─→ TipoMissao · MissaoPrincipalId ─→ Missao (auto-relação)
 ```
 
@@ -163,6 +164,11 @@ Catálogo (definições — global ou próprio; sem PerfilId):
 | PontosNecessarios | int | 0 | pontos de atributo exigidos p/ resgatar |
 | Escopo / Status / CriadoPorUsuarioId | — | | campos de catálogo (acima) |
 
+### Vínculo multi-classe — join tables N:N (item ↔ `Classe`)
+Tabelas implícitas (geradas pelo EF) ligando cada definição às Classes RPG às quais o item é exclusivo:
+`BomHabitoClasse`, `ClasseMauHabito`, `ClasseMissao`, `ClasseRecompensa` — PK composta `(DefId, ClassesId)`, cascade nas duas pontas.
+Sem linhas para um item = item **sem classe** (aparece para todos). Só conteúdo **global** usa o vínculo.
+
 ### Ativações — `PerfilBomHabito` / `PerfilMauHabito` / `PerfilMissao` / `PerfilRecompensa`
 Estado por-perfil de cada definição ativada. Índice **único** `(PerfilId, <Def>Id)`. Cascade ao apagar perfil **ou** definição.
 | Campo | Tipo | Observação |
@@ -205,6 +211,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `SeedTiposMissao` | seed dos 3 tipos de missão: `Principal`, `Secundária`, `Desafio` |
 | `AddRoleUsuario` | papel de acesso — coluna `Role` (`varchar(20)`, default `Usuario`) em `Usuario` |
 | `CatalogoGlobalEAtivacoes` | catálogo: definições ganham `Escopo`/`Status`/`CriadoPorUsuarioId` e perdem `PerfilId`; cria as 4 tabelas `Perfil*` (ativações). **Apaga o conteúdo antigo** (virada limpa) |
+| `VinculoMultiClasse` | vínculo N:N item ↔ Classe — join tables `BomHabitoClasse`, `ClasseMauHabito`, `ClasseMissao`, `ClasseRecompensa` |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 

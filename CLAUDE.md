@@ -53,7 +53,8 @@ Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · b
 - Campo `Role` em `Usuario` (não no `Perfil`): `Usuario` (default) · `VIP` · `Moderador` · `Admin`. **Não confundir com Classe RPG** (Mago, Bardo… que é do `Perfil`).
 - Gravado como texto (`varchar(20)`) — ajuste manual no banco é fácil. `UsuarioId = 1` é forçado a `Admin` no login (`AuthService.GarantirAdminInicialAsync`, hardcoded por enquanto).
 - **Criação de conteúdo por papel (backend, v0.7):** Admin → global aprovado · Moderador → global pendente · VIP → próprio aprovado · Usuário comum → **403**. Editar/excluir definição: só o autor ou Admin. Front expõe `auth.role()`/`isAdmin()`/`podeCatalogoGlobal()` etc.
-- Falta a **UI de catálogo** (navegar/ativar/desativar) por papel → **Parte 7**. Fluxo de aprovação Moderador→Admin → **Parte 5**. Notificações → **Parte 6**. Multi-classe nos itens → **Parte 3**.
+- **Multi-classe (v0.8):** itens globais podem ser exclusivos de uma ou mais Classes RPG (N:N). Item sem classe = vale pra todos; com classe = só ativa quem tem a classe (catálogo marca `bloqueado` para os demais). Conteúdo próprio não usa classe. Definido na **criação** via `classeIds` (editar vínculo = Parte 7).
+- Falta a **UI de catálogo** (navegar/ativar/desativar + seletor de classe) por papel → **Parte 7**. Fluxo de aprovação Moderador→Admin → **Parte 5**. Notificações → **Parte 6**.
 
 ## Notas de ambiente (Windows)
 - O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.
