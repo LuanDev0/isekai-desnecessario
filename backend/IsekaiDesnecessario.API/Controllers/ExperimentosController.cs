@@ -92,14 +92,17 @@ public class ExperimentosController(AppDbContext db) : ApiControllerBase
         exp.Ativo      = false;
         exp.Convertido = true;
 
+        // Vira um hábito próprio (privado) da conta, já ativado no perfil
         var habito = new BomHabito
         {
-            PerfilId  = perfilId,
-            Habito    = exp.Titulo,
-            Xp        = 10,
+            Habito     = exp.Titulo,
+            Xp         = 10,
             Frequencia = "Diário",
-            Streak    = 0,
+            Escopo     = EscopoConteudo.Proprio,
+            Status     = StatusConteudo.Aprovado,
+            CriadoPorUsuarioId = UsuarioId,
         };
+        habito.Ativacoes.Add(new PerfilBomHabito { PerfilId = perfilId, Ativo = true });
         db.BonsHabitos.Add(habito);
         await db.SaveChangesAsync();
         return Ok(new { experimento = exp, habito });

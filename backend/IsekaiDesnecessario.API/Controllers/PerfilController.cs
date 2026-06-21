@@ -147,9 +147,10 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
         perfil.Rank = "H";
         perfil.Titulo = "Iniciante";
 
-        db.BonsHabitos.RemoveRange(db.BonsHabitos.Where(h => h.PerfilId == id));
-        db.MausHabitos.RemoveRange(db.MausHabitos.Where(h => h.PerfilId == id));
-        db.Missoes.RemoveRange(db.Missoes.Where(m => m.PerfilId == id));
+        // Remove as ativações do perfil (as definições do catálogo permanecem)
+        db.PerfilBonsHabitos.RemoveRange(db.PerfilBonsHabitos.Where(a => a.PerfilId == id));
+        db.PerfilMausHabitos.RemoveRange(db.PerfilMausHabitos.Where(a => a.PerfilId == id));
+        db.PerfilMissoes.RemoveRange(db.PerfilMissoes.Where(a => a.PerfilId == id));
 
         await db.SaveChangesAsync();
         return Ok(perfil);

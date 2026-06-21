@@ -31,27 +31,39 @@ Banco: **`isekai`** (PostgreSQL). Mapeado por EF Core (provider Npgsql) em `Data
 ## Diagrama de relacionamentos
 
 ```
-Usuario (conta Google)
+Usuario (conta Google) ── Role (papel de acesso)
   └─1:N─ Perfil  (UsuarioId nullable → null = convidado)
             │
             ├─ ClasseId ──→ Classe ──→ Atributo
-            ├─1:N─ BomHabito      ── AtributoId ─→ Atributo
-            ├─1:N─ MauHabito      ── AtributoId ─→ Atributo
-            ├─1:N─ Missao         ── TipoId ─→ TipoMissao
-            │                       ── AtributoId ─→ Atributo
-            │                       ── MissaoPrincipalId ─→ Missao (auto-relação)
-            ├─1:N─ Recompensa     ── AtributoId ─→ Atributo
             ├─1:N─ ItemInventario (snapshot de Recompensa)
             ├─1:N─ HistoricoXp
             ├─1:N─ DiarioAcao
             ├─1:N─ SnapshotAtributo ── AtributoId ─→ Atributo
-            └─1:N─ Experimento    ─1:N─ ExperimentoDia
+            ├─1:N─ Experimento    ─1:N─ ExperimentoDia
+            │
+            │   ── Ativações (estado por-perfil; N:N com as definições) ──
+            ├─1:N─ PerfilBomHabito  ──→ BomHabito   (definição)
+            ├─1:N─ PerfilMauHabito  ──→ MauHabito   (definição)
+            ├─1:N─ PerfilMissao     ──→ Missao      (definição)
+            └─1:N─ PerfilRecompensa ──→ Recompensa  (definição)
+
+Catálogo (definições — global ou próprio; sem PerfilId):
+  BomHabito / MauHabito / Missao / Recompensa
+    ── AtributoId ─→ Atributo
+    ── CriadoPorUsuarioId ─→ Usuario (autor; SetNull)
+    ── Escopo (Global/Proprio) · Status (Aprovado/Pendente/Rejeitado)
+  Missao ── TipoId ─→ TipoMissao · MissaoPrincipalId ─→ Missao (auto-relação)
 ```
 
+> **Modelo de catálogo (v0.7):** o conteúdo (hábitos/missões/recompensas) deixou de pertencer
+> a um perfil. Cada item é uma **definição** (global ou própria) e cada perfil **ativa** itens via
+> as tabelas `Perfil*`. O estado por-perfil (streak, conclusão, última execução, trava) vive na ativação.
+
 ### Regras de exclusão (`OnDelete`)
-- **Apagar `Usuario`** → seus `Perfil` viram **convidados** (`UsuarioId = null`). O progresso é **preservado**.
+- **Apagar `Usuario`** → seus `Perfil` viram **convidados** (`UsuarioId = null`); as definições que ele criou viram **sem autor** (`CriadoPorUsuarioId = null`).
 - **Apagar `Classe`/`Atributo`** → FKs viram `null` (`SetNull`) nos perfis/hábitos/missões/recompensas.
-- **Apagar `Perfil`** → remove o herói (os filhos seguem o cascade padrão do EF).
+- **Apagar `Perfil`** → remove o herói e suas **ativações** (`Cascade`); as definições do catálogo permanecem.
+- **Apagar uma definição** → remove em **cascata** as ativações dela em todos os perfis.
 
 ---
 
@@ -110,47 +122,59 @@ Usuario (conta Google)
 | 5 | Foco | 🎯 | `#ffd700` | Pomodoro, sem celular, deep work |
 | 6 | Vitalidade | ❤️ | `#f85149` | Sono, hidratação, dieta, pausas |
 
-### BomHabito / MauHabito (mesma estrutura)
+> **Campos de catálogo** (presentes em **BomHabito, MauHabito, Missao e Recompensa**): `Escopo`
+> (`Global`/`Proprio`, texto, default `Global`), `Status` (`Aprovado`/`Pendente`/`Rejeitado`, texto,
+> default `Aprovado`) e `CriadoPorUsuarioId` (int? → `Usuario`, autor; `SetNull`). Definições **não têm `PerfilId`**.
+
+### BomHabito / MauHabito — definição (mesma estrutura)
 | Campo | Tipo | Observação |
 |-------|------|-----------|
 | Id | int | PK |
-| PerfilId | int | FK |
 | Habito | string | descrição |
 | Xp | int | XP ganho (bom) / perdido (mau) |
 | Frequencia | string | `Diário` · `Semanal` · `Mensal` · `Livre` |
-| Streak | int | sequência |
-| UltimaExecucao | DateTime? | controla cooldown |
 | AtributoId | int? | FK → Atributo |
+| Escopo / Status / CriadoPorUsuarioId | — | campos de catálogo (acima) |
 
-### Missao
+### Missao — definição
 | Campo | Tipo | Observação |
 |-------|------|-----------|
 | Id | int | PK |
-| PerfilId | int | FK |
 | Titulo | string | |
 | TipoId | int | FK → TipoMissao (1=Principal, 2=Secundária, 3=Desafio) |
 | RecompensaXp | int | XP ao concluir |
 | RecompensaMoedas | int | moedas ao concluir |
-| Streak | int | |
-| Concluida | bool | |
-| ConcluidaEm | DateTime? | usado na Jornada |
 | DataLimite | DateTime? | prazo (expira) |
-| MissaoPrincipalId | int? | vincula secundária a uma principal |
+| MissaoPrincipalId | int? | vincula secundária a uma principal (id de outra definição) |
 | AtributoId | int? | FK → Atributo |
+| Escopo / Status / CriadoPorUsuarioId | — | campos de catálogo (acima) |
 
 > `TipoMissao` tem seed fixo via migration `SeedTiposMissao` — aplicado automaticamente no startup.
 
-### Recompensa
+### Recompensa — definição
 | Campo | Tipo | Default | Observação |
 |-------|------|---------|-----------|
 | Id | int | | PK |
-| PerfilId | int | | FK |
 | Nome / Descricao | string | | |
 | Emoji | string | 🎁 | |
 | Preco | int | | custo em moedas |
-| Ativa | bool | true | aparece na loja/lootbox |
+| Ativa | bool | true | vitrine ligada/desligada (criador) |
 | AtributoId | int? | | requisito opcional de atributo |
 | PontosNecessarios | int | 0 | pontos de atributo exigidos p/ resgatar |
+| Escopo / Status / CriadoPorUsuarioId | — | | campos de catálogo (acima) |
+
+### Ativações — `PerfilBomHabito` / `PerfilMauHabito` / `PerfilMissao` / `PerfilRecompensa`
+Estado por-perfil de cada definição ativada. Índice **único** `(PerfilId, <Def>Id)`. Cascade ao apagar perfil **ou** definição.
+| Campo | Tipo | Observação |
+|-------|------|-----------|
+| Id | int | PK |
+| PerfilId | int | FK → Perfil |
+| BomHabitoId / MauHabitoId / MissaoId / RecompensaId | int | FK → definição |
+| Ativo | bool | item está na lista/loja do perfil |
+| Streak | int | hábitos e missões |
+| UltimaExecucao | DateTime? | cooldown (hábitos) |
+| Concluida / ConcluidaEm | bool / DateTime? | missões |
+| TravadoAte | DateTime? | trava por timer (enforcement na Parte 5) |
 
 ### ItemInventario — recompensa comprada (desnormalizada)
 Guarda cópia de Nome/Emoji/Descricao/Preco para sobreviver à exclusão da recompensa. Campos: `RecompensaId`, `DataCompra`, `DataUso`, `Usado`.
@@ -180,6 +204,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `RenameDesafioConcluidoEm` | renomeia a coluna do desafio do dia |
 | `SeedTiposMissao` | seed dos 3 tipos de missão: `Principal`, `Secundária`, `Desafio` |
 | `AddRoleUsuario` | papel de acesso — coluna `Role` (`varchar(20)`, default `Usuario`) em `Usuario` |
+| `CatalogoGlobalEAtivacoes` | catálogo: definições ganham `Escopo`/`Status`/`CriadoPorUsuarioId` e perdem `PerfilId`; cria as 4 tabelas `Perfil*` (ativações). **Apaga o conteúdo antigo** (virada limpa) |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 

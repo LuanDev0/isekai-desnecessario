@@ -38,7 +38,7 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | PATCH | `/perfil/{id}/info` | Atualiza só **nome, classe e gênero** (`{ nome, classeId, genero }`) |
 | DELETE | `/perfil/{id}` | Exclui o perfil |
 | POST | `/perfil/{id}/xp?quantidade=N` | Adiciona XP manualmente |
-| POST | `/perfil/{id}/reset` | Zera XP/moedas/nível e **apaga hábitos e missões** do perfil |
+| POST | `/perfil/{id}/reset` | Zera XP/moedas/nível e **remove as ativações** de hábitos/missões do perfil (definições do catálogo permanecem) |
 | POST | `/perfil/{id}/foto` | Upload de foto (`multipart`, campo `arquivo`; ≤5MB; jpg/jpeg/jfif/png/webp/gif) |
 | POST | `/perfil/{id}/desafio/recusar` | Marca o desafio do dia como recusado |
 | POST | `/perfil/{id}/desafio/concluir` | Marca o desafio do dia como concluído |
@@ -59,22 +59,34 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 
 ## Hábitos — `/api/habitos`
 
+> **Modelo de catálogo (v0.7):** `GET .../bons` e `.../maus` retornam os hábitos **ativos no perfil**
+> (definição achatada + estado da ativação — mesmo formato de antes). `POST` **cria uma definição**
+> e já a ativa no perfil (criar exige papel Admin/Moderador/VIP — Usuário comum recebe `403`).
+> `PUT`/`DELETE` atuam na **definição** (só autor ou Admin). As ações (`completar`/`registrar`)
+> operam na **ativação** do perfil.
+
 ### Bons
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET | `/habitos/bons?perfilId=X` | Lista bons hábitos |
-| POST | `/habitos/bons` | Cria |
-| PUT | `/habitos/bons/{id}` | Edita (Habito, Xp, Frequencia, AtributoId) |
-| DELETE | `/habitos/bons/{id}` | Exclui |
-| POST | `/habitos/bons/{id}/completar?perfilId=X` | Completa → **+XP**, +streak, registra no diário (respeita cooldown da frequência) |
+| GET | `/habitos/bons?perfilId=X` | Hábitos **ativos** no perfil |
+| GET | `/habitos/bons/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flag `ativo` |
+| POST | `/habitos/bons` | Cria definição + ativa no perfil |
+| PUT | `/habitos/bons/{id}` | Edita a definição (Habito, Xp, Frequencia, AtributoId) |
+| DELETE | `/habitos/bons/{id}` | Exclui a definição (ativações caem em cascata) |
+| POST | `/habitos/bons/{id}/ativar?perfilId=X` | Ativa a definição no perfil |
+| POST | `/habitos/bons/{id}/desativar?perfilId=X` | Desativa do perfil |
+| POST | `/habitos/bons/{id}/completar?perfilId=X` | Completa → **+XP**, +streak, diário (respeita cooldown) |
 
 ### Maus
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET | `/habitos/maus?perfilId=X` | Lista maus hábitos |
-| POST | `/habitos/maus` | Cria |
-| PUT | `/habitos/maus/{id}` | Edita |
-| DELETE | `/habitos/maus/{id}` | Exclui |
+| GET | `/habitos/maus?perfilId=X` | Maus hábitos **ativos** no perfil |
+| GET | `/habitos/maus/catalogo?perfilId=X` | Catálogo disponível + flag `ativo` |
+| POST | `/habitos/maus` | Cria definição + ativa no perfil |
+| PUT | `/habitos/maus/{id}` | Edita a definição |
+| DELETE | `/habitos/maus/{id}` | Exclui a definição |
+| POST | `/habitos/maus/{id}/ativar?perfilId=X` | Ativa no perfil |
+| POST | `/habitos/maus/{id}/desativar?perfilId=X` | Desativa do perfil |
 | POST | `/habitos/maus/{id}/registrar?perfilId=X` | Registra → **−XP** (pode regredir nível) |
 
 **Cooldown por frequência:** `Diário` (1×/dia) · `Semanal` (1×/semana, semana começa no domingo) · `Mensal` (1×/mês) · `Livre` (sem cooldown, sempre disponível).
@@ -85,13 +97,16 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET | `/missoes?perfilId=X` | Lista missões (com `Tipo`, ordenadas por TipoId) |
+| GET | `/missoes?perfilId=X` | Missões **ativas** no perfil (com `Tipo`, ordenadas por TipoId) |
 | GET | `/missoes/tipos` | Lista os tipos de missão |
-| POST | `/missoes` | Cria |
-| PUT | `/missoes/{id}` | Edita |
-| DELETE | `/missoes/{id}` | Exclui |
+| GET | `/missoes/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flag `ativo` |
+| POST | `/missoes` | Cria definição + ativa no perfil (papel Admin/Moderador/VIP; senão `403`) |
+| PUT | `/missoes/{id}` | Edita a definição (só autor ou Admin) |
+| DELETE | `/missoes/{id}` | Exclui a definição (ativações em cascata) |
+| POST | `/missoes/{id}/ativar?perfilId=X` | Ativa no perfil |
+| POST | `/missoes/{id}/desativar?perfilId=X` | Desativa do perfil |
 | POST | `/missoes/{id}/completar?perfilId=X` | Conclui → **+XP +moedas**; auto-conclui secundárias vinculadas (`MissaoPrincipalId`) |
-| POST | `/missoes/{id}/resetar` | Marca como não concluída |
+| POST | `/missoes/{id}/resetar?perfilId=X` | Marca a ativação como não concluída |
 | GET | `/missoes/jornada?perfilId=X` | Agrega missões concluídas das **últimas 12 semanas** (semana = segunda-feira) → `[{ semana, total, xp, principais }]` |
 
 ---
@@ -100,10 +115,13 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET | `/recompensas?perfilId=X` | Lista (ordenadas por preço) |
-| POST | `/recompensas` | Cria |
-| PUT | `/recompensas/{id}` | Edita |
-| DELETE | `/recompensas/{id}` | Exclui |
+| GET | `/recompensas?perfilId=X` | Recompensas **ativas** na loja do perfil (ordenadas por preço) |
+| GET | `/recompensas/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flag `ativo` |
+| POST | `/recompensas` | Cria definição + ativa no perfil (papel Admin/Moderador/VIP; senão `403`) |
+| PUT | `/recompensas/{id}` | Edita a definição (só autor ou Admin) |
+| DELETE | `/recompensas/{id}` | Exclui a definição (ativações em cascata) |
+| POST | `/recompensas/{id}/ativar?perfilId=X` | Ativa na loja do perfil |
+| POST | `/recompensas/{id}/desativar?perfilId=X` | Desativa da loja |
 | POST | `/recompensas/{id}/resgatar?perfilId=X` | Gasta moedas, valida requisito de atributo, **adiciona ao inventário** |
 
 ---

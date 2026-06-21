@@ -36,8 +36,9 @@ public class LootboxService(AppDbContext db, ILogger<LootboxService> logger)
         if (perfil.UltimaLootbox?.Date == DateTime.UtcNow.Date)
             return LootboxResultado.Falha("Lootbox já aberta hoje. Volte amanhã!");
 
-        var recompensas = await db.Recompensas
-            .Where(r => r.PerfilId == perfilId && r.Ativa)
+        var recompensas = await db.PerfilRecompensas
+            .Where(a => a.PerfilId == perfilId && a.Ativo && a.Recompensa!.Ativa)
+            .Select(a => a.Recompensa!)
             .ToListAsync();
 
         if (recompensas.Count == 0)
