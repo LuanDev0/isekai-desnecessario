@@ -17,6 +17,11 @@ public class Usuario
     [JsonIgnore]
     public string? SenhaHash { get; set; }
 
+    // ── Papel de acesso (vale para todos os perfis da conta) ──
+    // UsuarioId = 1 é forçado a Admin no login/registro (hardcoded por enquanto);
+    // demais papéis são ajustados manualmente no banco.
+    public Role Role { get; set; } = Role.Usuario;
+
     // ── Auditoria ─────────────────────────────────────
     public DateTime CriadoEm    { get; set; } = DateTime.UtcNow;
     public DateTime UltimoLogin { get; set; } = DateTime.UtcNow;

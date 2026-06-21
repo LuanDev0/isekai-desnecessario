@@ -7,12 +7,16 @@ export interface Classe {
   atributo?: Atributo;
 }
 
+// Papel de acesso da conta (não confundir com Classe RPG do perfil).
+export type Role = 'Usuario' | 'VIP' | 'Moderador' | 'Admin';
+
 export interface Usuario {
   id: number;
   googleId: string;
   email: string;
   nome: string;
   fotoUrl?: string | null;
+  role: Role;
 }
 
 export interface Perfil {

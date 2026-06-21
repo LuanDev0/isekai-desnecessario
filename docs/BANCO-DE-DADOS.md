@@ -67,6 +67,7 @@ Usuario (conta Google)
 | Nome | string | nome da conta |
 | FotoUrl | string? | avatar (Google) |
 | SenhaHash | string? | hash **BCrypt** do login próprio; null em conta só-Google. `[JsonIgnore]` — nunca sai na API |
+| Role | string | papel de acesso — `Usuario` (default) · `VIP` · `Moderador` · `Admin`. Gravado como texto (`varchar(20)`) p/ ajuste manual. `UsuarioId = 1` é forçado a `Admin` no login (hardcoded). **Não confundir com Classe RPG** (que é do Perfil) |
 | CriadoEm / UltimoLogin | DateTime | auditoria (UTC) |
 
 ### Perfil — o herói
@@ -178,6 +179,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `AddSenhaHashEGoogleIdNullable` | login por e-mail/senha — coluna `SenhaHash` em `Usuario` e `GoogleId` agora nullable |
 | `RenameDesafioConcluidoEm` | renomeia a coluna do desafio do dia |
 | `SeedTiposMissao` | seed dos 3 tipos de missão: `Principal`, `Secundária`, `Desafio` |
+| `AddRoleUsuario` | papel de acesso — coluna `Role` (`varchar(20)`, default `Usuario`) em `Usuario` |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 

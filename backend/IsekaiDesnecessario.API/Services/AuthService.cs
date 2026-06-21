@@ -45,6 +45,7 @@ public class AuthService(AppDbContext db, IConfiguration config, ILogger<AuthSer
         }
 
         await db.SaveChangesAsync();
+        await GarantirAdminInicialAsync(usuario);
 
         var perfis = await db.Perfis.Where(p => p.UsuarioId == usuario.Id).ToListAsync();
         logger.LogInformation("Login Google: usuário {UsuarioId} ({Email})", usuario.Id, usuario.Email);
@@ -69,6 +70,7 @@ public class AuthService(AppDbContext db, IConfiguration config, ILogger<AuthSer
 
         db.Usuarios.Add(usuario);
         await db.SaveChangesAsync();
+        await GarantirAdminInicialAsync(usuario);
 
         logger.LogInformation("Novo usuário registrado: {UsuarioId} ({Email})", usuario.Id, usuario.Email);
         return (GerarJwt(usuario), usuario, []);
@@ -87,10 +89,25 @@ public class AuthService(AppDbContext db, IConfiguration config, ILogger<AuthSer
 
         usuario.UltimoLogin = DateTime.UtcNow;
         await db.SaveChangesAsync();
+        await GarantirAdminInicialAsync(usuario);
 
         var perfis = await db.Perfis.Where(p => p.UsuarioId == usuario.Id).ToListAsync();
         logger.LogInformation("Login: usuário {UsuarioId} ({Email})", usuario.Id, usuario.Email);
         return (GerarJwt(usuario), usuario, perfis);
+    }
+
+    // ── Admin inicial ─────────────────────────────────────────────────────────
+    // UsuarioId = 1 é sempre Admin (hardcoded por enquanto). Promove na primeira
+    // vez que a conta aparece e persiste, para que ajustes manuais no banco
+    // (demais papéis) partam de um estado consistente.
+    private async Task GarantirAdminInicialAsync(Usuario usuario)
+    {
+        if (usuario.Id == 1 && usuario.Role != Role.Admin)
+        {
+            usuario.Role = Role.Admin;
+            await db.SaveChangesAsync();
+            logger.LogInformation("Usuário {UsuarioId} promovido a Admin (admin inicial).", usuario.Id);
+        }
     }
 
     // ── JWT ───────────────────────────────────────────────────────────────────
