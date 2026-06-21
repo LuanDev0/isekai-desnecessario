@@ -36,6 +36,7 @@ completa missões, junta moedas e troca por recompensas reais.
 - Maus hábitos deduzem XP e podem regredir nível
 
 ## Mecânicas-chave
+- **Catálogo (v0.7):** hábitos/missões/recompensas são **definições** (catálogo global ou conteúdo próprio), separadas da **ativação** no perfil. Cada perfil ativa itens (tabelas `Perfil*`); o estado por-perfil (streak, conclusão, última execução, trava) vive na ativação. As APIs antigas devolvem o item **achatado** (definição + ativação) no formato de sempre. Ver [`docs/BANCO-DE-DADOS.md`](docs/BANCO-DE-DADOS.md) e [`docs/API.md`](docs/API.md).
 - **Atributos (6):** Inteligência🧠, Sabedoria📚, Físico💪, Disciplina⚙️, Foco🎯, Vitalidade❤️
 - **Classes (6):** Mago, Bardo, Guerreiro, Escudeiro, Executor, Clérigo (com nome feminino; cada uma ligada a um atributo)
 - **Missões:** Principal / Secundária / Desafio — dão XP **e moedas** (única fonte de moedas).
@@ -51,7 +52,8 @@ Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · b
 ## Papéis de acesso (Role) — na conta `Usuario`
 - Campo `Role` em `Usuario` (não no `Perfil`): `Usuario` (default) · `VIP` · `Moderador` · `Admin`. **Não confundir com Classe RPG** (Mago, Bardo… que é do `Perfil`).
 - Gravado como texto (`varchar(20)`) — ajuste manual no banco é fácil. `UsuarioId = 1` é forçado a `Admin` no login (`AuthService.GarantirAdminInicialAsync`, hardcoded por enquanto).
-- Poderes (catálogo global / conteúdo próprio) ainda **não implementados** — só a base do papel existe. Front expõe `auth.role()`/`isAdmin()`/`podeCatalogoGlobal()` etc., ainda sem uso em tela.
+- **Criação de conteúdo por papel (backend, v0.7):** Admin → global aprovado · Moderador → global pendente · VIP → próprio aprovado · Usuário comum → **403**. Editar/excluir definição: só o autor ou Admin. Front expõe `auth.role()`/`isAdmin()`/`podeCatalogoGlobal()` etc.
+- Falta a **UI de catálogo** (navegar/ativar/desativar) por papel → **Parte 7**. Fluxo de aprovação Moderador→Admin → **Parte 5**. Notificações → **Parte 6**. Multi-classe nos itens → **Parte 3**.
 
 ## Notas de ambiente (Windows)
 - O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.

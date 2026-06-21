@@ -42,14 +42,15 @@ public class Perfil
     public DateTime? DesafioRecusadoEm  { get; set; }
     public DateTime? DesafioConcluidoEm { get; set; }
 
+    // Ativações de conteúdo do catálogo/próprio neste perfil
     [JsonIgnore]
-    public ICollection<BomHabito> BonsHabitos { get; set; } = [];
+    public ICollection<PerfilBomHabito> BonsHabitos { get; set; } = [];
     [JsonIgnore]
-    public ICollection<MauHabito> MausHabitos { get; set; } = [];
+    public ICollection<PerfilMauHabito> MausHabitos { get; set; } = [];
     [JsonIgnore]
-    public ICollection<Missao> Missoes { get; set; } = [];
+    public ICollection<PerfilMissao> Missoes { get; set; } = [];
     [JsonIgnore]
-    public ICollection<Recompensa> Recompensas { get; set; } = [];
+    public ICollection<PerfilRecompensa> Recompensas { get; set; } = [];
     [JsonIgnore]
     public ICollection<HistoricoXp> HistoricoXp { get; set; } = [];
     [JsonIgnore]

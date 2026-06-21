@@ -8,11 +8,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Usuario> Usuarios => Set<Usuario>();
     public DbSet<Perfil> Perfis => Set<Perfil>();
     public DbSet<Classe> Classes => Set<Classe>();
+    // ── Definições de conteúdo (catálogo global / próprio) ──
     public DbSet<BomHabito> BonsHabitos => Set<BomHabito>();
     public DbSet<MauHabito> MausHabitos => Set<MauHabito>();
     public DbSet<Missao> Missoes => Set<Missao>();
     public DbSet<TipoMissao> TiposMissao => Set<TipoMissao>();
     public DbSet<Recompensa> Recompensas => Set<Recompensa>();
+    // ── Ativações por perfil (estado por-perfil de cada definição) ──
+    public DbSet<PerfilBomHabito> PerfilBonsHabitos => Set<PerfilBomHabito>();
+    public DbSet<PerfilMauHabito> PerfilMausHabitos => Set<PerfilMauHabito>();
+    public DbSet<PerfilMissao> PerfilMissoes => Set<PerfilMissao>();
+    public DbSet<PerfilRecompensa> PerfilRecompensas => Set<PerfilRecompensa>();
     public DbSet<HistoricoXp> HistoricoXp => Set<HistoricoXp>();
     public DbSet<ItemInventario> Inventario => Set<ItemInventario>();
     public DbSet<Atributo>         Atributos        => Set<Atributo>();
@@ -96,6 +102,58 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .WithMany()
             .HasForeignKey(r => r.AtributoId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        // ── Catálogo: escopo/status (texto) + autor (SetNull ao apagar a conta) ──
+        foreach (var tipo in new[] { typeof(BomHabito), typeof(MauHabito), typeof(Missao), typeof(Recompensa) })
+        {
+            modelBuilder.Entity(tipo).Property("Escopo")
+                .HasConversion<string>().HasMaxLength(20).HasDefaultValue(EscopoConteudo.Global);
+            modelBuilder.Entity(tipo).Property("Status")
+                .HasConversion<string>().HasMaxLength(20).HasDefaultValue(StatusConteudo.Aprovado);
+        }
+
+        modelBuilder.Entity<BomHabito>()
+            .HasOne(d => d.CriadoPor).WithMany().HasForeignKey(d => d.CriadoPorUsuarioId).OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<MauHabito>()
+            .HasOne(d => d.CriadoPor).WithMany().HasForeignKey(d => d.CriadoPorUsuarioId).OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<Missao>()
+            .HasOne(d => d.CriadoPor).WithMany().HasForeignKey(d => d.CriadoPorUsuarioId).OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<Recompensa>()
+            .HasOne(d => d.CriadoPor).WithMany().HasForeignKey(d => d.CriadoPorUsuarioId).OnDelete(DeleteBehavior.SetNull);
+
+        // ── Ativações (Perfil ↔ definição); apagar perfil OU definição apaga a ativação ──
+        modelBuilder.Entity<PerfilBomHabito>(e =>
+        {
+            e.HasOne(a => a.Perfil).WithMany(p => p.BonsHabitos)
+                .HasForeignKey(a => a.PerfilId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(a => a.BomHabito).WithMany(d => d.Ativacoes)
+                .HasForeignKey(a => a.BomHabitoId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(a => new { a.PerfilId, a.BomHabitoId }).IsUnique();
+        });
+        modelBuilder.Entity<PerfilMauHabito>(e =>
+        {
+            e.HasOne(a => a.Perfil).WithMany(p => p.MausHabitos)
+                .HasForeignKey(a => a.PerfilId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(a => a.MauHabito).WithMany(d => d.Ativacoes)
+                .HasForeignKey(a => a.MauHabitoId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(a => new { a.PerfilId, a.MauHabitoId }).IsUnique();
+        });
+        modelBuilder.Entity<PerfilMissao>(e =>
+        {
+            e.HasOne(a => a.Perfil).WithMany(p => p.Missoes)
+                .HasForeignKey(a => a.PerfilId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(a => a.Missao).WithMany(d => d.Ativacoes)
+                .HasForeignKey(a => a.MissaoId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(a => new { a.PerfilId, a.MissaoId }).IsUnique();
+        });
+        modelBuilder.Entity<PerfilRecompensa>(e =>
+        {
+            e.HasOne(a => a.Perfil).WithMany(p => p.Recompensas)
+                .HasForeignKey(a => a.PerfilId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(a => a.Recompensa).WithMany(d => d.Ativacoes)
+                .HasForeignKey(a => a.RecompensaId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(a => new { a.PerfilId, a.RecompensaId }).IsUnique();
+        });
 
         modelBuilder.Entity<Atributo>().HasData(
             new Atributo { Id = 1, Nome = "Inteligência", Emoji = "🧠", Descricao = "Estudar, fazer cursos, resolver exercícios", Cor = "#58a6ff" },
