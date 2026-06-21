@@ -64,12 +64,17 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 > e já a ativa no perfil (criar exige papel Admin/Moderador/VIP — Usuário comum recebe `403`).
 > `PUT`/`DELETE` atuam na **definição** (só autor ou Admin). As ações (`completar`/`registrar`)
 > operam na **ativação** do perfil.
+>
+> **Multi-classe (v0.8):** `POST` aceita `classeIds[]` (vínculo a Classes RPG — **só conteúdo global**;
+> conteúdo próprio ignora). O `catalogo` devolve `classeIds` + `bloqueado` (item exclusivo de classe
+> que o perfil não tem → vem bloqueado, sem sumir). `ativar` recusa (`400`) item exclusivo de outra classe.
+> O `PUT` ainda **não** edita os vínculos de classe (Parte 7). Vale para missões e recompensas também.
 
 ### Bons
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | GET | `/habitos/bons?perfilId=X` | Hábitos **ativos** no perfil |
-| GET | `/habitos/bons/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flag `ativo` |
+| GET | `/habitos/bons/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flags `ativo`/`bloqueado` + `classeIds` |
 | POST | `/habitos/bons` | Cria definição + ativa no perfil |
 | PUT | `/habitos/bons/{id}` | Edita a definição (Habito, Xp, Frequencia, AtributoId) |
 | DELETE | `/habitos/bons/{id}` | Exclui a definição (ativações caem em cascata) |
@@ -99,7 +104,7 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 |--------|------|-----------|
 | GET | `/missoes?perfilId=X` | Missões **ativas** no perfil (com `Tipo`, ordenadas por TipoId) |
 | GET | `/missoes/tipos` | Lista os tipos de missão |
-| GET | `/missoes/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flag `ativo` |
+| GET | `/missoes/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flags `ativo`/`bloqueado` + `classeIds` |
 | POST | `/missoes` | Cria definição + ativa no perfil (papel Admin/Moderador/VIP; senão `403`) |
 | PUT | `/missoes/{id}` | Edita a definição (só autor ou Admin) |
 | DELETE | `/missoes/{id}` | Exclui a definição (ativações em cascata) |
@@ -116,7 +121,7 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | GET | `/recompensas?perfilId=X` | Recompensas **ativas** na loja do perfil (ordenadas por preço) |
-| GET | `/recompensas/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flag `ativo` |
+| GET | `/recompensas/catalogo?perfilId=X` | Catálogo disponível (aprovados: globais + próprios) + flags `ativo`/`bloqueado` + `classeIds` |
 | POST | `/recompensas` | Cria definição + ativa no perfil (papel Admin/Moderador/VIP; senão `403`) |
 | PUT | `/recompensas/{id}` | Edita a definição (só autor ou Admin) |
 | DELETE | `/recompensas/{id}` | Exclui a definição (ativações em cascata) |

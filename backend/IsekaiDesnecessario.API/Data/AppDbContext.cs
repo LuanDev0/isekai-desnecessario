@@ -121,6 +121,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Recompensa>()
             .HasOne(d => d.CriadoPor).WithMany().HasForeignKey(d => d.CriadoPorUsuarioId).OnDelete(DeleteBehavior.SetNull);
 
+        // ── Vínculo multi-classe (N:N item ↔ Classe); join tables implícitas ──
+        modelBuilder.Entity<BomHabito>().HasMany(d => d.Classes).WithMany();
+        modelBuilder.Entity<MauHabito>().HasMany(d => d.Classes).WithMany();
+        modelBuilder.Entity<Missao>().HasMany(d => d.Classes).WithMany();
+        modelBuilder.Entity<Recompensa>().HasMany(d => d.Classes).WithMany();
+
         // ── Ativações (Perfil ↔ definição); apagar perfil OU definição apaga a ativação ──
         modelBuilder.Entity<PerfilBomHabito>(e =>
         {

@@ -30,12 +30,15 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     {
         if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var uid = UsuarioId;
+        var classeId = await ClasseDoPerfilAsync(db, perfilId);
         var lista = await db.Recompensas
             .Where(d => d.Status == StatusConteudo.Aprovado
                      && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
             .Select(d => new RecompensaCatalogoDto(d.Id, d.Nome, d.Descricao, d.Emoji, d.Preco, d.Ativa,
                 d.AtributoId, d.PontosNecessarios, d.Escopo, d.Status,
-                db.PerfilRecompensas.Any(a => a.PerfilId == perfilId && a.RecompensaId == d.Id && a.Ativo)))
+                db.PerfilRecompensas.Any(a => a.PerfilId == perfilId && a.RecompensaId == d.Id && a.Ativo),
+                d.Classes.Select(c => c.Id).ToArray(),
+                d.Classes.Any() && !d.Classes.Any(c => c.Id == classeId)))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -55,7 +58,12 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
             Preco = dto.Preco, AtributoId = dto.AtributoId, PontosNecessarios = dto.PontosNecessarios,
             Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
-        def.Ativacoes.Add(new PerfilRecompensa { PerfilId = dto.PerfilId, Ativo = true });
+        if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
+            def.Classes = await db.Classes.Where(c => dto.ClasseIds.Contains(c.Id)).ToListAsync();
+
+        var classeId = await ClasseDoPerfilAsync(db, dto.PerfilId);
+        if (def.Classes.Count == 0 || (classeId != null && def.Classes.Any(c => c.Id == classeId)))
+            def.Ativacoes.Add(new PerfilRecompensa { PerfilId = dto.PerfilId, Ativo = true });
         db.Recompensas.Add(def);
         await db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetAll), new { perfilId = dto.PerfilId },
@@ -152,10 +160,18 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     {
         if (await GarantirDonoDoPerfilAsync(db, perfilId) is { } erro) return erro;
         var uid = UsuarioId;
-        var visivel = await db.Recompensas.AnyAsync(d => d.Id == defId
-            && d.Status == StatusConteudo.Aprovado
-            && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid));
-        if (!visivel) return NotFound();
+        var info = await db.Recompensas
+            .Where(d => d.Id == defId && d.Status == StatusConteudo.Aprovado
+                     && (d.Escopo == EscopoConteudo.Global || d.CriadoPorUsuarioId == uid))
+            .Select(d => new { Classes = d.Classes.Select(c => c.Id).ToArray() }).FirstOrDefaultAsync();
+        if (info is null) return NotFound();
+
+        if (ativar && info.Classes.Length > 0)
+        {
+            var classeId = await ClasseDoPerfilAsync(db, perfilId);
+            if (classeId is null || !info.Classes.Contains(classeId.Value))
+                return BadRequest("Item exclusivo de outra classe.");
+        }
 
         var a = await db.PerfilRecompensas.FirstOrDefaultAsync(x => x.PerfilId == perfilId && x.RecompensaId == defId);
         if (a is null) db.PerfilRecompensas.Add(new() { PerfilId = perfilId, RecompensaId = defId, Ativo = ativar });
@@ -172,14 +188,15 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
     }
 }
 
+// ClasseIds: vínculo multi-classe (só aplicado a conteúdo global).
 public record CriarRecompensaDto(int PerfilId, string Nome, string Descricao, string Emoji,
-    int Preco, int? AtributoId, int PontosNecessarios);
+    int Preco, int? AtributoId, int PontosNecessarios, List<int>? ClasseIds);
 
 // Recompensa ativa na loja do perfil (definição achatada).
 public record RecompensaDto(int Id, int PerfilId, string Nome, string Descricao, string Emoji,
     int Preco, bool Ativa, int? AtributoId, int PontosNecessarios);
 
-// Recompensa do catálogo (definição + se já está ativa no perfil).
+// Recompensa do catálogo (definição + se já está ativa no perfil + classes/bloqueio).
 public record RecompensaCatalogoDto(int Id, string Nome, string Descricao, string Emoji,
     int Preco, bool Ativa, int? AtributoId, int PontosNecessarios,
-    EscopoConteudo Escopo, StatusConteudo Status, bool Ativo);
+    EscopoConteudo Escopo, StatusConteudo Status, bool Ativo, int[] ClasseIds, bool Bloqueado);
