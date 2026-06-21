@@ -13,16 +13,18 @@ $muted:   #8b949e;
   min-height: 100svh;
   background: $bg;
   padding-top: env(safe-area-inset-top);
+  overflow-x: hidden;
 }
 
 .cadastro-page {
   width: 100%;
   max-width: 480px;
-  padding: 64px max(20px, env(safe-area-inset-left)) 40px;
+  padding: max(64px, calc(env(safe-area-inset-top) + 24px)) max(20px, env(safe-area-inset-left)) 40px;
   padding-right: max(20px, env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
   gap: 40px;
+  box-sizing: border-box;
 }
 
 // ── Barra de idioma ───────────────────────────────────
@@ -53,12 +55,13 @@ $muted:   #8b949e;
 
 .logo {
   font-family: 'Cinzel', serif;
-  font-size: 2.2rem;
+  font-size: clamp(1.3rem, 5.5vw, 2.2rem);
   font-weight: 900;
   color: $white;
-  letter-spacing: 2px;
+  letter-spacing: clamp(0px, 0.4vw, 2px);
   margin-bottom: 16px;
   line-height: 1.2;
+  word-break: break-word;
 }
 
 .hero-icon {

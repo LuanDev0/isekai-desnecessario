@@ -23,15 +23,17 @@
         <span class="avatar-fallback" *ngIf="!fotoAtual">{{ perfil.nome[0] }}</span>
       </div>
       <div class="profile-identity">
-        <p class="player-name">{{ perfil.nome }}</p>
-        <p class="player-title">{{ perfil.titulo }}</p>
-        <div class="coins-badge">
-          <svg class="coins-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/>
-            <text x="12" y="17" text-anchor="middle" font-size="11" font-weight="bold" fill="#7a5200">$</text>
-          </svg>
-          <span class="coins-value">{{ perfil.moedas }}</span>
+        <div class="player-name-row">
+          <p class="player-name">{{ perfil.nome }}</p>
+          <div class="coins-badge">
+            <svg class="coins-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/>
+              <text x="12" y="17" text-anchor="middle" font-size="11" font-weight="bold" fill="#7a5200">$</text>
+            </svg>
+            <span class="coins-value">{{ perfil.moedas }}</span>
+          </div>
         </div>
+        <p class="player-title">{{ perfil.titulo }}</p>
       </div>
       <div class="rank-letter" [class]="'rank-' + perfil.rank">{{ perfil.rank }}</div>
     </div>
