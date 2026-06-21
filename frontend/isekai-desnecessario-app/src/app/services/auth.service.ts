@@ -1,8 +1,8 @@
-import { Injectable, inject, signal, NgZone } from '@angular/core';
+import { Injectable, inject, signal, computed, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { Usuario, Perfil } from '../models/models';
+import { Usuario, Perfil, Role } from '../models/models';
 
 const TOKEN_KEY   = 'isekai_jwt';
 const USUARIO_KEY = 'isekai_usuario';
@@ -16,6 +16,15 @@ export class AuthService {
 
   private _usuario = signal<Usuario | null>(null);
   readonly usuario = this._usuario.asReadonly();
+
+  // Papel de acesso da conta logada (default 'Usuario' quando deslogado).
+  readonly role = computed<Role>(() => this._usuario()?.role ?? 'Usuario');
+  readonly isAdmin     = computed(() => this.role() === 'Admin');
+  readonly isModerador = computed(() => this.role() === 'Moderador');
+  // Quem pode criar conteúdo próprio/privado: VIP, Moderador e Admin.
+  readonly podeConteudoProprio = computed(() => this.role() !== 'Usuario');
+  // Quem pode criar conteúdo no catálogo global: Admin e Moderador.
+  readonly podeCatalogoGlobal  = computed(() => this.isAdmin() || this.isModerador());
 
   constructor() {
     const saved = localStorage.getItem(USUARIO_KEY);

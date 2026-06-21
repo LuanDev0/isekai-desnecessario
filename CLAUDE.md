@@ -48,6 +48,11 @@ completa missões, junta moedas e troca por recompensas reais.
 Login Google. `Usuario` (conta) 1→N `Perfil`. `Perfil.UsuarioId` null = convidado.
 Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · backend JWT · frontend · vincular convidados.
 
+## Papéis de acesso (Role) — na conta `Usuario`
+- Campo `Role` em `Usuario` (não no `Perfil`): `Usuario` (default) · `VIP` · `Moderador` · `Admin`. **Não confundir com Classe RPG** (Mago, Bardo… que é do `Perfil`).
+- Gravado como texto (`varchar(20)`) — ajuste manual no banco é fácil. `UsuarioId = 1` é forçado a `Admin` no login (`AuthService.GarantirAdminInicialAsync`, hardcoded por enquanto).
+- Poderes (catálogo global / conteúdo próprio) ainda **não implementados** — só a base do papel existe. Front expõe `auth.role()`/`isAdmin()`/`podeCatalogoGlobal()` etc., ainda sem uso em tela.
+
 ## Notas de ambiente (Windows)
 - O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.
 - Após `git pull` com migrations novas: `dotnet ef database update` em `backend/IsekaiDesnecessario.API`.

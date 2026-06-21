@@ -31,6 +31,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasIndex(u => u.Email)
             .IsUnique();
 
+        // Papel de acesso gravado como texto (ex.: "Admin") — facilita ajuste manual.
+        modelBuilder.Entity<Usuario>()
+            .Property(u => u.Role)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(Role.Usuario);
+
         // Um usuário tem vários perfis; apagar a conta NÃO apaga os heróis
         // (eles viram convidados — UsuarioId = null), preservando o progresso.
         modelBuilder.Entity<Perfil>()

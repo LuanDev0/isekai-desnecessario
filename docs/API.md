@@ -17,6 +17,8 @@ Rotas **públicas** (sem token). Todas devolvem `{ token, usuario, perfis }`.
 | POST | `/auth/registrar` | Cria conta por e-mail/senha (`{ nome, email, senha }`) — senha guardada com **BCrypt** |
 | POST | `/auth/login` | Login por e-mail/senha (`{ email, senha }`) |
 
+O objeto `usuario` inclui o campo `role` (`Usuario` · `VIP` · `Moderador` · `Admin`) — papel de acesso da conta. A conta `Id = 1` é promovida a `Admin` automaticamente no login (hardcoded por enquanto).
+
 O JWT leva o `UsuarioId` no claim `sub` e expira em **168h** (`Jwt:ExpiresHours`). O frontend o injeta via interceptor em todas as chamadas.
 
 ---
