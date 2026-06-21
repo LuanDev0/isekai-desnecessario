@@ -148,3 +148,13 @@ export interface MauHabito {
   ultimaExecucao?: string | null;
   atributoId?: number | null;
 }
+
+// Notificação in-app (sininho). Tipo: 'pendente' | 'rejeitado' | 'modificado'.
+export interface Notificacao {
+  id: number;
+  usuarioId: number;
+  tipo: string;
+  mensagem: string;
+  lida: boolean;
+  criadaEm: string;
+}

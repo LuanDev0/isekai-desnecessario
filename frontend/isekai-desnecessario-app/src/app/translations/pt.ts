@@ -8,6 +8,11 @@ export const pt = {
     grafico: 'Gráfico',
     config: 'Config.',
   },
+  notificacoes: {
+    titulo: 'Notificações',
+    vazio: 'Nenhuma notificação',
+    marcarTodas: 'Marcar todas como lidas',
+  },
   cadastro: {
     sub: 'Seu isekai começa aqui. Nenhum caminhão-kun necessário.',
     entrar: 'Entrar',

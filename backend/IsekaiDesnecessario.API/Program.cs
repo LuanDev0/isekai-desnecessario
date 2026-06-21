@@ -18,6 +18,7 @@ builder.Services.AddScoped<XpService>();
 builder.Services.AddScoped<LootboxService>();
 builder.Services.AddScoped<MissaoService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<NotificacaoService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>

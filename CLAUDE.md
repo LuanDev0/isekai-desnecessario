@@ -56,7 +56,8 @@ Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · b
 - **Multi-classe (v0.8):** itens globais podem ser exclusivos de uma ou mais Classes RPG (N:N). Item sem classe = vale pra todos; com classe = só ativa quem tem a classe (catálogo marca `bloqueado` para os demais). Conteúdo próprio não usa classe. Definido na **criação** via `classeIds` (editar vínculo = Parte 7).
 - **Aprovação (v0.9):** `AprovacoesController` (só Admin) — `GET /aprovacoes/pendentes`, `aprovar`/`rejeitar`. Itens globais do Moderador nascem Pendente (fora do catálogo) até aprovação.
 - **Trava/timer (v0.9):** `TravaDias` na definição; concluir (`completar`/`registrar`/`resgatar`) seta `TravadoAte`; `desativar` bloqueia enquanto travado (vale p/ todos).
-- Falta a **UI de catálogo** (navegar/ativar/desativar + seletor de classe + tela de aprovação) por papel → **Parte 7**. Notificações dos eventos de aprovação → **Parte 6**.
+- **Notificações (v0.10):** sininho in-app (`Notificacao` + `NotificacoesController` + `NotificacaoService`). Admin avisado de novo pendente; moderador avisado de rejeição/modificação. Front: componente `app-notificacoes` (sino flutuante global).
+- Falta a **UI de catálogo** (navegar/ativar/desativar + seletor de classe + tela de aprovação) por papel → **Parte 7**.
 
 ## Notas de ambiente (Windows)
 - O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.

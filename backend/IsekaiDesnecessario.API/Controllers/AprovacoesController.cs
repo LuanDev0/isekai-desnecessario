@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
+using IsekaiDesnecessario.API.Services;
 
 namespace IsekaiDesnecessario.API.Controllers;
 
 // Fluxo de aprovação Moderador → Admin. Só Admin acessa.
-// (As notificações dos eventos — novo pendente / rejeitado / modificado — são a Parte 6.)
 [ApiController]
 [Route("api/aprovacoes")]
 [Authorize]
-public class AprovacoesController(AppDbContext db) : ApiControllerBase
+public class AprovacoesController(AppDbContext db, NotificacaoService notificacoes) : ApiControllerBase
 {
     // Itens globais pendentes de aprovação, unificados por tipo.
     [HttpGet("pendentes")]
@@ -65,6 +65,10 @@ public class AprovacoesController(AppDbContext db) : ApiControllerBase
 
         d.Status = novo;
         await db.SaveChangesAsync();
+
+        // Avisa o autor (moderador) quando rejeitado
+        if (novo == StatusConteudo.Rejeitado && d.CriadoPorUsuarioId is int autor)
+            await notificacoes.NotificarAsync(autor, "rejeitado", $"Seu item \"{d.Titulo}\" foi rejeitado pelo admin.");
         return Ok();
     }
 }

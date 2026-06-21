@@ -196,6 +196,9 @@ Guarda cópia de Nome/Emoji/Descricao/Preco para sobreviver à exclusão da reco
 ### DiarioAcao — feed de conquistas
 `Mensagem`, `Emoji`, `Tipo` (`nivel`, `habito_bom`, `habito_mau`, `missao`, `recompensa`, `lootbox`), `Data`. Gerado automaticamente pelos controllers a cada ação relevante.
 
+### Notificacao — sininho in-app
+Destinatário é a **conta** (`UsuarioId` → `Usuario`, cascade). Campos: `Tipo` (`pendente`/`rejeitado`/`modificado`), `Mensagem`, `Lida` (bool), `CriadaEm`. Índice `(UsuarioId, Lida)`. Criada pelos eventos do fluxo de aprovação (admin: novo pendente; moderador: rejeição/modificação).
+
 ### Experimento / ExperimentoDia — hábito em teste
 `Titulo`, `Descricao`, `DuracaoDias` (default 21), `DataInicio`, `Ativo`, `Convertido`. Cada `ExperimentoDia` registra um dia marcado. Ao completar a duração, vira inativo; pode ser **convertido** em `BomHabito`.
 
@@ -215,6 +218,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `CatalogoGlobalEAtivacoes` | catálogo: definições ganham `Escopo`/`Status`/`CriadoPorUsuarioId` e perdem `PerfilId`; cria as 4 tabelas `Perfil*` (ativações). **Apaga o conteúdo antigo** (virada limpa) |
 | `VinculoMultiClasse` | vínculo N:N item ↔ Classe — join tables `BomHabitoClasse`, `ClasseMauHabito`, `ClasseMissao`, `ClasseRecompensa` |
 | `TravaDiasNoConteudo` | coluna `TravaDias` (int, default 0) nas 4 definições — trava por timer |
+| `Notificacoes` | tabela `Notificacoes` (sininho in-app) — FK p/ `Usuario`, índice `(UsuarioId, Lida)` |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 

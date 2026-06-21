@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace IsekaiDesnecessario.API.Models;
@@ -8,6 +9,7 @@ public class MauHabito : IDefinicaoConteudo
 {
     public int Id { get; set; }
     public string Habito { get; set; } = string.Empty;
+    [JsonIgnore, NotMapped] public string Titulo => Habito;
     public int Xp { get; set; }
     public string Frequencia { get; set; } = string.Empty;
     public int? AtributoId { get; set; }

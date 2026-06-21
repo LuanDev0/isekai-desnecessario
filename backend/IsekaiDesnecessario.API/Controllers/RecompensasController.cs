@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
+using IsekaiDesnecessario.API.Services;
 
 namespace IsekaiDesnecessario.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class RecompensasController(AppDbContext db) : ApiControllerBase
+public class RecompensasController(AppDbContext db, NotificacaoService notificacoes) : ApiControllerBase
 {
     // Recompensas ativas na loja do perfil (definição achatada)
     [HttpGet]
@@ -66,6 +67,8 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
             def.Ativacoes.Add(new PerfilRecompensa { PerfilId = dto.PerfilId, Ativo = true });
         db.Recompensas.Add(def);
         await db.SaveChangesAsync();
+        if (status == StatusConteudo.Pendente)
+            await notificacoes.NotificarAdminsAsync("pendente", $"Nova recompensa pendente de aprovação: \"{def.Nome}\".");
         return CreatedAtAction(nameof(GetAll), new { perfilId = dto.PerfilId },
             new RecompensaDto(def.Id, dto.PerfilId, def.Nome, def.Descricao, def.Emoji, def.Preco, def.Ativa, def.AtributoId, def.PontosNecessarios));
     }
@@ -84,6 +87,7 @@ public class RecompensasController(AppDbContext db) : ApiControllerBase
         d.AtributoId        = recompensa.AtributoId;
         d.PontosNecessarios = recompensa.PontosNecessarios;
         await db.SaveChangesAsync();
+        await AvisarSeAdminModificouAsync(db, notificacoes, d);
         return Ok(d);
     }
 

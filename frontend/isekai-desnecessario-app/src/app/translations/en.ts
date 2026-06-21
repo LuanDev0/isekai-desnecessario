@@ -8,6 +8,11 @@ export const en = {
     grafico: 'Chart',
     config: 'Config',
   },
+  notificacoes: {
+    titulo: 'Notifications',
+    vazio: 'No notifications',
+    marcarTodas: 'Mark all as read',
+  },
   cadastro: {
     sub: 'Your isekai starts here. No truck-kun required.',
     entrar: 'Sign In',

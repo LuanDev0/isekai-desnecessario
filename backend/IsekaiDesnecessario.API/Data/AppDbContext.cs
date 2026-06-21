@@ -26,6 +26,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<SnapshotAtributo> SnapshotsAtributo => Set<SnapshotAtributo>();
     public DbSet<Experimento>    Experimentos    => Set<Experimento>();
     public DbSet<ExperimentoDia> ExperimentosDia => Set<ExperimentoDia>();
+    public DbSet<Notificacao>    Notificacoes    => Set<Notificacao>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,6 +44,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasConversion<string>()
             .HasMaxLength(20)
             .HasDefaultValue(Role.Usuario);
+
+        // Notificações: apagar a conta apaga suas notificações
+        modelBuilder.Entity<Notificacao>()
+            .HasOne(n => n.Usuario)
+            .WithMany()
+            .HasForeignKey(n => n.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Notificacao>()
+            .HasIndex(n => new { n.UsuarioId, n.Lida });
 
         // Um usuário tem vários perfis; apagar a conta NÃO apaga os heróis
         // (eles viram convidados — UsuarioId = null), preservando o progresso.
