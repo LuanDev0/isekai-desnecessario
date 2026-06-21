@@ -424,6 +424,14 @@ $gold:    #ffd700;
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    .radar-wrap        { order: 1; }
+    .mini-cards-col-wrap { order: 2; }
+  }
 }
 
 // ── Wrapper com título + grade ────────────────────────────
