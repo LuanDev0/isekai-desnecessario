@@ -1,6 +1,6 @@
 # 📖 Documentação — Isekai Desnecessário
 
-> RPG **habit tracker**: transforme sua rotina numa aventura. Ganhe XP, suba de nível e rank, complete missões, junte moedas e troque por recompensas reais. Nenhum caminhão-chan necessário.
+> RPG **habit tracker**: transforme sua rotina numa aventura. Ganhe XP, suba de nível e rank, complete missões, junte moedas e troque por recompensas reais. Nenhum caminhão-kun necessário.
 
 ---
 
