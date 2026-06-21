@@ -65,6 +65,7 @@ Visão do progresso por **rank** (H → SSS), com faixas de nível, cor e ícone
 |-----------|--------|
 | `navbar` | Barra de navegação inferior (7 ícones SVG) |
 | `profile-selector` | Troca de perfil ativo; escuta `fotoAtualizada$` para recarregar a foto |
+| `notificacoes` | Sininho in-app flutuante (canto superior direito) — badge de não-lidas + painel; renderizado globalmente (exceto `/cadastro`) |
 
 ---
 

@@ -1,0 +1,173 @@
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$blue:    #58a6ff;
+$red:     #f85149;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+
+:host {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 1100;
+}
+
+// ── Botão do sino ─────────────────────────────────────
+.sino-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $surface;
+  border: 1px solid $border;
+  color: $text;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: background 0.2s, border-color 0.2s;
+
+  svg { width: 20px; height: 20px; }
+  &:hover { background: $card; border-color: #484f58; }
+}
+
+.sino-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: $red;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0d1117;
+}
+
+// ── Overlay para fechar ───────────────────────────────
+.sino-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1099;
+}
+
+// ── Painel ────────────────────────────────────────────
+.sino-painel {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: min(320px, calc(100vw - 24px));
+  max-height: 70vh;
+  overflow-y: auto;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  z-index: 1101;
+  animation: painelIn 0.15s ease;
+}
+
+@keyframes painelIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.painel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid $border;
+  position: sticky;
+  top: 0;
+  background: $surface;
+}
+
+.painel-titulo {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: $white;
+}
+
+.painel-marcar {
+  background: none;
+  border: none;
+  color: $blue;
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 0;
+  &:hover { text-decoration: underline; }
+}
+
+.painel-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 32px 0;
+  color: $muted;
+
+  span { font-size: 1.8rem; }
+  p { margin: 0; font-size: 0.85rem; }
+}
+
+.painel-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.noti {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: $card; }
+  &.nao-lida { background: rgba(88, 166, 255, 0.07); }
+}
+
+.noti-emoji {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.noti-corpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.noti-msg {
+  margin: 0;
+  font-size: 0.82rem;
+  color: $text;
+  line-height: 1.35;
+}
+
+.noti-quando {
+  font-size: 0.7rem;
+  color: $muted;
+}
+
+.noti-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $blue;
+  flex-shrink: 0;
+  margin-top: 5px;
+}

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, ItemInventario, JornadaSemana, MauHabito, Missao, Perfil, Recompensa } from '../models/models';
+import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, ItemInventario, JornadaSemana, MauHabito, Missao, Notificacao, Perfil, Recompensa } from '../models/models';
 import { environment } from '../../environments/environment';
 
 const BASE = environment.apiUrl;
@@ -219,5 +219,18 @@ export class ApiService {
   abrirLootbox(perfilId: number) {
     return this.http.post<{ recompensa: Recompensa; chance: number }>
       (`${BASE}/perfil/${perfilId}/lootbox/abrir`, {});
+  }
+
+  // ── Notificações (sininho) ───────────────────────────
+  getNotificacoes() {
+    return this.http.get<Notificacao[]>(`${BASE}/notificacoes`);
+  }
+
+  marcarNotificacaoLida(id: number) {
+    return this.http.post(`${BASE}/notificacoes/${id}/lida`, {});
+  }
+
+  marcarTodasNotificacoesLidas() {
+    return this.http.post(`${BASE}/notificacoes/lidas`, {});
   }
 }

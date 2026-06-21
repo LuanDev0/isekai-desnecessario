@@ -1,5 +1,6 @@
 using IsekaiDesnecessario.API.Data;
 using IsekaiDesnecessario.API.Models;
+using IsekaiDesnecessario.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -36,6 +37,15 @@ public abstract class ApiControllerBase : ControllerBase
     // Classe RPG do perfil (null = sem classe definida). Usado no vínculo multi-classe.
     protected static Task<int?> ClasseDoPerfilAsync(AppDbContext db, int perfilId) =>
         db.Perfis.Where(p => p.Id == perfilId).Select(p => p.ClasseId).FirstOrDefaultAsync();
+
+    // Quando um Admin edita um item global ainda Pendente de outro autor (moderador),
+    // avisa o autor de que o item foi modificado antes de aprovar.
+    protected async Task AvisarSeAdminModificouAsync(AppDbContext db, NotificacaoService notificacoes, IDefinicaoConteudo d)
+    {
+        if (d.Status == StatusConteudo.Pendente && d.CriadoPorUsuarioId is int autor && autor != UsuarioId
+            && await ObterRoleAsync(db) == Role.Admin)
+            await notificacoes.NotificarAsync(autor, "modificado", $"Seu item \"{d.Titulo}\" foi modificado pelo admin antes de aprovar.");
+    }
 
     // Quem pode editar/excluir uma definição:
     //   Admin → sempre · não-autor → nunca · autor de conteúdo próprio → sempre ·

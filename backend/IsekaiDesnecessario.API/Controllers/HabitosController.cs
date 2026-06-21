@@ -10,7 +10,7 @@ namespace IsekaiDesnecessario.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class HabitosController(AppDbContext db, XpService xpService) : ApiControllerBase
+public class HabitosController(AppDbContext db, XpService xpService, NotificacaoService notificacoes) : ApiControllerBase
 {
     // ════════════════════ Bons hábitos ════════════════════
 
@@ -69,6 +69,8 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
             def.Ativacoes.Add(new PerfilBomHabito { PerfilId = dto.PerfilId, Ativo = true });
         db.BonsHabitos.Add(def);
         await db.SaveChangesAsync();
+        if (status == StatusConteudo.Pendente)
+            await notificacoes.NotificarAdminsAsync("pendente", $"Novo hábito pendente de aprovação: \"{def.Habito}\".");
         return CreatedAtAction(nameof(GetBons), new { perfilId = dto.PerfilId },
             new HabitoDto(def.Id, dto.PerfilId, def.Habito, def.Xp, def.Frequencia, 0, null, def.AtributoId));
     }
@@ -84,6 +86,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
         d.Frequencia = habito.Frequencia;
         d.AtributoId = habito.AtributoId;
         await db.SaveChangesAsync();
+        await AvisarSeAdminModificouAsync(db, notificacoes, d);
         return Ok(d);
     }
 
@@ -183,6 +186,8 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
             def.Ativacoes.Add(new PerfilMauHabito { PerfilId = dto.PerfilId, Ativo = true });
         db.MausHabitos.Add(def);
         await db.SaveChangesAsync();
+        if (status == StatusConteudo.Pendente)
+            await notificacoes.NotificarAdminsAsync("pendente", $"Novo hábito pendente de aprovação: \"{def.Habito}\".");
         return CreatedAtAction(nameof(GetMaus), new { perfilId = dto.PerfilId },
             new HabitoDto(def.Id, dto.PerfilId, def.Habito, def.Xp, def.Frequencia, 0, null, def.AtributoId));
     }
@@ -198,6 +203,7 @@ public class HabitosController(AppDbContext db, XpService xpService) : ApiContro
         d.Frequencia = habito.Frequencia;
         d.AtributoId = habito.AtributoId;
         await db.SaveChangesAsync();
+        await AvisarSeAdminModificouAsync(db, notificacoes, d);
         return Ok(d);
     }
 

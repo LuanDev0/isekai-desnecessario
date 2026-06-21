@@ -10,7 +10,7 @@ namespace IsekaiDesnecessario.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class MissoesController(AppDbContext db, MissaoService missaoService) : ApiControllerBase
+public class MissoesController(AppDbContext db, MissaoService missaoService, NotificacaoService notificacoes) : ApiControllerBase
 {
     // Missões ativas no perfil (definição achatada + estado da ativação)
     [HttpGet]
@@ -73,6 +73,8 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
             def.Ativacoes.Add(new PerfilMissao { PerfilId = dto.PerfilId, Ativo = true });
         db.Missoes.Add(def);
         await db.SaveChangesAsync();
+        if (status == StatusConteudo.Pendente)
+            await notificacoes.NotificarAdminsAsync("pendente", $"Nova missão pendente de aprovação: \"{def.Titulo}\".");
         return CreatedAtAction(nameof(GetAll), new { perfilId = dto.PerfilId },
             new MissaoDto(def.Id, dto.PerfilId, def.Titulo, def.TipoId, null, def.RecompensaXp,
                 def.RecompensaMoedas, 0, false, null, def.DataLimite, def.MissaoPrincipalId, def.AtributoId));
@@ -92,6 +94,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService) : A
         d.DataLimite = missao.DataLimite;
         d.MissaoPrincipalId = missao.MissaoPrincipalId;
         await db.SaveChangesAsync();
+        await AvisarSeAdminModificouAsync(db, notificacoes, d);
         return Ok(d);
     }
 

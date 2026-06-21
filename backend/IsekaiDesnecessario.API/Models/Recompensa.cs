@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace IsekaiDesnecessario.API.Models;
@@ -8,6 +9,7 @@ public class Recompensa : IDefinicaoConteudo
 {
     public int Id { get; set; }
     public string Nome { get; set; } = string.Empty;
+    [JsonIgnore, NotMapped] public string Titulo => Nome;
     public string Descricao { get; set; } = string.Empty;
     public string Emoji { get; set; } = "🎁";
     public int Preco { get; set; }

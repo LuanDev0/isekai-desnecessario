@@ -148,7 +148,21 @@ Fluxo Moderador → Admin. Itens globais criados por Moderador entram como **Pen
 | POST | `/aprovacoes/{tipo}/{id}/aprovar` | Aprova (vira visível no catálogo) |
 | POST | `/aprovacoes/{tipo}/{id}/rejeitar` | Rejeita |
 
-> Notificações dos eventos (admin avisado de novo pendente; moderador avisado de rejeição/modificação) → **Parte 6**.
+> Os eventos disparam **notificações** (ver abaixo): aprovar/rejeitar avisa o autor; editar item pendente de outro autor (Admin) avisa o autor.
+
+---
+
+## Notificações — `/api/notificacoes`
+
+Sininho in-app. Destinatário é a conta logada.
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/notificacoes` | Lista as notificações da conta (50 mais recentes) |
+| POST | `/notificacoes/{id}/lida` | Marca uma como lida |
+| POST | `/notificacoes/lidas` | Marca todas como lidas |
+
+**Disparos automáticos:** Moderador cria item global (Pendente) → todos os admins · Admin rejeita → autor · Admin edita item pendente de outro autor → autor.
 
 ---
 

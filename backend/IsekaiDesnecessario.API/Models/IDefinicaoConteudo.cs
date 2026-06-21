@@ -7,4 +7,6 @@ public interface IDefinicaoConteudo
     EscopoConteudo Escopo { get; set; }
     StatusConteudo Status { get; set; }
     int? CriadoPorUsuarioId { get; set; }
+    // Título de exibição (Habito / Titulo / Nome) — usado em notificações/aprovação.
+    string Titulo { get; }
 }
