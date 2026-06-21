@@ -146,6 +146,13 @@ $muted:   #8b949e;   // fg.subtle
   min-width: 0;
 }
 
+.player-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .player-name {
   font-size: 1.1rem;
   font-weight: 700;
@@ -153,6 +160,7 @@ $muted:   #8b949e;   // fg.subtle
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 }
 
 .player-title {
