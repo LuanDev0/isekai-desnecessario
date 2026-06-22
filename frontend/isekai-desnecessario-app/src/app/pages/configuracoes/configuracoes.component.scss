@@ -584,3 +584,61 @@ $muted:   #8b949e;
   color: $muted;
   text-align: center;
 }
+
+// ── Catálogo (Parte 7) ────────────────────────────────
+.item-row.bloqueado {
+  opacity: 0.5;
+  .item-meta { color: $orange; }
+}
+
+.btn-cat {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #1a3a5e;
+  background: #0c1a2e;
+  color: $blue;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &:hover:not(:disabled) { background: #102038; }
+  &.on {
+    border-color: $border;
+    background: $card;
+    color: $muted;
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// Chips de seleção de classe no formulário de criação
+.classe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 5px 10px;
+  border-radius: 16px;
+  border: 1px solid $border;
+  background: $surface;
+  color: $text;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { border-color: #484f58; }
+  &.sel {
+    border-color: $blue;
+    background: #0c1a2e;
+    color: $blue;
+  }
+}
+
+// Botões compactos (aprovações)
+.btn-sm {
+  padding: 5px 12px !important;
+  font-size: 0.78rem !important;
+}

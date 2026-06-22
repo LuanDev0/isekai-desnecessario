@@ -149,6 +149,65 @@ export interface MauHabito {
   atributoId?: number | null;
 }
 
+// ── Catálogo (definição + estado no perfil) ──────────
+export type EscopoConteudo = 'Global' | 'Proprio';
+export type StatusConteudo = 'Aprovado' | 'Pendente' | 'Rejeitado';
+
+export interface HabitoCatalogo {
+  id: number;
+  habito: string;
+  xp: number;
+  frequencia: string;
+  atributoId?: number | null;
+  escopo: EscopoConteudo;
+  status: StatusConteudo;
+  ativo: boolean;
+  classeIds: number[];
+  bloqueado: boolean;
+}
+
+export interface MissaoCatalogo {
+  id: number;
+  titulo: string;
+  tipoId: number;
+  tipo?: TipoMissao;
+  recompensaXp: number;
+  recompensaMoedas: number;
+  dataLimite?: string | null;
+  missaoPrincipalId?: number | null;
+  atributoId?: number | null;
+  escopo: EscopoConteudo;
+  status: StatusConteudo;
+  ativo: boolean;
+  classeIds: number[];
+  bloqueado: boolean;
+}
+
+export interface RecompensaCatalogo {
+  id: number;
+  nome: string;
+  descricao: string;
+  emoji: string;
+  preco: number;
+  ativa: boolean;
+  atributoId?: number | null;
+  pontosNecessarios: number;
+  escopo: EscopoConteudo;
+  status: StatusConteudo;
+  ativo: boolean;
+  classeIds: number[];
+  bloqueado: boolean;
+}
+
+// Item pendente de aprovação (unificado entre tipos), para a tela do admin.
+export interface Pendente {
+  tipo: 'bomhabito' | 'mauhabito' | 'missao' | 'recompensa';
+  id: number;
+  titulo: string;
+  criadoPorUsuarioId?: number | null;
+  autorNome?: string | null;
+}
+
 // Notificação in-app (sininho). Tipo: 'pendente' | 'rejeitado' | 'modificado'.
 export interface Notificacao {
   id: number;

@@ -5,8 +5,9 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { Atributo, BomHabito, Classe, MauHabito, Missao, Perfil, Recompensa } from '../../models/models';
+import { Atributo, BomHabito, Classe, HabitoCatalogo, MauHabito, Missao, MissaoCatalogo, Pendente, Perfil, Recompensa, RecompensaCatalogo } from '../../models/models';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -21,10 +22,11 @@ export class ConfiguracoesComponent implements OnInit {
   private profile = inject(ProfileService);
   private router  = inject(Router);
   readonly lang   = inject(LanguageService);
+  readonly auth   = inject(AuthService);
 
   get perfilId() { return this.profile.id; }
 
-  // Listas
+  // Listas — ativos no perfil
   bonsHabitos:  BomHabito[]  = [];
   mausHabitos:  MauHabito[]  = [];
   missoes:      Missao[]     = [];
@@ -32,6 +34,22 @@ export class ConfiguracoesComponent implements OnInit {
   tiposMissao:  { id: number; nome: string }[] = [];
   atributos:    Atributo[]   = [];
   classes:      Classe[]     = [];
+
+  // Catálogo (itens disponíveis para ativar)
+  catBons:   HabitoCatalogo[]     = [];
+  catMaus:   HabitoCatalogo[]     = [];
+  catMiss:   MissaoCatalogo[]     = [];
+  catRecomp: RecompensaCatalogo[] = [];
+
+  // Colapsáveis do catálogo (sub-aba "Adicionar")
+  catAbertoBons   = false;
+  catAbertoMaus   = false;
+  catAbertoMiss   = false;
+  catAbertoRecomp = false;
+
+  // Aprovações (admin)
+  secaoAprov = false;
+  pendentes: Pendente[] = [];
 
   // ── Aba Perfil ────────────────────────────────────
   secaoPerfil    = false;
@@ -55,11 +73,11 @@ export class ConfiguracoesComponent implements OnInit {
     this.classes = [...this.classes];
   }
 
-  // Formulários de criação
-  novoBom  = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null as number | null };
-  novoMau  = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null as number | null };
-  novaMiss = { titulo: '', tipoId: 1, recompensaXp: 10, recompensaMoedas: 30, atributoId: null as number | null, dataLimite: null as string | null, missaoPrincipalId: null as number | null };
-  novaRecomp = { nome: '', descricao: '', emoji: '🎁', preco: 50, atributoId: null as number | null, pontosNecessarios: 0 };
+  // Formulários de criação (proprio/classeIds/travaDias = campos de catálogo)
+  novoBom  = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null as number | null, proprio: false, classeIds: [] as number[], travaDias: 0 };
+  novoMau  = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null as number | null, proprio: false, classeIds: [] as number[], travaDias: 0 };
+  novaMiss = { titulo: '', tipoId: 1, recompensaXp: 10, recompensaMoedas: 30, atributoId: null as number | null, dataLimite: null as string | null, missaoPrincipalId: null as number | null, proprio: false, classeIds: [] as number[], travaDias: 0 };
+  novaRecomp = { nome: '', descricao: '', emoji: '🎁', preco: 50, atributoId: null as number | null, pontosNecessarios: 0, proprio: false, classeIds: [] as number[], travaDias: 0 };
 
   // Edição inline — armazena o item sendo editado por id
   editandoBomId:    number | null = null;
@@ -125,20 +143,103 @@ export class ConfiguracoesComponent implements OnInit {
     this.api.getMausHabitos(this.perfilId).subscribe({ next: h => this.mausHabitos = h });
     this.api.getMissoes(this.perfilId).subscribe({ next: m => this.missoes = m });
     this.api.getRecompensas(this.perfilId).subscribe({ next: r => this.recompensas = r });
+    this.carregarCatalogos();
+    if (this.auth.isAdmin()) this.carregarPendentes();
+  }
+
+  carregarCatalogos() {
+    this.api.getCatalogoBonsHabitos(this.perfilId).subscribe({ next: c => this.catBons = c });
+    this.api.getCatalogoMausHabitos(this.perfilId).subscribe({ next: c => this.catMaus = c });
+    this.api.getCatalogoMissoes(this.perfilId).subscribe({ next: c => this.catMiss = c });
+    this.api.getCatalogoRecompensas(this.perfilId).subscribe({ next: c => this.catRecomp = c });
+  }
+
+  // ── Ativar / desativar do catálogo ───────────────────
+  toggleAtivoBom(item: HabitoCatalogo) {
+    if (item.bloqueado) return;
+    this.api.ativarBomHabito(item.id, this.perfilId, !item.ativo).subscribe({
+      next: () => this.carregar(),
+      error: e => this.mostrarFeedback('bom', this.erroMsg(e), 'warn'),
+    });
+  }
+  toggleAtivoMau(item: HabitoCatalogo) {
+    if (item.bloqueado) return;
+    this.api.ativarMauHabito(item.id, this.perfilId, !item.ativo).subscribe({
+      next: () => this.carregar(),
+      error: e => this.mostrarFeedback('mau', this.erroMsg(e), 'warn'),
+    });
+  }
+  toggleAtivoMiss(item: MissaoCatalogo) {
+    if (item.bloqueado) return;
+    this.api.ativarMissao(item.id, this.perfilId, !item.ativo).subscribe({
+      next: () => this.carregar(),
+      error: e => this.mostrarFeedback('miss', this.erroMsg(e), 'warn'),
+    });
+  }
+  toggleAtivoRecomp(item: RecompensaCatalogo) {
+    if (item.bloqueado) return;
+    this.api.ativarRecompensa(item.id, this.perfilId, !item.ativo).subscribe({
+      next: () => this.carregar(),
+      error: e => this.mostrarFeedback('recomp', this.erroMsg(e), 'warn'),
+    });
+  }
+
+  // Desativar a partir da lista de Ativos (respeita trava — backend devolve 400).
+  desativarAtivo(tipo: 'bom' | 'mau' | 'miss' | 'recomp', id: number) {
+    const obs =
+      tipo === 'bom'  ? this.api.ativarBomHabito(id, this.perfilId, false) :
+      tipo === 'mau'  ? this.api.ativarMauHabito(id, this.perfilId, false) :
+      tipo === 'miss' ? this.api.ativarMissao(id, this.perfilId, false) :
+                        this.api.ativarRecompensa(id, this.perfilId, false);
+    obs.subscribe({ next: () => this.carregar(), error: e => this.mostrarFeedback(tipo, this.erroMsg(e), 'warn') });
+  }
+
+  // ── Seleção de classes (chips) no formulário de criação ──
+  toggleClasse(arr: number[], id: number) {
+    const i = arr.indexOf(id);
+    if (i >= 0) arr.splice(i, 1); else arr.push(id);
+  }
+
+  // ── Aprovações (admin) ───────────────────────────────
+  carregarPendentes() {
+    this.api.getPendentes().subscribe({ next: p => this.pendentes = p, error: () => {} });
+  }
+  aprovar(p: Pendente) {
+    this.api.aprovarPendente(p.tipo, p.id).subscribe({ next: () => { this.carregarPendentes(); this.carregarCatalogos(); } });
+  }
+  rejeitar(p: Pendente) {
+    this.api.rejeitarPendente(p.tipo, p.id).subscribe({ next: () => this.carregarPendentes() });
+  }
+
+  private erroMsg(e: any): string {
+    return typeof e?.error === 'string' ? e.error : 'Não foi possível concluir a ação.';
+  }
+
+  // Admin/Moderador escolhem global vs próprio (toggle); VIP só cria próprio.
+  escopoProprio(toggle: boolean): boolean {
+    return this.auth.podeCatalogoGlobal() ? toggle : true;
+  }
+
+  // Rótulo das classes de um item (para "exclusivo de ..." no catálogo).
+  classesLabel(ids: number[]): string {
+    return ids
+      .map(id => { const c = this.classes.find(x => x.id === id); return c ? `${c.emoji} ${c.nome}` : ''; })
+      .filter(Boolean)
+      .join(', ');
   }
 
   // ── Bons hábitos ──────────────────────────────────
   salvarBomHabito() {
     if (!this.novoBom.habito.trim()) return;
     if (!this.novoBom.atributoId) { this.mostrarFeedback('bom', 'Selecione um atributo!', 'warn'); return; }
-    const payload = { habito: this.novoBom.habito, xp: +this.novoBom.xp, frequencia: this.novoBom.frequencia, perfilId: this.perfilId, atributoId: this.novoBom.atributoId };
+    const payload = { habito: this.novoBom.habito, xp: +this.novoBom.xp, frequencia: this.novoBom.frequencia, perfilId: this.perfilId, atributoId: this.novoBom.atributoId, proprio: this.escopoProprio(this.novoBom.proprio), classeIds: this.novoBom.classeIds, travaDias: +this.novoBom.travaDias };
     this.api.criarBomHabito(payload).subscribe({
       next: () => {
-        this.novoBom = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null };
+        this.novoBom = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null, proprio: false, classeIds: [], travaDias: 0 };
         this.mostrarFeedback('bom', 'Hábito criado!');
         this.carregar();
       },
-      error: e => { console.error('Erro ao criar bom hábito:', e); this.mostrarFeedback('bom', 'Erro ao cadastrar!'); }
+      error: e => { console.error('Erro ao criar bom hábito:', e); this.mostrarFeedback('bom', this.erroMsg(e), 'warn'); }
     });
   }
 
@@ -166,14 +267,14 @@ export class ConfiguracoesComponent implements OnInit {
   salvarMauHabito() {
     if (!this.novoMau.habito.trim()) return;
     if (!this.novoMau.atributoId) { this.mostrarFeedback('mau', 'Selecione um atributo!', 'warn'); return; }
-    const payload = { habito: this.novoMau.habito, xp: +this.novoMau.xp, frequencia: this.novoMau.frequencia, perfilId: this.perfilId, atributoId: this.novoMau.atributoId };
+    const payload = { habito: this.novoMau.habito, xp: +this.novoMau.xp, frequencia: this.novoMau.frequencia, perfilId: this.perfilId, atributoId: this.novoMau.atributoId, proprio: this.escopoProprio(this.novoMau.proprio), classeIds: this.novoMau.classeIds, travaDias: +this.novoMau.travaDias };
     this.api.criarMauHabito(payload).subscribe({
       next: () => {
-        this.novoMau = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null };
+        this.novoMau = { habito: '', xp: 50, frequencia: 'Livre', atributoId: null, proprio: false, classeIds: [], travaDias: 0 };
         this.mostrarFeedback('mau', 'Hábito criado!');
         this.carregar();
       },
-      error: e => { console.error('Erro ao criar mau hábito:', e); this.mostrarFeedback('mau', 'Erro ao cadastrar!'); }
+      error: e => { console.error('Erro ao criar mau hábito:', e); this.mostrarFeedback('mau', this.erroMsg(e), 'warn'); }
     });
   }
 
@@ -201,14 +302,14 @@ export class ConfiguracoesComponent implements OnInit {
   salvarMissao() {
     if (!this.novaMiss.titulo.trim()) return;
     if (!this.novaMiss.atributoId) { this.mostrarFeedback('miss', 'Selecione um atributo!', 'warn'); return; }
-    const payload = { titulo: this.novaMiss.titulo, tipoId: +this.novaMiss.tipoId, recompensaXp: +this.novaMiss.recompensaXp, recompensaMoedas: +this.novaMiss.recompensaMoedas, perfilId: this.perfilId, atributoId: this.novaMiss.atributoId, dataLimite: this.novaMiss.dataLimite || null, missaoPrincipalId: this.novaMiss.missaoPrincipalId || null };
+    const payload = { titulo: this.novaMiss.titulo, tipoId: +this.novaMiss.tipoId, recompensaXp: +this.novaMiss.recompensaXp, recompensaMoedas: +this.novaMiss.recompensaMoedas, perfilId: this.perfilId, atributoId: this.novaMiss.atributoId, dataLimite: this.novaMiss.dataLimite || null, missaoPrincipalId: this.novaMiss.missaoPrincipalId || null, proprio: this.escopoProprio(this.novaMiss.proprio), classeIds: this.novaMiss.classeIds, travaDias: +this.novaMiss.travaDias };
     this.api.criarMissao(payload).subscribe({
       next: () => {
-        this.novaMiss = { titulo: '', tipoId: this.tiposMissao[0]?.id ?? 1, recompensaXp: 10, recompensaMoedas: 30, atributoId: null, dataLimite: null, missaoPrincipalId: null };
+        this.novaMiss = { titulo: '', tipoId: this.tiposMissao[0]?.id ?? 1, recompensaXp: 10, recompensaMoedas: 30, atributoId: null, dataLimite: null, missaoPrincipalId: null, proprio: false, classeIds: [], travaDias: 0 };
         this.mostrarFeedback('miss', 'Missão criada!');
         this.carregar();
       },
-      error: e => { console.error('Erro ao criar missão:', e); this.mostrarFeedback('miss', 'Erro ao cadastrar!'); }
+      error: e => { console.error('Erro ao criar missão:', e); this.mostrarFeedback('miss', this.erroMsg(e), 'warn'); }
     });
   }
 
@@ -236,14 +337,14 @@ export class ConfiguracoesComponent implements OnInit {
   // ── Recompensas ───────────────────────────────────
   salvarRecompensa() {
     if (!this.novaRecomp.nome.trim()) return;
-    const payload = { ...this.novaRecomp, preco: +this.novaRecomp.preco, perfilId: this.perfilId };
+    const payload = { ...this.novaRecomp, preco: +this.novaRecomp.preco, perfilId: this.perfilId, proprio: this.escopoProprio(this.novaRecomp.proprio), travaDias: +this.novaRecomp.travaDias };
     this.api.criarRecompensa(payload).subscribe({
       next: () => {
-        this.novaRecomp = { nome: '', descricao: '', emoji: '🎁', preco: 50, atributoId: null, pontosNecessarios: 0 };
+        this.novaRecomp = { nome: '', descricao: '', emoji: '🎁', preco: 50, atributoId: null, pontosNecessarios: 0, proprio: false, classeIds: [], travaDias: 0 };
         this.mostrarFeedback('recomp', 'Recompensa criada!');
         this.carregar();
       },
-      error: () => this.mostrarFeedback('recomp', 'Erro ao cadastrar!', 'warn')
+      error: e => this.mostrarFeedback('recomp', this.erroMsg(e), 'warn')
     });
   }
 

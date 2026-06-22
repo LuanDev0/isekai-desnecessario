@@ -1,6 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, ItemInventario, JornadaSemana, MauHabito, Missao, Notificacao, Perfil, Recompensa } from '../models/models';
+import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, HabitoCatalogo, ItemInventario, JornadaSemana, MauHabito, Missao, MissaoCatalogo, Notificacao, Pendente, Perfil, Recompensa, RecompensaCatalogo } from '../models/models';
+
+// Campos extras de catálogo no payload de criação (Partes 3-5).
+type ExtrasCatalogo = { classeIds?: number[]; proprio?: boolean; travaDias?: number };
 import { environment } from '../../environments/environment';
 
 const BASE = environment.apiUrl;
@@ -73,7 +76,7 @@ export class ApiService {
     return this.http.post(`${BASE}/missoes/${id}/completar?perfilId=${perfilId}`, {});
   }
 
-  criarBomHabito(habito: Partial<BomHabito>) {
+  criarBomHabito(habito: Partial<BomHabito> & ExtrasCatalogo) {
     return this.http.post<BomHabito>(`${BASE}/habitos/bons`, habito);
   }
 
@@ -85,7 +88,7 @@ export class ApiService {
     return this.http.delete(`${BASE}/habitos/bons/${id}`);
   }
 
-  criarMauHabito(habito: Partial<MauHabito>) {
+  criarMauHabito(habito: Partial<MauHabito> & ExtrasCatalogo) {
     return this.http.post<MauHabito>(`${BASE}/habitos/maus`, habito);
   }
 
@@ -97,7 +100,7 @@ export class ApiService {
     return this.http.delete(`${BASE}/habitos/maus/${id}`);
   }
 
-  criarMissao(missao: { titulo: string; tipoId: number; recompensaXp: number; recompensaMoedas: number; perfilId?: number }) {
+  criarMissao(missao: { titulo: string; tipoId: number; recompensaXp: number; recompensaMoedas: number; perfilId?: number } & ExtrasCatalogo) {
     return this.http.post<Missao>(`${BASE}/missoes`, missao);
   }
 
@@ -122,7 +125,7 @@ export class ApiService {
     return this.http.get<Recompensa[]>(`${BASE}/recompensas?perfilId=${perfilId}`);
   }
 
-  criarRecompensa(r: Partial<Recompensa>) {
+  criarRecompensa(r: Partial<Recompensa> & ExtrasCatalogo) {
     return this.http.post<Recompensa>(`${BASE}/recompensas`, r);
   }
 
@@ -219,6 +222,45 @@ export class ApiService {
   abrirLootbox(perfilId: number) {
     return this.http.post<{ recompensa: Recompensa; chance: number }>
       (`${BASE}/perfil/${perfilId}/lootbox/abrir`, {});
+  }
+
+  // ── Catálogo (itens disponíveis para ativar) ─────────
+  getCatalogoBonsHabitos(perfilId: number) {
+    return this.http.get<HabitoCatalogo[]>(`${BASE}/habitos/bons/catalogo?perfilId=${perfilId}`);
+  }
+  getCatalogoMausHabitos(perfilId: number) {
+    return this.http.get<HabitoCatalogo[]>(`${BASE}/habitos/maus/catalogo?perfilId=${perfilId}`);
+  }
+  getCatalogoMissoes(perfilId: number) {
+    return this.http.get<MissaoCatalogo[]>(`${BASE}/missoes/catalogo?perfilId=${perfilId}`);
+  }
+  getCatalogoRecompensas(perfilId: number) {
+    return this.http.get<RecompensaCatalogo[]>(`${BASE}/recompensas/catalogo?perfilId=${perfilId}`);
+  }
+
+  // ── Ativar / desativar no perfil ─────────────────────
+  ativarBomHabito(id: number, perfilId: number, ativar: boolean) {
+    return this.http.post(`${BASE}/habitos/bons/${id}/${ativar ? 'ativar' : 'desativar'}?perfilId=${perfilId}`, {});
+  }
+  ativarMauHabito(id: number, perfilId: number, ativar: boolean) {
+    return this.http.post(`${BASE}/habitos/maus/${id}/${ativar ? 'ativar' : 'desativar'}?perfilId=${perfilId}`, {});
+  }
+  ativarMissao(id: number, perfilId: number, ativar: boolean) {
+    return this.http.post(`${BASE}/missoes/${id}/${ativar ? 'ativar' : 'desativar'}?perfilId=${perfilId}`, {});
+  }
+  ativarRecompensa(id: number, perfilId: number, ativar: boolean) {
+    return this.http.post(`${BASE}/recompensas/${id}/${ativar ? 'ativar' : 'desativar'}?perfilId=${perfilId}`, {});
+  }
+
+  // ── Aprovações (Admin) ───────────────────────────────
+  getPendentes() {
+    return this.http.get<Pendente[]>(`${BASE}/aprovacoes/pendentes`);
+  }
+  aprovarPendente(tipo: string, id: number) {
+    return this.http.post(`${BASE}/aprovacoes/${tipo}/${id}/aprovar`, {});
+  }
+  rejeitarPendente(tipo: string, id: number) {
+    return this.http.post(`${BASE}/aprovacoes/${tipo}/${id}/rejeitar`, {});
   }
 
   // ── Notificações (sininho) ───────────────────────────

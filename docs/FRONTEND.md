@@ -49,7 +49,13 @@ Itens resgatados; permite marcar como **usado**.
 Evolução de XP/atributos ao longo do tempo (usa `HistoricoXp` e `SnapshotAtributo`).
 
 ### Configurações (`/configuracoes`)
-Abas para gerenciar o **Perfil** (foto, nome, classe, gênero) e CRUD de **bons hábitos**, **maus hábitos**, **missões** e **recompensas**.
+Gerencia o **Perfil** (foto, nome, classe, gênero) e os conteúdos do herói. Cada seção (Bons Hábitos, Maus Hábitos, Missões, Recompensas) tem três sub-blocos:
+
+1. **Adicionar do catálogo** — lista itens aprovados do catálogo global + conteúdo próprio; itens exclusivos de outra classe aparecem com 🔒 e opacidade reduzida (bloqueados). Botão **Ativar/Desativar** aciona `POST /{tipo}/{id}/ativar` ou `/desativar`.
+2. **Ativos** — lista os itens já ativos no perfil. Botão **Desativar** sempre visível; botões **Editar/Excluir** só para autores e Admins (`auth.podeConteudoProprio()`).
+3. **Criar** — formulário de criação, gated por `auth.podeConteudoProprio()` (VIP/Moderador/Admin). Campos extras: **Escopo** (próprio × global — só Admin/Moderador veem a opção global), **Trava (dias)** e **Chips de classe** (só para conteúdo global, seleciona classes exclusivas).
+
+**Seção de Aprovações** (só Admin): lista unificada de itens globais pendentes (`/aprovacoes/pendentes`), com botões **Aprovar** e **Rejeitar** por item.
 
 ### Laboratório (`/laboratorio`)
 Cria e acompanha **experimentos** (hábitos em teste, default 21 dias). Marca um dia por vez e converte em bom hábito.
@@ -93,7 +99,11 @@ Estado do **perfil ativo** com signal:
 
 ## Models TypeScript (`models/models.ts`)
 
-Espelham as entidades do backend (camelCase): `Perfil`, `Classe`, `Atributo`, `BomHabito`, `MauHabito`, `Missao`, `TipoMissao`, `Recompensa`, `ItemInventario`, `DiarioAcao`, `Experimento`/`ExperimentoDia`, `JornadaSemana`. Detalhes de cada campo em [BANCO-DE-DADOS.md](BANCO-DE-DADOS.md).
+Espelham as entidades do backend (camelCase): `Perfil`, `Classe`, `Atributo`, `BomHabito`, `MauHabito`, `Missao`, `TipoMissao`, `Recompensa`, `ItemInventario`, `DiarioAcao`, `Experimento`/`ExperimentoDia`, `JornadaSemana`, `Notificacao`.
+
+Tipos de catálogo: `HabitoCatalogo`, `MissaoCatalogo`, `RecompensaCatalogo` (definição + flags `ativo`/`bloqueado`/`classeIds`); `Pendente` (item aguardando aprovação); `EscopoConteudo` (`'Global'|'Proprio'`); `StatusConteudo` (`'Aprovado'|'Pendente'|'Rejeitado'`); `Role` (`'Usuario'|'VIP'|'Moderador'|'Admin'`).
+
+Detalhes de cada campo em [BANCO-DE-DADOS.md](BANCO-DE-DADOS.md).
 
 ---
 
