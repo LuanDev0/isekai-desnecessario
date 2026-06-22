@@ -21,7 +21,7 @@ public class RecompensasController(AppDbContext db, NotificacaoService notificac
             .Where(a => a.PerfilId == perfilId && a.Ativo)
             .OrderBy(a => a.Recompensa!.Preco)
             .Select(a => new RecompensaDto(a.Recompensa!.Id, perfilId, a.Recompensa.Nome, a.Recompensa.Descricao,
-                a.Recompensa.Emoji, a.Recompensa.Preco, a.Recompensa.Ativa, a.Recompensa.AtributoId, a.Recompensa.PontosNecessarios))
+                a.Recompensa.Emoji, a.Recompensa.Preco, a.Recompensa.Ativa, a.Recompensa.AtributoId, a.Recompensa.PontosNecessarios, a.Recompensa.Escopo))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -70,7 +70,7 @@ public class RecompensasController(AppDbContext db, NotificacaoService notificac
         if (status == StatusConteudo.Pendente)
             await notificacoes.NotificarAdminsAsync("pendente", $"Nova recompensa pendente de aprovação: \"{def.Nome}\".");
         return CreatedAtAction(nameof(GetAll), new { perfilId = dto.PerfilId },
-            new RecompensaDto(def.Id, dto.PerfilId, def.Nome, def.Descricao, def.Emoji, def.Preco, def.Ativa, def.AtributoId, def.PontosNecessarios));
+            new RecompensaDto(def.Id, dto.PerfilId, def.Nome, def.Descricao, def.Emoji, def.Preco, def.Ativa, def.AtributoId, def.PontosNecessarios, def.Escopo));
     }
 
     [HttpPut("{id}")]
@@ -194,7 +194,7 @@ public record CriarRecompensaDto(int PerfilId, string Nome, string Descricao, st
 
 // Recompensa ativa na loja do perfil (definição achatada).
 public record RecompensaDto(int Id, int PerfilId, string Nome, string Descricao, string Emoji,
-    int Preco, bool Ativa, int? AtributoId, int PontosNecessarios);
+    int Preco, bool Ativa, int? AtributoId, int PontosNecessarios, EscopoConteudo Escopo);
 
 // Recompensa do catálogo (definição + se já está ativa no perfil + classes/bloqueio).
 public record RecompensaCatalogoDto(int Id, string Nome, string Descricao, string Emoji,

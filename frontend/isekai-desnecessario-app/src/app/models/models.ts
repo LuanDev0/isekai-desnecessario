@@ -49,6 +49,7 @@ export interface Recompensa {
   ativa: boolean;
   atributoId?: number | null;
   pontosNecessarios: number;
+  escopo?: EscopoConteudo;
 }
 
 export interface TipoMissao {
@@ -70,6 +71,7 @@ export interface Missao {
   dataLimite?: string | null;
   missaoPrincipalId?: number | null;
   atributoId?: number | null;
+  escopo?: EscopoConteudo;
 }
 
 export interface JornadaSemana {
@@ -109,6 +111,7 @@ export interface BomHabito {
   streak: number;
   ultimaExecucao?: string | null;
   atributoId?: number | null;
+  escopo?: EscopoConteudo;
 }
 
 export interface DiarioAcao {
@@ -147,6 +150,7 @@ export interface MauHabito {
   streak: number;
   ultimaExecucao?: string | null;
   atributoId?: number | null;
+  escopo?: EscopoConteudo;
 }
 
 // ── Catálogo (definição + estado no perfil) ──────────

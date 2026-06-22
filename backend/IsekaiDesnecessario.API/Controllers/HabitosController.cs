@@ -22,7 +22,7 @@ public class HabitosController(AppDbContext db, XpService xpService, Notificacao
         var lista = await db.PerfilBonsHabitos
             .Where(a => a.PerfilId == perfilId && a.Ativo)
             .Select(a => new HabitoDto(a.BomHabito!.Id, perfilId, a.BomHabito.Habito, a.BomHabito.Xp,
-                a.BomHabito.Frequencia, a.Streak, a.UltimaExecucao, a.BomHabito.AtributoId))
+                a.BomHabito.Frequencia, a.Streak, a.UltimaExecucao, a.BomHabito.AtributoId, a.BomHabito.Escopo))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -72,7 +72,7 @@ public class HabitosController(AppDbContext db, XpService xpService, Notificacao
         if (status == StatusConteudo.Pendente)
             await notificacoes.NotificarAdminsAsync("pendente", $"Novo hábito pendente de aprovação: \"{def.Habito}\".");
         return CreatedAtAction(nameof(GetBons), new { perfilId = dto.PerfilId },
-            new HabitoDto(def.Id, dto.PerfilId, def.Habito, def.Xp, def.Frequencia, 0, null, def.AtributoId));
+            new HabitoDto(def.Id, dto.PerfilId, def.Habito, def.Xp, def.Frequencia, 0, null, def.AtributoId, def.Escopo));
     }
 
     [HttpPut("bons/{id}")]
@@ -130,7 +130,7 @@ public class HabitosController(AppDbContext db, XpService xpService, Notificacao
             Mensagem = $"Completou \"{def.Habito}\" +{def.Xp} XP" });
         await db.SaveChangesAsync();
 
-        return Ok(new HabitoDto(def.Id, perfilId, def.Habito, def.Xp, def.Frequencia, a.Streak, a.UltimaExecucao, def.AtributoId));
+        return Ok(new HabitoDto(def.Id, perfilId, def.Habito, def.Xp, def.Frequencia, a.Streak, a.UltimaExecucao, def.AtributoId, def.Escopo));
     }
 
     // ════════════════════ Maus hábitos ════════════════════
@@ -142,7 +142,7 @@ public class HabitosController(AppDbContext db, XpService xpService, Notificacao
         var lista = await db.PerfilMausHabitos
             .Where(a => a.PerfilId == perfilId && a.Ativo)
             .Select(a => new HabitoDto(a.MauHabito!.Id, perfilId, a.MauHabito.Habito, a.MauHabito.Xp,
-                a.MauHabito.Frequencia, a.Streak, a.UltimaExecucao, a.MauHabito.AtributoId))
+                a.MauHabito.Frequencia, a.Streak, a.UltimaExecucao, a.MauHabito.AtributoId, a.MauHabito.Escopo))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -189,7 +189,7 @@ public class HabitosController(AppDbContext db, XpService xpService, Notificacao
         if (status == StatusConteudo.Pendente)
             await notificacoes.NotificarAdminsAsync("pendente", $"Novo hábito pendente de aprovação: \"{def.Habito}\".");
         return CreatedAtAction(nameof(GetMaus), new { perfilId = dto.PerfilId },
-            new HabitoDto(def.Id, dto.PerfilId, def.Habito, def.Xp, def.Frequencia, 0, null, def.AtributoId));
+            new HabitoDto(def.Id, dto.PerfilId, def.Habito, def.Xp, def.Frequencia, 0, null, def.AtributoId, def.Escopo));
     }
 
     [HttpPut("maus/{id}")]
@@ -247,7 +247,7 @@ public class HabitosController(AppDbContext db, XpService xpService, Notificacao
         await db.SaveChangesAsync();
         await xpService.DeduzerXpAsync(perfilId, def.Xp);
 
-        var habitoDto = new HabitoDto(def.Id, perfilId, def.Habito, def.Xp, def.Frequencia, a.Streak, a.UltimaExecucao, def.AtributoId);
+        var habitoDto = new HabitoDto(def.Id, perfilId, def.Habito, def.Xp, def.Frequencia, a.Streak, a.UltimaExecucao, def.AtributoId, def.Escopo);
         var perfil = await db.Perfis.FindAsync(perfilId);
         return Ok(new { habito = habitoDto, perfil });
     }
@@ -326,7 +326,7 @@ public record CriarHabitoDto(int PerfilId, string Habito, int Xp, string Frequen
 
 // Item ativo no perfil (definição achatada + estado da ativação).
 public record HabitoDto(int Id, int PerfilId, string Habito, int Xp, string Frequencia,
-    int Streak, DateTime? UltimaExecucao, int? AtributoId);
+    int Streak, DateTime? UltimaExecucao, int? AtributoId, EscopoConteudo Escopo);
 
 // Item do catálogo (definição + se já está ativo no perfil + classes/bloqueio).
 // Bloqueado = item exclusivo de classe(s) e o perfil não tem nenhuma delas.
