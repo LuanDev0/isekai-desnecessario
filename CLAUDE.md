@@ -57,7 +57,7 @@ Limite de 3 perfis por conta. Fases: banco ✅ · OAuth Client ID (externo) · b
 - **Aprovação (v0.9):** `AprovacoesController` (só Admin) — `GET /aprovacoes/pendentes`, `aprovar`/`rejeitar`. Itens globais do Moderador nascem Pendente (fora do catálogo) até aprovação.
 - **Trava/timer (v0.9):** `TravaDias` na definição; concluir (`completar`/`registrar`/`resgatar`) seta `TravadoAte`; `desativar` bloqueia enquanto travado (vale p/ todos).
 - **Notificações (v0.10):** sininho in-app (`Notificacao` + `NotificacoesController` + `NotificacaoService`). Admin avisado de novo pendente; moderador avisado de rejeição/modificação. Front: componente `app-notificacoes` (sino flutuante global).
-- Falta a **UI de catálogo** (navegar/ativar/desativar + seletor de classe + tela de aprovação) por papel → **Parte 7**.
+- **UI de catálogo (v0.11):** tela de Configurações reformada com sub-blocos **Catálogo** (ativar/desativar; bloqueados com 🔒), **Ativos** (desativar; editar/excluir gated) e **Criar** (gated por papel; campos: escopo, travaDias, chips de classe). Seção **Aprovações** exclusiva do Admin. `ApiService` inclui métodos de catálogo, ativar/desativar e aprovação. `AuthService` expõe sinais `role`, `isAdmin`, `isModerador`, `podeConteudoProprio`, `podeCatalogoGlobal`.
 
 ## Notas de ambiente (Windows)
 - O processo `IsekaiDesnecessario.API` trava o `.exe` — pare o `dotnet run` antes de `dotnet build`/`dotnet ef`.

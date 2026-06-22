@@ -61,6 +61,35 @@
     </ng-container>
   </section>
 
+  <!-- ── APROVAÇÕES (Admin) ──────────────────────── -->
+  <section class="card" *ngIf="auth.isAdmin()">
+    <div class="secao-header" (click)="secaoAprov = !secaoAprov">
+      <h2 class="card-title">
+        {{ 'config.secAprovacoes' | translate }}
+        <span class="badge quest" *ngIf="pendentes.length">{{ pendentes.length }}</span>
+      </h2>
+      <svg class="chevron" [class.open]="secaoAprov" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <ng-container *ngIf="secaoAprov">
+      <ul class="item-list" *ngIf="pendentes.length > 0">
+        <li class="item-row" *ngFor="let p of pendentes">
+          <div class="item-info">
+            <span class="item-nome">{{ p.titulo }}</span>
+            <span class="item-meta">{{ p.tipo }}<ng-container *ngIf="p.autorNome"> · {{ 'config.porAutor' | translate: { nome: p.autorNome } }}</ng-container></span>
+          </div>
+          <div class="item-actions">
+            <button class="btn-confirm btn-sm" (click)="aprovar(p)">{{ 'config.aprovar' | translate }}</button>
+            <button class="btn-cancel btn-sm" (click)="rejeitar(p)">{{ 'config.rejeitar' | translate }}</button>
+          </div>
+        </li>
+      </ul>
+      <p class="empty-list" *ngIf="pendentes.length === 0">{{ 'config.nenhumPendente' | translate }}</p>
+    </ng-container>
+  </section>
+
   <!-- ── BOM HÁBITO ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoBons = !secaoBons">
@@ -71,6 +100,31 @@
     </div>
 
     <ng-container *ngIf="secaoBons">
+      <!-- Catálogo (Adicionar) -->
+      <div class="list-header" (click)="catAbertoBons = !catAbertoBons">
+        <span>{{ 'config.catalogo' | translate }}</span>
+        <svg class="chevron" [class.open]="catAbertoBons" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <ng-container *ngIf="catAbertoBons">
+        <ul class="item-list" *ngIf="catBons.length > 0">
+          <li class="item-row" *ngFor="let item of catBons" [class.bloqueado]="item.bloqueado">
+            <div class="item-info">
+              <span class="item-nome">{{ item.habito }}</span>
+              <span class="item-meta">+{{ item.xp }} XP · {{ item.frequencia }}
+                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+              </span>
+            </div>
+            <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoBom(item)">
+              {{ item.ativo ? ('config.desativar' | translate) : ('config.ativar' | translate) }}
+            </button>
+          </li>
+        </ul>
+        <p class="empty-list" *ngIf="catBons.length === 0">{{ 'config.semCatalogo' | translate }}</p>
+      </ng-container>
+
+      <!-- Ativos -->
       <div class="list-header" (click)="abertoBons = !abertoBons">
         <span>{{ 'config.cadastrados' | translate: { n: bonsHabitos.length } }}</span>
         <svg class="chevron" [class.open]="abertoBons" viewBox="0 0 24 24" fill="none">
@@ -87,12 +141,17 @@
                 <span class="item-meta">+{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
               </div>
               <div class="item-actions">
-                <button class="btn-icon edit" (click)="iniciarEdicaoBom(h)" title="Editar">
-                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <button class="btn-icon" (click)="desativarAtivo('bom', h.id)" title="Desativar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
-                <button class="btn-icon delete" (click)="excluirBom(h.id)" title="Excluir">
-                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
+                <ng-container *ngIf="auth.podeConteudoProprio()">
+                  <button class="btn-icon edit" (click)="iniciarEdicaoBom(h)" title="Editar">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="btn-icon delete" (click)="excluirBom(h.id)" title="Excluir">
+                    <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </ng-container>
               </div>
             </li>
             <li class="item-edit" *ngIf="editandoBomId === h.id">
@@ -135,32 +194,54 @@
         <p class="empty-list" *ngIf="bonsHabitos.length === 0">{{ 'config.nenhumHabitoCad' | translate }}</p>
       </ng-container>
 
-      <div class="divider"></div>
-      <h3 class="sub-title">{{ 'config.novoBomHabito' | translate }}</h3>
-      <div class="field"><label>{{ 'config.nome' | translate }}</label>
-        <input type="text" [(ngModel)]="novoBom.habito" placeholder="Ex: Ler 10 páginas" />
-      </div>
-      <div class="row">
-        <div class="field"><label>{{ 'config.xp' | translate }}</label>
-          <input type="number" [(ngModel)]="novoBom.xp" min="1" />
+      <!-- Criar -->
+      <ng-container *ngIf="auth.podeConteudoProprio()">
+        <div class="divider"></div>
+        <h3 class="sub-title">{{ 'config.novoBomHabito' | translate }}</h3>
+        <div class="field"><label>{{ 'config.nome' | translate }}</label>
+          <input type="text" [(ngModel)]="novoBom.habito" placeholder="Ex: Ler 10 páginas" />
         </div>
-        <div class="field"><label>{{ 'config.frequencia' | translate }}</label>
-          <select [(ngModel)]="novoBom.frequencia">
-            <option>{{ 'config.freqDiario' | translate }}</option>
-            <option>{{ 'config.freqSemanal' | translate }}</option>
-            <option>{{ 'config.freqMensal' | translate }}</option>
-            <option>{{ 'config.freqLivre' | translate }}</option>
+        <div class="row">
+          <div class="field"><label>{{ 'config.xp' | translate }}</label>
+            <input type="number" [(ngModel)]="novoBom.xp" min="1" />
+          </div>
+          <div class="field"><label>{{ 'config.frequencia' | translate }}</label>
+            <select [(ngModel)]="novoBom.frequencia">
+              <option>{{ 'config.freqDiario' | translate }}</option>
+              <option>{{ 'config.freqSemanal' | translate }}</option>
+              <option>{{ 'config.freqMensal' | translate }}</option>
+              <option>{{ 'config.freqLivre' | translate }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>{{ 'config.atributo' | translate }}</label>
+          <select [(ngModel)]="novoBom.atributoId">
+            <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
+            <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
           </select>
         </div>
-      </div>
-      <div class="field"><label>{{ 'config.atributo' | translate }}</label>
-        <select [(ngModel)]="novoBom.atributoId">
-          <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
-          <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
-        </select>
-      </div>
-      <button class="btn-salvar" (click)="salvarBomHabito()">{{ 'config.cadastrar' | translate }}</button>
-      <p class="feedback" [class]="'feedback ' + feedbackBomTipo" *ngIf="feedbackBom">{{ feedbackBom }}</p>
+        <div class="row">
+          <div class="field" *ngIf="auth.podeCatalogoGlobal()"><label>{{ 'config.escopo' | translate }}</label>
+            <select [(ngModel)]="novoBom.proprio">
+              <option [ngValue]="false">{{ 'config.escopoGlobal' | translate }}</option>
+              <option [ngValue]="true">{{ 'config.escopoProprio' | translate }}</option>
+            </select>
+          </div>
+          <div class="field" style="flex:0 0 110px"><label>{{ 'config.travaDias' | translate }}</label>
+            <input type="number" [(ngModel)]="novoBom.travaDias" min="0" />
+          </div>
+        </div>
+        <div class="field" *ngIf="auth.podeCatalogoGlobal() && !novoBom.proprio">
+          <label>{{ 'config.classesExclusivas' | translate }} <span class="label-opt">{{ 'config.classesTodas' | translate }}</span></label>
+          <div class="classe-chips">
+            <button type="button" class="chip" *ngFor="let c of classes" [class.sel]="novoBom.classeIds.includes(c.id)" (click)="toggleClasse(novoBom.classeIds, c.id)">
+              {{ c.emoji }} {{ c.nome }}
+            </button>
+          </div>
+        </div>
+        <button class="btn-salvar" (click)="salvarBomHabito()">{{ 'config.cadastrar' | translate }}</button>
+        <p class="feedback" [class]="'feedback ' + feedbackBomTipo" *ngIf="feedbackBom">{{ feedbackBom }}</p>
+      </ng-container>
     </ng-container>
   </section>
 
@@ -174,6 +255,31 @@
     </div>
 
     <ng-container *ngIf="secaoMaus">
+      <!-- Catálogo (Adicionar) -->
+      <div class="list-header" (click)="catAbertoMaus = !catAbertoMaus">
+        <span>{{ 'config.catalogo' | translate }}</span>
+        <svg class="chevron" [class.open]="catAbertoMaus" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <ng-container *ngIf="catAbertoMaus">
+        <ul class="item-list" *ngIf="catMaus.length > 0">
+          <li class="item-row" *ngFor="let item of catMaus" [class.bloqueado]="item.bloqueado">
+            <div class="item-info">
+              <span class="item-nome">{{ item.habito }}</span>
+              <span class="item-meta red">-{{ item.xp }} XP · {{ item.frequencia }}
+                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+              </span>
+            </div>
+            <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoMau(item)">
+              {{ item.ativo ? ('config.desativar' | translate) : ('config.ativar' | translate) }}
+            </button>
+          </li>
+        </ul>
+        <p class="empty-list" *ngIf="catMaus.length === 0">{{ 'config.semCatalogo' | translate }}</p>
+      </ng-container>
+
+      <!-- Ativos -->
       <div class="list-header" (click)="abertoMaus = !abertoMaus">
         <span>{{ 'config.cadastrados' | translate: { n: mausHabitos.length } }}</span>
         <svg class="chevron" [class.open]="abertoMaus" viewBox="0 0 24 24" fill="none">
@@ -190,12 +296,17 @@
                 <span class="item-meta red">-{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
               </div>
               <div class="item-actions">
-                <button class="btn-icon edit" (click)="iniciarEdicaoMau(h)" title="Editar">
-                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <button class="btn-icon" (click)="desativarAtivo('mau', h.id)" title="Desativar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
-                <button class="btn-icon delete" (click)="excluirMau(h.id)" title="Excluir">
-                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
+                <ng-container *ngIf="auth.podeConteudoProprio()">
+                  <button class="btn-icon edit" (click)="iniciarEdicaoMau(h)" title="Editar">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="btn-icon delete" (click)="excluirMau(h.id)" title="Excluir">
+                    <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </ng-container>
               </div>
             </li>
             <li class="item-edit" *ngIf="editandoMauId === h.id">
@@ -238,32 +349,54 @@
         <p class="empty-list" *ngIf="mausHabitos.length === 0">{{ 'config.nenhumHabitoCad' | translate }}</p>
       </ng-container>
 
-      <div class="divider"></div>
-      <h3 class="sub-title">{{ 'config.novoMauHabito' | translate }}</h3>
-      <div class="field"><label>{{ 'config.nome' | translate }}</label>
-        <input type="text" [(ngModel)]="novoMau.habito" placeholder="Ex: Pular treino" />
-      </div>
-      <div class="row">
-        <div class="field"><label>{{ 'config.xpPenalidade' | translate }}</label>
-          <input type="number" [(ngModel)]="novoMau.xp" min="1" />
+      <!-- Criar -->
+      <ng-container *ngIf="auth.podeConteudoProprio()">
+        <div class="divider"></div>
+        <h3 class="sub-title">{{ 'config.novoMauHabito' | translate }}</h3>
+        <div class="field"><label>{{ 'config.nome' | translate }}</label>
+          <input type="text" [(ngModel)]="novoMau.habito" placeholder="Ex: Pular treino" />
         </div>
-        <div class="field"><label>{{ 'config.frequencia' | translate }}</label>
-          <select [(ngModel)]="novoMau.frequencia">
-            <option>{{ 'config.freqDiario' | translate }}</option>
-            <option>{{ 'config.freqSemanal' | translate }}</option>
-            <option>{{ 'config.freqMensal' | translate }}</option>
-            <option>{{ 'config.freqLivre' | translate }}</option>
+        <div class="row">
+          <div class="field"><label>{{ 'config.xpPenalidade' | translate }}</label>
+            <input type="number" [(ngModel)]="novoMau.xp" min="1" />
+          </div>
+          <div class="field"><label>{{ 'config.frequencia' | translate }}</label>
+            <select [(ngModel)]="novoMau.frequencia">
+              <option>{{ 'config.freqDiario' | translate }}</option>
+              <option>{{ 'config.freqSemanal' | translate }}</option>
+              <option>{{ 'config.freqMensal' | translate }}</option>
+              <option>{{ 'config.freqLivre' | translate }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>{{ 'config.atributo' | translate }}</label>
+          <select [(ngModel)]="novoMau.atributoId">
+            <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
+            <option *ngFor="let a of atributos" [ngValue]="a.id">− {{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
           </select>
         </div>
-      </div>
-      <div class="field"><label>{{ 'config.atributo' | translate }}</label>
-        <select [(ngModel)]="novoMau.atributoId">
-          <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
-          <option *ngFor="let a of atributos" [ngValue]="a.id">− {{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
-        </select>
-      </div>
-      <button class="btn-salvar" (click)="salvarMauHabito()">{{ 'config.cadastrar' | translate }}</button>
-      <p class="feedback" [class]="'feedback ' + feedbackMauTipo" *ngIf="feedbackMau">{{ feedbackMau }}</p>
+        <div class="row">
+          <div class="field" *ngIf="auth.podeCatalogoGlobal()"><label>{{ 'config.escopo' | translate }}</label>
+            <select [(ngModel)]="novoMau.proprio">
+              <option [ngValue]="false">{{ 'config.escopoGlobal' | translate }}</option>
+              <option [ngValue]="true">{{ 'config.escopoProprio' | translate }}</option>
+            </select>
+          </div>
+          <div class="field" style="flex:0 0 110px"><label>{{ 'config.travaDias' | translate }}</label>
+            <input type="number" [(ngModel)]="novoMau.travaDias" min="0" />
+          </div>
+        </div>
+        <div class="field" *ngIf="auth.podeCatalogoGlobal() && !novoMau.proprio">
+          <label>{{ 'config.classesExclusivas' | translate }} <span class="label-opt">{{ 'config.classesTodas' | translate }}</span></label>
+          <div class="classe-chips">
+            <button type="button" class="chip" *ngFor="let c of classes" [class.sel]="novoMau.classeIds.includes(c.id)" (click)="toggleClasse(novoMau.classeIds, c.id)">
+              {{ c.emoji }} {{ c.nome }}
+            </button>
+          </div>
+        </div>
+        <button class="btn-salvar" (click)="salvarMauHabito()">{{ 'config.cadastrar' | translate }}</button>
+        <p class="feedback" [class]="'feedback ' + feedbackMauTipo" *ngIf="feedbackMau">{{ feedbackMau }}</p>
+      </ng-container>
     </ng-container>
   </section>
 
@@ -277,6 +410,31 @@
     </div>
 
     <ng-container *ngIf="secaoMiss">
+      <!-- Catálogo (Adicionar) -->
+      <div class="list-header" (click)="catAbertoMiss = !catAbertoMiss">
+        <span>{{ 'config.catalogo' | translate }}</span>
+        <svg class="chevron" [class.open]="catAbertoMiss" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <ng-container *ngIf="catAbertoMiss">
+        <ul class="item-list" *ngIf="catMiss.length > 0">
+          <li class="item-row" *ngFor="let item of catMiss" [class.bloqueado]="item.bloqueado">
+            <div class="item-info">
+              <span class="item-nome">{{ item.titulo }}</span>
+              <span class="item-meta">{{ nomeTipo(item.tipoId) }} · +{{ item.recompensaXp }} XP · +{{ item.recompensaMoedas }} {{ 'config.moedas' | translate }}
+                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+              </span>
+            </div>
+            <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoMiss(item)">
+              {{ item.ativo ? ('config.desativar' | translate) : ('config.ativar' | translate) }}
+            </button>
+          </li>
+        </ul>
+        <p class="empty-list" *ngIf="catMiss.length === 0">{{ 'config.semCatalogo' | translate }}</p>
+      </ng-container>
+
+      <!-- Ativos -->
       <div class="list-header" (click)="abertoMiss = !abertoMiss">
         <span>{{ 'config.cadastradas' | translate: { n: missoes.length } }}</span>
         <svg class="chevron" [class.open]="abertoMiss" viewBox="0 0 24 24" fill="none">
@@ -293,12 +451,17 @@
                 <span class="item-meta">{{ nomeTipo(m.tipoId) }} · +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} {{ 'config.moedas' | translate }}</span>
               </div>
               <div class="item-actions">
-                <button class="btn-icon edit" (click)="iniciarEdicaoMiss(m)" title="Editar">
-                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <button class="btn-icon" (click)="desativarAtivo('miss', m.id)" title="Desativar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
-                <button class="btn-icon delete" (click)="excluirMissao(m.id)" title="Excluir">
-                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
+                <ng-container *ngIf="auth.podeConteudoProprio()">
+                  <button class="btn-icon edit" (click)="iniciarEdicaoMiss(m)" title="Editar">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="btn-icon delete" (click)="excluirMissao(m.id)" title="Excluir">
+                    <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </ng-container>
               </div>
             </li>
             <li class="item-edit" *ngIf="editandoMissId === m.id">
@@ -365,44 +528,66 @@
         <p class="empty-list" *ngIf="missoes.length === 0">{{ 'config.nenhumaMissaoCad' | translate }}</p>
       </ng-container>
 
-      <div class="divider"></div>
-      <h3 class="sub-title">{{ 'config.novaMissao' | translate }}</h3>
-      <div class="field"><label>{{ 'config.tituloLabel' | translate }}</label>
-        <input type="text" [(ngModel)]="novaMiss.titulo" placeholder="Ex: 30 dias de exercício" />
-      </div>
-      <div class="row">
-        <div class="field"><label>{{ 'config.tipo' | translate }}</label>
-          <select [(ngModel)]="novaMiss.tipoId">
-            <option *ngFor="let t of tiposMissao" [value]="t.id">{{ t.nome }}</option>
+      <!-- Criar -->
+      <ng-container *ngIf="auth.podeConteudoProprio()">
+        <div class="divider"></div>
+        <h3 class="sub-title">{{ 'config.novaMissao' | translate }}</h3>
+        <div class="field"><label>{{ 'config.tituloLabel' | translate }}</label>
+          <input type="text" [(ngModel)]="novaMiss.titulo" placeholder="Ex: 30 dias de exercício" />
+        </div>
+        <div class="row">
+          <div class="field"><label>{{ 'config.tipo' | translate }}</label>
+            <select [(ngModel)]="novaMiss.tipoId">
+              <option *ngFor="let t of tiposMissao" [value]="t.id">{{ t.nome }}</option>
+            </select>
+          </div>
+          <div class="field"><label>{{ 'config.dataLimite' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
+            <input type="date" [(ngModel)]="novaMiss.dataLimite" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label>{{ 'config.xp' | translate }}</label>
+            <input type="number" [(ngModel)]="novaMiss.recompensaXp" min="0" />
+          </div>
+          <div class="field"><label>{{ 'config.moedas' | translate }}</label>
+            <input type="number" [(ngModel)]="novaMiss.recompensaMoedas" min="0" />
+          </div>
+        </div>
+        <div class="field"><label>{{ 'config.atributo' | translate }}</label>
+          <select [(ngModel)]="novaMiss.atributoId">
+            <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
+            <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
           </select>
         </div>
-        <div class="field"><label>{{ 'config.dataLimite' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
-          <input type="date" [(ngModel)]="novaMiss.dataLimite" />
+        <div class="field" *ngIf="+novaMiss.tipoId === tipoSecundariaId">
+          <label>{{ 'config.missaoPrincipalVinc' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
+          <select [(ngModel)]="novaMiss.missaoPrincipalId">
+            <option [ngValue]="null">{{ 'config.nenhuma' | translate }}</option>
+            <option *ngFor="let m of missoesPrincipais" [ngValue]="m.id">{{ m.titulo }}</option>
+          </select>
         </div>
-      </div>
-      <div class="row">
-        <div class="field"><label>{{ 'config.xp' | translate }}</label>
-          <input type="number" [(ngModel)]="novaMiss.recompensaXp" min="0" />
+        <div class="row">
+          <div class="field" *ngIf="auth.podeCatalogoGlobal()"><label>{{ 'config.escopo' | translate }}</label>
+            <select [(ngModel)]="novaMiss.proprio">
+              <option [ngValue]="false">{{ 'config.escopoGlobal' | translate }}</option>
+              <option [ngValue]="true">{{ 'config.escopoProprio' | translate }}</option>
+            </select>
+          </div>
+          <div class="field" style="flex:0 0 110px"><label>{{ 'config.travaDias' | translate }}</label>
+            <input type="number" [(ngModel)]="novaMiss.travaDias" min="0" />
+          </div>
         </div>
-        <div class="field"><label>{{ 'config.moedas' | translate }}</label>
-          <input type="number" [(ngModel)]="novaMiss.recompensaMoedas" min="0" />
+        <div class="field" *ngIf="auth.podeCatalogoGlobal() && !novaMiss.proprio">
+          <label>{{ 'config.classesExclusivas' | translate }} <span class="label-opt">{{ 'config.classesTodas' | translate }}</span></label>
+          <div class="classe-chips">
+            <button type="button" class="chip" *ngFor="let c of classes" [class.sel]="novaMiss.classeIds.includes(c.id)" (click)="toggleClasse(novaMiss.classeIds, c.id)">
+              {{ c.emoji }} {{ c.nome }}
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="field"><label>{{ 'config.atributo' | translate }}</label>
-        <select [(ngModel)]="novaMiss.atributoId">
-          <option [ngValue]="null" disabled>{{ 'config.selecione' | translate }}</option>
-          <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
-        </select>
-      </div>
-      <div class="field" *ngIf="+novaMiss.tipoId === tipoSecundariaId">
-        <label>{{ 'config.missaoPrincipalVinc' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
-        <select [(ngModel)]="novaMiss.missaoPrincipalId">
-          <option [ngValue]="null">{{ 'config.nenhuma' | translate }}</option>
-          <option *ngFor="let m of missoesPrincipais" [ngValue]="m.id">{{ m.titulo }}</option>
-        </select>
-      </div>
-      <button class="btn-salvar" (click)="salvarMissao()">{{ 'config.cadastrar' | translate }}</button>
-      <p class="feedback" [class]="'feedback ' + feedbackMissTipo" *ngIf="feedbackMiss">{{ feedbackMiss }}</p>
+        <button class="btn-salvar" (click)="salvarMissao()">{{ 'config.cadastrar' | translate }}</button>
+        <p class="feedback" [class]="'feedback ' + feedbackMissTipo" *ngIf="feedbackMiss">{{ feedbackMiss }}</p>
+      </ng-container>
     </ng-container>
   </section>
 
@@ -416,6 +601,31 @@
     </div>
 
     <ng-container *ngIf="secaoRecomp">
+      <!-- Catálogo (Adicionar) -->
+      <div class="list-header" (click)="catAbertoRecomp = !catAbertoRecomp">
+        <span>{{ 'config.catalogo' | translate }}</span>
+        <svg class="chevron" [class.open]="catAbertoRecomp" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <ng-container *ngIf="catAbertoRecomp">
+        <ul class="item-list" *ngIf="catRecomp.length > 0">
+          <li class="item-row" *ngFor="let item of catRecomp" [class.bloqueado]="item.bloqueado">
+            <div class="item-info">
+              <span class="item-nome">{{ item.emoji }} {{ item.nome }}</span>
+              <span class="item-meta">{{ item.preco }} {{ 'config.moedas' | translate }}{{ item.descricao ? ' · ' + item.descricao : '' }}
+                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+              </span>
+            </div>
+            <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoRecomp(item)">
+              {{ item.ativo ? ('config.desativar' | translate) : ('config.ativar' | translate) }}
+            </button>
+          </li>
+        </ul>
+        <p class="empty-list" *ngIf="catRecomp.length === 0">{{ 'config.semCatalogo' | translate }}</p>
+      </ng-container>
+
+      <!-- Ativos -->
       <div class="list-header" (click)="abertoRecomp = !abertoRecomp">
         <span>{{ 'config.cadastradas' | translate: { n: recompensas.length } }}</span>
         <svg class="chevron" [class.open]="abertoRecomp" viewBox="0 0 24 24" fill="none">
@@ -435,12 +645,17 @@
                 <span class="item-meta">{{ r.preco }} {{ 'config.moedas' | translate }}{{ r.descricao ? ' · ' + r.descricao : '' }}</span>
               </div>
               <div class="item-actions">
-                <button class="btn-icon edit" (click)="iniciarEdicaoRecomp(r)" title="Editar">
-                  <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <button class="btn-icon" (click)="desativarAtivo('recomp', r.id)" title="Desativar">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
-                <button class="btn-icon delete" (click)="excluirRecomp(r.id)" title="Excluir">
-                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
+                <ng-container *ngIf="auth.podeConteudoProprio()">
+                  <button class="btn-icon edit" (click)="iniciarEdicaoRecomp(r)" title="Editar">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="btn-icon delete" (click)="excluirRecomp(r.id)" title="Excluir">
+                    <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </ng-container>
               </div>
             </li>
             <li class="item-edit" *ngIf="editandoRecompId === r.id">
@@ -495,38 +710,60 @@
         <p class="empty-list" *ngIf="recompensas.length === 0">{{ 'config.nenhumaRecompCad' | translate }}</p>
       </ng-container>
 
-      <div class="divider"></div>
-      <h3 class="sub-title">{{ 'config.novaRecomp' | translate }}</h3>
-      <div class="row">
-        <div class="field"><label>{{ 'config.nome' | translate }}</label>
-          <input type="text" [(ngModel)]="novaRecomp.nome" placeholder="Ex: Tomar um refrigerante" />
+      <!-- Criar -->
+      <ng-container *ngIf="auth.podeConteudoProprio()">
+        <div class="divider"></div>
+        <h3 class="sub-title">{{ 'config.novaRecomp' | translate }}</h3>
+        <div class="row">
+          <div class="field"><label>{{ 'config.nome' | translate }}</label>
+            <input type="text" [(ngModel)]="novaRecomp.nome" placeholder="Ex: Tomar um refrigerante" />
+          </div>
+          <div class="field" style="flex:0 0 58px"><label>{{ 'config.emoji' | translate }}</label>
+            <input type="text" [(ngModel)]="novaRecomp.emoji" placeholder="🎁" class="input-emoji-center" (input)="onEmojiInput($event, 'nova')" />
+          </div>
         </div>
-        <div class="field" style="flex:0 0 58px"><label>{{ 'config.emoji' | translate }}</label>
-          <input type="text" [(ngModel)]="novaRecomp.emoji" placeholder="🎁" class="input-emoji-center" (input)="onEmojiInput($event, 'nova')" />
+        <div class="row">
+          <div class="field"><label>{{ 'config.descricao' | translate }}</label>
+            <input type="text" [(ngModel)]="novaRecomp.descricao" placeholder="Opcional" />
+          </div>
+          <div class="field" style="flex:0 0 110px"><label>{{ 'config.moedas' | translate }}</label>
+            <input type="number" [(ngModel)]="novaRecomp.preco" min="1" />
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="field"><label>{{ 'config.descricao' | translate }}</label>
-          <input type="text" [(ngModel)]="novaRecomp.descricao" placeholder="Opcional" />
+        <div class="row">
+          <div class="field"><label>{{ 'config.reqAtributo' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
+            <select [(ngModel)]="novaRecomp.atributoId">
+              <option [ngValue]="null">{{ 'config.nenhum' | translate }}</option>
+              <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
+            </select>
+          </div>
+          <div class="field" style="flex:0 0 120px" *ngIf="novaRecomp.atributoId">
+            <label>{{ 'config.pontosMinimos' | translate }}</label>
+            <input type="number" [(ngModel)]="novaRecomp.pontosNecessarios" min="0" />
+          </div>
         </div>
-        <div class="field" style="flex:0 0 110px"><label>{{ 'config.moedas' | translate }}</label>
-          <input type="number" [(ngModel)]="novaRecomp.preco" min="1" />
+        <div class="row">
+          <div class="field" *ngIf="auth.podeCatalogoGlobal()"><label>{{ 'config.escopo' | translate }}</label>
+            <select [(ngModel)]="novaRecomp.proprio">
+              <option [ngValue]="false">{{ 'config.escopoGlobal' | translate }}</option>
+              <option [ngValue]="true">{{ 'config.escopoProprio' | translate }}</option>
+            </select>
+          </div>
+          <div class="field" style="flex:0 0 110px"><label>{{ 'config.travaDias' | translate }}</label>
+            <input type="number" [(ngModel)]="novaRecomp.travaDias" min="0" />
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="field"><label>{{ 'config.reqAtributo' | translate }} <span class="label-opt">{{ 'config.opcionalLabel' | translate }}</span></label>
-          <select [(ngModel)]="novaRecomp.atributoId">
-            <option [ngValue]="null">{{ 'config.nenhum' | translate }}</option>
-            <option *ngFor="let a of atributos" [ngValue]="a.id">{{ a.emoji }} {{ a.nome }} — {{ a.descricao }}</option>
-          </select>
+        <div class="field" *ngIf="auth.podeCatalogoGlobal() && !novaRecomp.proprio">
+          <label>{{ 'config.classesExclusivas' | translate }} <span class="label-opt">{{ 'config.classesTodas' | translate }}</span></label>
+          <div class="classe-chips">
+            <button type="button" class="chip" *ngFor="let c of classes" [class.sel]="novaRecomp.classeIds.includes(c.id)" (click)="toggleClasse(novaRecomp.classeIds, c.id)">
+              {{ c.emoji }} {{ c.nome }}
+            </button>
+          </div>
         </div>
-        <div class="field" style="flex:0 0 120px" *ngIf="novaRecomp.atributoId">
-          <label>{{ 'config.pontosMinimos' | translate }}</label>
-          <input type="number" [(ngModel)]="novaRecomp.pontosNecessarios" min="0" />
-        </div>
-      </div>
-      <button class="btn-salvar" (click)="salvarRecompensa()">{{ 'config.cadastrar' | translate }}</button>
-      <p class="feedback" [class]="'feedback ' + feedbackRecompTipo" *ngIf="feedbackRecomp">{{ feedbackRecomp }}</p>
+        <button class="btn-salvar" (click)="salvarRecompensa()">{{ 'config.cadastrar' | translate }}</button>
+        <p class="feedback" [class]="'feedback ' + feedbackRecompTipo" *ngIf="feedbackRecomp">{{ feedbackRecomp }}</p>
+      </ng-container>
     </ng-container>
   </section>
 
