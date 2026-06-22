@@ -8,75 +8,91 @@ $text:    #c9d1d9;
 $muted:   #8b949e;
 
 :host {
-  position: fixed;
-  top: max(12px, env(safe-area-inset-top));
-  right: max(12px, env(safe-area-inset-right));
-  z-index: 1100;
+  position: relative;
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
 
-// ── Botão do sino ─────────────────────────────────────
+// ── Botão (estilo nav-item) ────────────────────────────
 .sino-btn {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: $surface;
-  border: 1px solid $border;
-  color: $text;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  color: #484f58;
   cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+
+  &:hover { color: #8b949e; }
+  &.aberto { color: $white; svg { stroke: $blue; } }
+}
+
+.sino-icon-wrap {
+  position: relative;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  transition: background 0.2s, border-color 0.2s;
 
-  svg { width: 20px; height: 20px; }
-  &:hover { background: $card; border-color: #484f58; }
+  svg { width: 22px; height: 22px; }
+}
+
+.sino-label {
+  color: inherit;
 }
 
 .sino-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  border-radius: 9px;
+  top: -5px;
+  right: -7px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
   background: $red;
   color: #fff;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #0d1117;
+  border: 2px solid #161b22;
 }
 
-// ── Overlay para fechar ───────────────────────────────
+// ── Overlay ───────────────────────────────────────────
 .sino-overlay {
   position: fixed;
   inset: 0;
   z-index: 1099;
 }
 
-// ── Painel ────────────────────────────────────────────
+// ── Painel (abre para cima) ───────────────────────────
 .sino-painel {
-  position: absolute;
-  top: 48px;
-  right: 0;
-  width: min(320px, calc(100vw - 24px));
-  max-height: 70vh;
+  position: fixed;
+  bottom: calc(64px + env(safe-area-inset-bottom) + 8px);
+  right: 8px;
+  width: min(320px, calc(100vw - 16px));
+  max-height: 60vh;
   overflow-y: auto;
   background: $surface;
   border: 1px solid $border;
   border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.55);
   z-index: 1101;
   animation: painelIn 0.15s ease;
 }
 
 @keyframes painelIn {
-  from { opacity: 0; transform: translateY(-6px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
