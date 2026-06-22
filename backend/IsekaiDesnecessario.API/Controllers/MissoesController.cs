@@ -22,7 +22,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
             .OrderBy(a => a.Missao!.TipoId)
             .Select(a => new MissaoDto(a.Missao!.Id, perfilId, a.Missao.Titulo, a.Missao.TipoId, a.Missao.Tipo,
                 a.Missao.RecompensaXp, a.Missao.RecompensaMoedas, a.Streak, a.Concluida, a.ConcluidaEm,
-                a.Missao.DataLimite, a.Missao.MissaoPrincipalId, a.Missao.AtributoId))
+                a.Missao.DataLimite, a.Missao.MissaoPrincipalId, a.Missao.AtributoId, a.Missao.Escopo))
             .AsNoTracking().ToListAsync();
         return Ok(lista);
     }
@@ -77,7 +77,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
             await notificacoes.NotificarAdminsAsync("pendente", $"Nova missão pendente de aprovação: \"{def.Titulo}\".");
         return CreatedAtAction(nameof(GetAll), new { perfilId = dto.PerfilId },
             new MissaoDto(def.Id, dto.PerfilId, def.Titulo, def.TipoId, null, def.RecompensaXp,
-                def.RecompensaMoedas, 0, false, null, def.DataLimite, def.MissaoPrincipalId, def.AtributoId));
+                def.RecompensaMoedas, 0, false, null, def.DataLimite, def.MissaoPrincipalId, def.AtributoId, def.Escopo));
     }
 
     [HttpPut("{id}")]
@@ -129,7 +129,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
         var perfil = await missaoService.ConcluirAsync(a);
         var dto = new MissaoDto(a.Missao.Id, perfilId, a.Missao.Titulo, a.Missao.TipoId, a.Missao.Tipo,
             a.Missao.RecompensaXp, a.Missao.RecompensaMoedas, a.Streak, a.Concluida, a.ConcluidaEm,
-            a.Missao.DataLimite, a.Missao.MissaoPrincipalId, a.Missao.AtributoId);
+            a.Missao.DataLimite, a.Missao.MissaoPrincipalId, a.Missao.AtributoId, a.Missao.Escopo);
         return Ok(new { missao = dto, perfil });
     }
 
@@ -214,7 +214,7 @@ public record CriarMissaoDto(
 // Missão ativa no perfil (definição achatada + estado da ativação).
 public record MissaoDto(int Id, int PerfilId, string Titulo, int TipoId, TipoMissao? Tipo,
     int RecompensaXp, int RecompensaMoedas, int Streak, bool Concluida, DateTime? ConcluidaEm,
-    DateTime? DataLimite, int? MissaoPrincipalId, int? AtributoId);
+    DateTime? DataLimite, int? MissaoPrincipalId, int? AtributoId, EscopoConteudo Escopo);
 
 // Missão do catálogo (definição + se já está ativa no perfil + classes/bloqueio).
 public record MissaoCatalogoDto(int Id, string Titulo, int TipoId, TipoMissao? Tipo,

@@ -498,6 +498,25 @@ $muted:   #8b949e;
   caret-color: transparent;
 }
 
+.escopo-tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(88, 166, 255, 0.15);
+  color: #58a6ff;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  vertical-align: middle;
+  margin-left: 5px;
+
+  &.proprio {
+    background: rgba(188, 140, 255, 0.15);
+    color: #bc8cff;
+    border-color: rgba(188, 140, 255, 0.3);
+  }
+}
+
 .badge-inativa {
   font-size: 0.65rem;
   font-weight: 600;

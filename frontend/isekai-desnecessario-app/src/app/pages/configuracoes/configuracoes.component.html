@@ -137,7 +137,7 @@
           <ng-container *ngFor="let h of bonsHabitos">
             <li class="item-row" *ngIf="editandoBomId !== h.id">
               <div class="item-info">
-                <span class="item-nome">{{ h.habito }}</span>
+                <span class="item-nome">{{ h.habito }} <span class="escopo-tag" [class.proprio]="h.escopo === 'Proprio'">{{ h.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span></span>
                 <span class="item-meta">+{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
               </div>
               <div class="item-actions">
@@ -292,7 +292,7 @@
           <ng-container *ngFor="let h of mausHabitos">
             <li class="item-row" *ngIf="editandoMauId !== h.id">
               <div class="item-info">
-                <span class="item-nome">{{ h.habito }}</span>
+                <span class="item-nome">{{ h.habito }} <span class="escopo-tag" [class.proprio]="h.escopo === 'Proprio'">{{ h.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span></span>
                 <span class="item-meta red">-{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
               </div>
               <div class="item-actions">
@@ -447,7 +447,7 @@
           <ng-container *ngFor="let m of missoes">
             <li class="item-row" *ngIf="editandoMissId !== m.id">
               <div class="item-info">
-                <span class="item-nome">{{ m.titulo }}</span>
+                <span class="item-nome">{{ m.titulo }} <span class="escopo-tag" [class.proprio]="m.escopo === 'Proprio'">{{ m.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span></span>
                 <span class="item-meta">{{ nomeTipo(m.tipoId) }} · +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} {{ 'config.moedas' | translate }}</span>
               </div>
               <div class="item-actions">
@@ -641,6 +641,7 @@
                 <span class="item-nome">
                   {{ r.nome }}
                   <span class="badge-inativa" *ngIf="!r.ativa">{{ 'config.inativa' | translate }}</span>
+                  <span class="escopo-tag" [class.proprio]="r.escopo === 'Proprio'">{{ r.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span>
                 </span>
                 <span class="item-meta">{{ r.preco }} {{ 'config.moedas' | translate }}{{ r.descricao ? ' · ' + r.descricao : '' }}</span>
               </div>
