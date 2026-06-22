@@ -1,9 +1,12 @@
-<button class="sino-btn" (click)="toggle()" [attr.aria-label]="'notificacoes.titulo' | translate">
-  <svg viewBox="0 0 24 24" fill="none">
-    <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-  <span class="sino-badge" *ngIf="naoLidas > 0">{{ naoLidas > 9 ? '9+' : naoLidas }}</span>
+<button class="sino-btn" [class.aberto]="aberto" (click)="toggle()" [attr.aria-label]="'notificacoes.titulo' | translate">
+  <span class="sino-icon-wrap">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="sino-badge" *ngIf="naoLidas > 0">{{ naoLidas > 9 ? '9+' : naoLidas }}</span>
+  </span>
+  <span class="sino-label">{{ 'notificacoes.titulo' | translate }}</span>
 </button>
 
 <div class="sino-overlay" *ngIf="aberto" (click)="fechar()"></div>
