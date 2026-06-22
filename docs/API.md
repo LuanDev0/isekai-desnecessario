@@ -198,6 +198,8 @@ Sininho in-app. Destinatário é a conta logada.
 |--------|------|-----------|
 | GET | `/diarioacoes?perfilId=X` | Feed de ações (níveis, hábitos, missões, lootbox, recompensas) |
 
+> **Expiração automática (v0.12):** `DiarioLimpezaService` (BackgroundService) roda toda meia-noite UTC e exclui entradas com `Data < UtcNow - 24h` via `ExecuteDeleteAsync`. Sem endpoint — operação interna.
+
 ---
 
 ## Experimentos — `/api/experimentos`
