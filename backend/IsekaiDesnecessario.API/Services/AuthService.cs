@@ -121,6 +121,7 @@ public class AuthService(AppDbContext db, IConfiguration config, ILogger<AuthSer
             new Claim(JwtRegisteredClaimNames.Sub,   usuario.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, usuario.Email),
             new Claim("nome",                        usuario.Nome),
+            new Claim("role",                        usuario.Role.ToString()),
         };
 
         var token = new JwtSecurityToken(
