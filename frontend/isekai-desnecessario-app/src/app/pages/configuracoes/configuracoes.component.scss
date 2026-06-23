@@ -380,6 +380,10 @@ $muted:   #8b949e;
   gap: 10px;
   flex-wrap: wrap;
   .field { flex: 1; min-width: min(140px, 100%); }
+
+  @media (min-width: 769px) {
+    .field-freq { flex: 0 0 170px; }
+  }
 }
 
 .label-opt {
