@@ -6,6 +6,7 @@ export const en = {
     inventario: 'Inventory',
     loja: 'Shop',
     grafico: 'Chart',
+    ranking: 'Ranking',
     config: 'Config',
   },
   notificacoes: {
@@ -239,6 +240,12 @@ export const en = {
     pontosMinimos: 'Minimum points',
     nenhum: 'None',
     reqAtributo: 'Attribute requirement',
+    secPrincipal: 'Main Profile',
+    principalDesc: 'The main profile is the one shown in the ranking. Can be changed on the 1st of each month.',
+    principalCarregando: 'Loading profiles...',
+    definirPrincipal: 'Set as main',
+    principalAtual: 'Main',
+    principalCooldown: 'Change available only on the 1st of each month.',
     secAssinatura: 'Subscription',
     assinAtivo: 'VIP plan active',
     assinInativo: 'Free plan',
@@ -287,5 +294,11 @@ export const en = {
     dias: '{{d}}d',
     horasMinutos: '{{h}}h {{m}}m',
     minutos: '{{m}}m',
+  },
+  ranking: {
+    titulo: 'Ranking',
+    carregando: 'Loading ranking...',
+    vazio: 'No heroes in the ranking yet.',
+    suaPos: 'Your position:',
   },
 };

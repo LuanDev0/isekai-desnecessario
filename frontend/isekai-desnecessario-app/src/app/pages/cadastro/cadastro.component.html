@@ -233,7 +233,10 @@
             <img *ngIf="fotoUrl(p)" [src]="fotoUrl(p)" alt="avatar" />
             <span *ngIf="!fotoUrl(p)" class="avatar-inicial">{{ p.nome[0] }}</span>
           </div>
-          <span class="perfil-nome">{{ p.nome }}</span>
+          <span class="perfil-nome">
+            {{ p.nome }}
+            <span *ngIf="p.principal" class="badge-principal" title="Perfil principal">★</span>
+          </span>
           <span class="perfil-rank">{{ p.rank }} · Nv {{ p.nivel }}</span>
         </button>
         <button class="btn-desvincular" (click)="desvincular(p)" title="Remover da conta">✕</button>

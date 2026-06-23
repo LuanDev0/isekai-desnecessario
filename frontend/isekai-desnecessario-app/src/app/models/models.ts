@@ -37,6 +37,8 @@ export interface Perfil {
   ultimaLootbox?: string | null;
   desafioRecusadoEm?: string | null;
   desafioConcluidoEm?: string | null;
+  principal?: boolean;
+  principalDesde?: string | null;
 }
 
 export interface Recompensa {
@@ -210,6 +212,17 @@ export interface Pendente {
   titulo: string;
   criadoPorUsuarioId?: number | null;
   autorNome?: string | null;
+}
+
+export interface PerfilRanking {
+  id:       number;
+  nome:     string;
+  nivel:    number;
+  xp:       number;
+  rank:     string;
+  titulo:   string;
+  fotoUrl:  string | null;
+  classeId: number | null;
 }
 
 // Notificação in-app (sininho). Tipo: 'pendente' | 'rejeitado' | 'modificado'.

@@ -112,8 +112,30 @@ export class ConfiguracoesComponent implements OnInit {
   secaoMaus       = false;
   secaoMiss       = false;
   secaoRecomp     = false;
+  secaoPrincipal  = false;
   secaoAssinatura = false;
   secaoDanger     = false;
+
+  // ── Perfil principal ──────────────────────────────
+  meusPerfis:       Perfil[] = [];
+  definindoPrincipal = false;
+
+  get podeTrocarPrincipal(): boolean {
+    return new Date().getDate() === 1;
+  }
+
+  carregarMeusPerfis() {
+    this.api.getMeusPerfis().subscribe({ next: p => this.meusPerfis = p });
+  }
+
+  definirPrincipal(id: number) {
+    if (!this.podeTrocarPrincipal || this.definindoPrincipal) return;
+    this.definindoPrincipal = true;
+    this.api.definirPerfilPrincipal(id).subscribe({
+      next: () => { this.carregarMeusPerfis(); this.definindoPrincipal = false; },
+      error: e  => { this.mostrarFeedback('perfil', this.erroMsg(e), 'warn'); this.definindoPrincipal = false; },
+    });
+  }
 
   // Confirmação reset
   confirmarReset = false;
@@ -131,6 +153,7 @@ export class ConfiguracoesComponent implements OnInit {
       this.api.getClasses().subscribe({ next: c => this.classes = c });
       this.carregarPerfil();
       this.carregar();
+      this.carregarMeusPerfis();
     };
     if (!this.profile.perfilAtivo()) {
       this.api.getPerfil(savedId).subscribe({ next: p => { this.profile.setPerfilAtivo(p); init(); } });

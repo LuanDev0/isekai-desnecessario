@@ -38,6 +38,10 @@ public class Perfil
         return true;
     }
 
+    // ── Perfil principal da conta ─────────────────────
+    public bool Principal { get; set; } = false;
+    public DateTime? PrincipalDesde { get; set; }
+
     // ── Desafio do dia ────────────────────────────────
     public DateTime? DesafioRecusadoEm  { get; set; }
     public DateTime? DesafioConcluidoEm { get; set; }

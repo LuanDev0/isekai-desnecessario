@@ -6,6 +6,7 @@ export const pt = {
     inventario: 'Inventário',
     loja: 'Loja',
     grafico: 'Gráfico',
+    ranking: 'Ranking',
     config: 'Config.',
   },
   notificacoes: {
@@ -239,6 +240,12 @@ export const pt = {
     pontosMinimos: 'Pontos mínimos',
     nenhum: 'Nenhum',
     reqAtributo: 'Requisito de atributo',
+    secPrincipal: 'Perfil Principal',
+    principalDesc: 'O perfil principal é o que aparece no ranking. Pode ser trocado no dia 1 de cada mês.',
+    principalCarregando: 'Carregando perfis...',
+    definirPrincipal: 'Definir como principal',
+    principalAtual: 'Principal',
+    principalCooldown: 'Troca disponível apenas no dia 1 de cada mês.',
     secAssinatura: 'Assinatura',
     assinAtivo: 'Plano VIP ativo',
     assinInativo: 'Plano gratuito',
@@ -287,5 +294,11 @@ export const pt = {
     dias: '{{d}}d',
     horasMinutos: '{{h}}h {{m}}m',
     minutos: '{{m}}m',
+  },
+  ranking: {
+    titulo: 'Ranking',
+    carregando: 'Carregando ranking...',
+    vazio: 'Nenhum herói no ranking ainda.',
+    suaPos: 'Sua posição:',
   },
 };

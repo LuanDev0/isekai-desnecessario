@@ -15,6 +15,29 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     // Máximo de heróis (perfis) que uma conta Google pode ter
     public const int MaxPerfisPorConta = 3;
 
+    [HttpGet("ranking")]
+    public async Task<IActionResult> GetRanking([FromQuery] int top = 50)
+    {
+        var limite = Math.Clamp(top, 1, 100);
+        var perfis = await db.Perfis
+            .AsNoTracking()
+            .Where(p => p.Principal)
+            .OrderByDescending(p => p.Xp)
+            .Take(limite)
+            .Select(p => new {
+                p.Id,
+                p.Nome,
+                p.Nivel,
+                p.Xp,
+                p.Rank,
+                p.Titulo,
+                p.FotoUrl,
+                p.ClasseId,
+            })
+            .ToListAsync();
+        return Ok(perfis);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -33,7 +56,27 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
     public async Task<IActionResult> GetMeus()
     {
         if (UsuarioId is not int usuarioId) return Unauthorized();
-        var perfis = await db.Perfis.Where(p => p.UsuarioId == usuarioId).AsNoTracking().ToListAsync();
+
+        // Migração: se nenhum perfil é principal, o mais antigo (menor Id) assume
+        var temPrincipal = await db.Perfis.AnyAsync(p => p.UsuarioId == usuarioId && p.Principal);
+        if (!temPrincipal)
+        {
+            var maisAntigo = await db.Perfis
+                .Where(p => p.UsuarioId == usuarioId)
+                .OrderBy(p => p.Id)
+                .FirstOrDefaultAsync();
+            if (maisAntigo is not null)
+            {
+                maisAntigo.Principal = true;
+                maisAntigo.PrincipalDesde = DateTime.UtcNow;
+                await db.SaveChangesAsync();
+            }
+        }
+
+        var perfis = await db.Perfis
+            .Where(p => p.UsuarioId == usuarioId)
+            .AsNoTracking()
+            .ToListAsync();
         return Ok(perfis);
     }
 
@@ -57,10 +100,50 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
         };
         db.Perfis.Add(perfil);
         await db.SaveChangesAsync();
+
+        // Se é o primeiro perfil da conta, já nasce como principal
+        var total = await db.Perfis.CountAsync(p => p.UsuarioId == usuarioId);
+        if (total == 1)
+        {
+            perfil.Principal = true;
+            perfil.PrincipalDesde = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+        }
+
         return CreatedAtAction(nameof(GetById), new { id = perfil.Id }, perfil);
     }
 
     public record CriarPerfilDto(string Nome, int? ClasseId, string? Genero);
+
+    [HttpPost("{id}/definir-principal")]
+    public async Task<IActionResult> DefinirPrincipal(int id)
+    {
+        if (UsuarioId is not int usuarioId) return Unauthorized();
+        if (await GarantirDonoDoPerfilAsync(db, id) is { } erro) return erro;
+
+        var perfil = await db.Perfis.FindAsync(id);
+        if (perfil is null) return NotFound();
+
+        // Se já é o principal, nada a fazer
+        if (perfil.Principal) return Ok(perfil);
+
+        // Cooldown: só pode trocar no dia 1 do mês
+        var hoje = DateTime.UtcNow;
+        if (hoje.Day != 1)
+            return BadRequest($"Só é possível trocar o perfil principal no dia 1 de cada mês. Próxima troca disponível em 01/{hoje.AddMonths(1).Month:D2}/{hoje.AddMonths(1).Year}.");
+
+        // Remove o principal atual
+        var principalAtual = await db.Perfis
+            .Where(p => p.UsuarioId == usuarioId && p.Principal && p.Id != id)
+            .FirstOrDefaultAsync();
+        if (principalAtual is not null)
+            principalAtual.Principal = false;
+
+        perfil.Principal = true;
+        perfil.PrincipalDesde = hoje;
+        await db.SaveChangesAsync();
+        return Ok(perfil);
+    }
 
     // Remove vínculo de um perfil desta conta (vira órfão novamente)
     [HttpPost("{id}/desvincular")]

@@ -9,6 +9,7 @@ import { InventarioComponent } from './pages/inventario/inventario.component';
 import { StatusComponent } from './pages/status/status.component';
 import { LaboratorioComponent } from './pages/laboratorio/laboratorio.component';
 import { MundoComponent } from './pages/mundo/mundo.component';
+import { RankingComponent } from './pages/ranking/ranking.component';
 import { authGuard, guestGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -22,4 +23,5 @@ export const routes: Routes = [
   { path: 'configuracoes', component: ConfiguracoesComponent, canActivate: [authGuard] },
   { path: 'laboratorio',   component: LaboratorioComponent,   canActivate: [authGuard] },
   { path: 'mundo',         component: MundoComponent,         canActivate: [authGuard] },
+  { path: 'ranking',       component: RankingComponent,       canActivate: [authGuard] },
 ];
