@@ -759,6 +759,48 @@
     </ng-container>
   </section>
 
+  <!-- ── ASSINATURA ───────────────────────────────── -->
+  <section class="card">
+    <div class="secao-header" (click)="secaoAssinatura = !secaoAssinatura">
+      <h2 class="card-title">
+        <span class="secao-icon assin-icon">👑</span>
+        {{ 'config.secAssinatura' | translate }}
+      </h2>
+      <svg class="chevron" [class.open]="secaoAssinatura" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <ng-container *ngIf="secaoAssinatura">
+      <!-- Status atual -->
+      <div class="assin-status" [class.vip]="auth.role() === 'VIP' || auth.isAdmin()">
+        <span class="assin-badge">
+          {{ (auth.role() === 'VIP' || auth.isAdmin()) ? '👑 VIP' : '🆓 Gratuito' }}
+        </span>
+        <span class="assin-status-label">
+          {{ (auth.role() === 'VIP' || auth.isAdmin()) ? ('config.assinAtivo' | translate) : ('config.assinInativo' | translate) }}
+        </span>
+      </div>
+
+      <!-- Benefícios -->
+      <p class="assin-titulo">{{ 'config.assinBeneficios' | translate }}</p>
+      <ul class="assin-lista">
+        <li><span class="assin-check">✓</span> {{ 'config.assinB1' | translate }}</li>
+        <li><span class="assin-check">✓</span> {{ 'config.assinB2' | translate }}</li>
+        <li><span class="assin-check">✓</span> {{ 'config.assinB3' | translate }}</li>
+      </ul>
+
+      <!-- Botão -->
+      <ng-container *ngIf="!(auth.role() === 'VIP' || auth.isAdmin())">
+        <button class="btn-vip">👑 {{ 'config.assinAssinar' | translate }}</button>
+        <p class="assin-hint">{{ 'config.assinEmBreve' | translate }}</p>
+      </ng-container>
+      <ng-container *ngIf="auth.role() === 'VIP'">
+        <button class="btn-cancelar assin-cancelar">{{ 'config.assinCancelar' | translate }}</button>
+      </ng-container>
+    </ng-container>
+  </section>
+
   <!-- ── DANGER ZONE ─────────────────────────────── -->
   <section class="card danger-zone">
     <div class="secao-header" (click)="secaoDanger = !secaoDanger">
