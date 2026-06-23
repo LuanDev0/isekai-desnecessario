@@ -416,6 +416,95 @@ $muted:   #8b949e;
   &.warn { color: $orange; }
 }
 
+// ── Assinatura ─────────────────────────────────────────
+.assin-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+
+  &.vip { border-color: #6e40c9; background: rgba(188, 140, 255, 0.07); }
+}
+
+.assin-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $white;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+
+  .vip & { background: rgba(188, 140, 255, 0.15); border-color: #6e40c9; color: $purple; }
+}
+
+.assin-status-label {
+  font-size: 0.82rem;
+  color: $muted;
+  .vip & { color: $purple; }
+}
+
+.assin-titulo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: $muted;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.assin-lista {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: $text;
+  }
+}
+
+.assin-check {
+  color: $purple;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.btn-vip {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #6e40c9, #bc8cff);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  @media (hover: hover) { &:hover { opacity: 0.85; } }
+}
+
+.assin-hint {
+  text-align: center;
+  font-size: 0.72rem;
+  color: $muted;
+  margin: 8px 0 0;
+}
+
+.assin-cancelar { width: 100%; }
+
 // ── Danger Zone ────────────────────────────────────────
 .danger-zone { border-color: #4a2020; }
 

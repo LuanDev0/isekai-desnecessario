@@ -108,11 +108,12 @@ export class ConfiguracoesComponent implements OnInit {
   abertoRecomp = false;
 
   // Colapsáveis — seções inteiras (todas fechadas por padrão)
-  secaoBons    = false;
-  secaoMaus    = false;
-  secaoMiss    = false;
-  secaoRecomp  = false;
-  secaoDanger  = false;
+  secaoBons       = false;
+  secaoMaus       = false;
+  secaoMiss       = false;
+  secaoRecomp     = false;
+  secaoAssinatura = false;
+  secaoDanger     = false;
 
   // Confirmação reset
   confirmarReset = false;
