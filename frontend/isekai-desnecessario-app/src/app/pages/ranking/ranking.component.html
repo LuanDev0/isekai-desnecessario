@@ -1,0 +1,44 @@
+<div class="ranking-page">
+
+  <h1 class="page-title">{{ 'ranking.titulo' | translate }}</h1>
+
+  <div *ngIf="carregando" class="vazio">{{ 'ranking.carregando' | translate }}</div>
+
+  <div *ngIf="!carregando && perfis.length === 0" class="vazio">
+    {{ 'ranking.vazio' | translate }}
+  </div>
+
+  <ul *ngIf="!carregando && perfis.length > 0" class="lista">
+    <li
+      *ngFor="let p of perfis; let i = index"
+      class="item"
+      [class.eu]="p.id === meuPerfilId"
+      [class.top3]="i < 3"
+    >
+      <span class="posicao">{{ posicaoIcon(i) }}</span>
+
+      <div class="avatar">
+        <img *ngIf="fotoUrl(p)" [src]="fotoUrl(p)" [alt]="p.nome" />
+        <span *ngIf="!fotoUrl(p)" class="avatar-inicial">{{ p.nome.charAt(0) }}</span>
+      </div>
+
+      <div class="info">
+        <span class="nome">{{ p.nome }}</span>
+        <span class="titulo-perfil">{{ p.titulo }}</span>
+      </div>
+
+      <div class="stats">
+        <span class="rank-badge" [style.color]="rankColor(p.rank)" [style.border-color]="rankColor(p.rank)">
+          {{ p.rank }}
+        </span>
+        <span class="nivel">Nv.{{ p.nivel }}</span>
+        <span class="xp">{{ p.xp | number }} XP</span>
+      </div>
+    </li>
+  </ul>
+
+  <p *ngIf="!carregando && minhaPos >= 0" class="minha-pos">
+    {{ 'ranking.suaPos' | translate }} #{{ minhaPos + 1 }}
+  </p>
+
+</div>

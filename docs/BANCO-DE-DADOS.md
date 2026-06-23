@@ -102,6 +102,8 @@ Catálogo (definições — global ou próprio; sem PerfilId):
 | DataXpHoje | DateTime? | | reseta `XpHoje` à meia-noite |
 | UltimaLootbox | DateTime? | | controla 1×/dia |
 | DesafioRecusadoEm / DesafioConcluidoEm | DateTime? | | desafio do dia |
+| Principal | bool | false | perfil principal da conta (aparece no ranking) |
+| PrincipalDesde | DateTime? | | data da última definição como principal |
 
 ### Classe — seed fixo (6)
 | Id | Nome | Feminino | Emoji | AtributoId |
@@ -219,6 +221,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `VinculoMultiClasse` | vínculo N:N item ↔ Classe — join tables `BomHabitoClasse`, `ClasseMauHabito`, `ClasseMissao`, `ClasseRecompensa` |
 | `TravaDiasNoConteudo` | coluna `TravaDias` (int, default 0) nas 4 definições — trava por timer |
 | `Notificacoes` | tabela `Notificacoes` (sininho in-app) — FK p/ `Usuario`, índice `(UsuarioId, Lida)` |
+| `PerfilPrincipal` | colunas `Principal` (bool, default false) e `PrincipalDesde` (DateTime?) em `Perfil` |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 

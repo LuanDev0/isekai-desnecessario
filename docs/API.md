@@ -30,9 +30,10 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | GET | `/perfil/{id}` | Busca um perfil (valida que pertence ao usuário logado) |
-| GET | `/perfil/meus` | Lista os perfis **da conta autenticada** |
+| GET | `/perfil/ranking?top=N` | Top-N perfis por XP — **só perfis `Principal=true`** (padrão: 50, máx: 100) |
+| GET | `/perfil/meus` | Lista os perfis **da conta autenticada** (migra automaticamente o mais antigo como principal se nenhum tiver `Principal=true`) |
 | GET | `/perfil/orfaos` | Lista perfis **sem dono** (convidados), para reivindicar após login |
-| POST | `/perfil` | Cria perfil na conta logada (limite de **3 por conta**; progressão sempre nasce nos defaults do modelo) |
+| POST | `/perfil` | Cria perfil na conta logada (limite de **3 por conta**; primeiro perfil já nasce como `Principal=true`) |
 | POST | `/perfil/{id}/vincular` | Reivindica um perfil órfão para a conta logada |
 | POST | `/perfil/{id}/desvincular` | Remove o vínculo (perfil volta a convidado; **não** é excluído) |
 | PATCH | `/perfil/{id}/info` | Atualiza só **nome, classe e gênero** (`{ nome, classeId, genero }`) |
@@ -40,6 +41,7 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | POST | `/perfil/{id}/xp?quantidade=N` | Adiciona XP manualmente |
 | POST | `/perfil/{id}/reset` | Zera XP/moedas/nível e **remove as ativações** de hábitos/missões do perfil (definições do catálogo permanecem) |
 | POST | `/perfil/{id}/foto` | Upload de foto (`multipart`, campo `arquivo`; ≤5MB; jpg/jpeg/jfif/png/webp/gif) |
+| POST | `/perfil/{id}/definir-principal` | Define este perfil como o principal da conta (cooldown: só no **dia 1** de cada mês) |
 | POST | `/perfil/{id}/desafio/recusar` | Marca o desafio do dia como recusado |
 | POST | `/perfil/{id}/desafio/concluir` | Marca o desafio do dia como concluído |
 | GET | `/perfil/{id}/lootbox/status` | `{ disponivel, xpHoje, xpNecessario:1000, jaAbriuHoje }` |

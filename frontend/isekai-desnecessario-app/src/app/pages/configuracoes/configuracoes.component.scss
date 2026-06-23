@@ -416,6 +416,28 @@ $muted:   #8b949e;
   &.warn { color: $orange; }
 }
 
+// ── Perfil Principal ───────────────────────────────────
+.principal-desc { font-size: 0.82rem; color: $muted; margin: 0 0 14px; }
+.principal-lista { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.principal-item {
+  display: flex; align-items: center; gap: 8px;
+  background: $surface; border: 1px solid $border; border-radius: 8px; padding: 10px 12px;
+  &.ativo { border-color: #ffd700; background: rgba(255, 215, 0, 0.05); }
+}
+.principal-star { color: #ffd700; font-size: 0.9rem; margin-right: 2px; }
+.principal-nome { flex: 1; font-size: 0.88rem; font-weight: 600; color: $white; }
+.principal-info { font-size: 0.75rem; color: $muted; flex-shrink: 0; }
+.btn-definir-principal {
+  font-size: 0.75rem; font-weight: 600; padding: 4px 10px;
+  background: transparent; border: 1px solid $purple; color: $purple; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s;
+  &:hover:not(:disabled) { background: rgba(188, 140, 255, 0.12); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+.principal-atual-badge { font-size: 0.72rem; color: #ffd700; font-weight: 700; }
+.principal-hint { font-size: 0.75rem; color: $muted; margin: 4px 0 0; }
+.vazio-txt { font-size: 0.82rem; color: $muted; }
+
 // ── Assinatura ─────────────────────────────────────────
 .assin-status {
   display: flex;

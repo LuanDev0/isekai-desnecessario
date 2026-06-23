@@ -1,0 +1,160 @@
+$bg:     #0d1117;
+$card:   #21262d;
+$border: #30363d;
+$purple: #bc8cff;
+$gold:   #ffd700;
+$silver: #c0c0c0;
+$bronze: #cd7f32;
+$white:  #e6edf3;
+$text:   #c9d1d9;
+$muted:  #8b949e;
+$blue:   #58a6ff;
+
+:host {
+  display: block;
+  min-height: 100svh;
+  background: $bg;
+}
+
+.ranking-page {
+  padding: 12px max(14px, env(safe-area-inset-left)) calc(84px + env(safe-area-inset-bottom));
+  padding-right: max(14px, env(safe-area-inset-right));
+  color: $text;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $white;
+  margin: 0 0 16px;
+}
+
+.vazio {
+  text-align: center;
+  color: $muted;
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
+
+// ── Lista ───────────────────────────────────────────────
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color 0.15s;
+
+  &.eu {
+    border-color: $purple;
+    background: rgba(188, 140, 255, 0.06);
+  }
+
+  &.top3:nth-child(1) .posicao { font-size: 1.4rem; }
+  &.top3:nth-child(2) .posicao { font-size: 1.25rem; }
+  &.top3:nth-child(3) .posicao { font-size: 1.1rem; }
+}
+
+// ── Posição ─────────────────────────────────────────────
+.posicao {
+  min-width: 28px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $muted;
+}
+
+// ── Avatar ──────────────────────────────────────────────
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #30363d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.avatar-inicial {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $white;
+  text-transform: uppercase;
+}
+
+// ── Info ────────────────────────────────────────────────
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nome {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titulo-perfil {
+  font-size: 0.72rem;
+  color: $muted;
+}
+
+// ── Stats ───────────────────────────────────────────────
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.rank-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+}
+
+.nivel {
+  font-size: 0.72rem;
+  color: $muted;
+}
+
+.xp {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $blue;
+}
+
+// ── Minha posição ───────────────────────────────────────
+.minha-pos {
+  text-align: center;
+  font-size: 0.8rem;
+  color: $purple;
+  margin-top: 16px;
+}

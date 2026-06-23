@@ -759,6 +759,44 @@
     </ng-container>
   </section>
 
+  <!-- ── PERFIL PRINCIPAL ─────────────────────────── -->
+  <section class="card">
+    <div class="secao-header" (click)="secaoPrincipal = !secaoPrincipal">
+      <h2 class="card-title">
+        <span class="secao-icon">★</span>
+        {{ 'config.secPrincipal' | translate }}
+      </h2>
+      <svg class="chevron" [class.open]="secaoPrincipal" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <ng-container *ngIf="secaoPrincipal">
+      <p class="principal-desc">{{ 'config.principalDesc' | translate }}</p>
+      <div *ngIf="meusPerfis.length === 0" class="vazio-txt">{{ 'config.principalCarregando' | translate }}</div>
+      <ul class="principal-lista">
+        <li *ngFor="let p of meusPerfis" class="principal-item" [class.ativo]="p.principal">
+          <span class="principal-nome">
+            <span *ngIf="p.principal" class="principal-star">★</span>
+            {{ p.nome }}
+          </span>
+          <span class="principal-info">Nv.{{ p.nivel }} · {{ p.rank }}</span>
+          <ng-container *ngIf="!p.principal">
+            <button
+              class="btn-definir-principal"
+              [disabled]="!podeTrocarPrincipal || definindoPrincipal"
+              (click)="definirPrincipal(p.id)"
+              [title]="podeTrocarPrincipal ? '' : ('config.principalCooldown' | translate)"
+            >
+              {{ definindoPrincipal ? '...' : ('config.definirPrincipal' | translate) }}
+            </button>
+          </ng-container>
+          <span *ngIf="p.principal" class="principal-atual-badge">{{ 'config.principalAtual' | translate }}</span>
+        </li>
+      </ul>
+      <p *ngIf="!podeTrocarPrincipal" class="principal-hint">{{ 'config.principalCooldown' | translate }}</p>
+    </ng-container>
+  </section>
+
   <!-- ── ASSINATURA ───────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoAssinatura = !secaoAssinatura">
