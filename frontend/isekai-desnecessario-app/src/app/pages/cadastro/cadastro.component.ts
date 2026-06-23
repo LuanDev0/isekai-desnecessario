@@ -65,7 +65,7 @@ export class CadastroComponent implements OnInit {
     return this.generoSelecionado === 'Feminino' ? (c.nomeFeminino ?? c.nome) : c.nome;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.auth.isLogado() && this.profile.getSavedId()) {
       this.router.navigate(['/']);
       return;
@@ -75,7 +75,8 @@ export class CadastroComponent implements OnInit {
     if (this.usuario) this.carregarPerfisDoUsuario();
     if (environment.googleClientId) {
       if (Capacitor.isNativePlatform()) {
-        GoogleAuth.initialize({ clientId: environment.googleClientId, scopes: ['profile', 'email'], grantOfflineAccess: true });
+        GoogleAuth.initialize({ clientId: environment.googleClientId, scopes: ['profile', 'email'] });
+        try { await GoogleAuth.signOut(); } catch {}
       } else {
         this.tentarIniciarGoogle();
       }
