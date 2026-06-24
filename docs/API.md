@@ -185,6 +185,16 @@ Sininho in-app. Destinatário é a conta logada.
 
 ---
 
+## Pontos de Atributo — `/api/pontosatributos`
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/pontosatributos?perfilId=X` | Lista os pontos persistidos por atributo `[{ atributoId, total }]` |
+
+> Incrementado automaticamente ao completar hábitos e missões. Usado na página de Status e na validação de recompensas com requisito de atributo.
+
+---
+
 ## Snapshots de atributos — `/api/snapshots`
 
 | Método | Rota | Descrição |

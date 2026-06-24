@@ -23,6 +23,7 @@ Banco: **`isekai`** (PostgreSQL). Mapeado por EF Core (provider Npgsql) em `Data
 | `Atributos` | Atributos | `Atributo` |
 | `DiarioAcoes` | DiarioAcoes | `DiarioAcao` |
 | `SnapshotsAtributo` | SnapshotsAtributo | `SnapshotAtributo` |
+| `PontosAtributos` | PontosAtributos | `PontosAtributo` |
 | `Experimentos` | Experimentos | `Experimento` |
 | `ExperimentosDia` | ExperimentosDia | `ExperimentoDia` |
 
@@ -39,6 +40,7 @@ Usuario (conta Google) ── Role (papel de acesso)
             ├─1:N─ HistoricoXp
             ├─1:N─ DiarioAcao
             ├─1:N─ SnapshotAtributo ── AtributoId ─→ Atributo
+            ├─N:1─ PontosAtributo (chave composta PerfilId+AtributoId) ─→ Atributo
             ├─1:N─ Experimento    ─1:N─ ExperimentoDia
             │
             │   ── Ativações (estado por-perfil; N:N com as definições) ──
@@ -192,6 +194,9 @@ Guarda cópia de Nome/Emoji/Descricao/Preco para sobreviver à exclusão da reco
 ### HistoricoXp — telemetria diária
 `Data` (DateOnly), `XpHoje`, `Nivel`, `Moedas` e `XpPorHora` — array de **24 ints** serializado em JSON na coluna `XpPorHoraJson` (`[NotMapped]` no getter/setter).
 
+### PontosAtributo — pontos persistidos por atributo
+Chave composta `(PerfilId, AtributoId)`. Campo `Total` (int) acumulado a cada conclusão de hábito ou missão: `+Xp/10` (hábito) ou `+RecompensaXp/10` (missão). Usado na validação de requisitos de recompensa e na página de Status. Perfis anteriores à v0.14.0 começam com `Total = 0` (sem retroativo).
+
 ### SnapshotAtributo — foto do progresso
 `AtributoId`, `Pontos`, `Data`. Usado para comparar a evolução dos atributos ao longo do tempo (página de gráficos).
 
@@ -222,6 +227,7 @@ O histórico foi **squashado** num único `InitialCreate` (o esquema inteiro —
 | `TravaDiasNoConteudo` | coluna `TravaDias` (int, default 0) nas 4 definições — trava por timer |
 | `Notificacoes` | tabela `Notificacoes` (sininho in-app) — FK p/ `Usuario`, índice `(UsuarioId, Lida)` |
 | `PerfilPrincipal` | colunas `Principal` (bool, default false) e `PrincipalDesde` (DateTime?) em `Perfil` |
+| `PontosAtributosPersistidos` | tabela `PontosAtributos` (chave composta `PerfilId+AtributoId`, campo `Total`) |
 
 > Em produção (e no `dotnet run` local) as migrations são aplicadas **automaticamente** no startup — `Database.Migrate()` no `Program.cs`.
 

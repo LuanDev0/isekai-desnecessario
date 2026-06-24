@@ -10,7 +10,7 @@ namespace IsekaiDesnecessario.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class HabitosController(AppDbContext db, XpService xpService, NotificacaoService notificacoes) : ApiControllerBase
+public class HabitosController(AppDbContext db, XpService xpService, NotificacaoService notificacoes, PontosAtributoService pontosService) : ApiControllerBase
 {
     // ════════════════════ Bons hábitos ════════════════════
 
@@ -126,6 +126,7 @@ public class HabitosController(AppDbContext db, XpService xpService, Notificacao
         if (def.TravaDias > 0) a.TravadoAte = DateTime.UtcNow.AddDays(def.TravaDias);
 
         await xpService.AdicionarXpAsync(perfilId, def.Xp);
+        await pontosService.IncrementarAsync(perfilId, def.AtributoId, def.Xp);
         db.DiarioAcoes.Add(new() { PerfilId = perfilId, Emoji = "✅", Tipo = "habito_bom",
             Mensagem = $"Completou \"{def.Habito}\" +{def.Xp} XP" });
         await db.SaveChangesAsync();

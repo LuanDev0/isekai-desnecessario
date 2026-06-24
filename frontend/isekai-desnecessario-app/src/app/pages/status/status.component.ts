@@ -42,10 +42,11 @@ export class StatusComponent implements OnInit {
 
   // Snapshot anterior para o "fantasma" do radar
   snapshotAnterior: { atributoId: number; pontos: number }[] = [];
+  pontosAtributos:  { atributoId: number; total: number }[]  = [];
 
   carregando = true;
   private loaded = 0;
-  private total  = 7;
+  private total  = 8;
 
   ngOnInit() {
     const id = this.profile.getSavedId();
@@ -66,6 +67,10 @@ export class StatusComponent implements OnInit {
     this.api.getAtributos().subscribe(a => { this.atributos = a; this.tick(); });
     this.api.getSnapshotAnterior(id).subscribe(s => {
       this.snapshotAnterior = s;
+      this.tick();
+    });
+    this.api.getPontosAtributos(id).subscribe(p => {
+      this.pontosAtributos = p;
       this.tick();
     });
   }
@@ -100,10 +105,7 @@ export class StatusComponent implements OnInit {
       const mausVinculados    = this.mausHabitos.filter(h => h.atributoId === attr.id);
       const missoesVinculadas = this.missoes.filter(m => m.atributoId === attr.id);
 
-      const xpBons    = bonsVinculados.reduce((acc, h) => acc + h.xp * h.streak, 0);
-      const xpMissoes = missoesVinculadas.filter(m => m.concluida).reduce((acc, m) => acc + m.recompensaXp, 0);
-
-      const valor = Math.max(0, Math.floor((xpBons + xpMissoes) / 10));
+      const valor = this.pontosAtributos.find(p => p.atributoId === attr.id)?.total ?? 0;
 
       return {
         id:      attr.id,

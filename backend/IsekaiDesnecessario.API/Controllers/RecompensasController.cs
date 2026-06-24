@@ -125,17 +125,13 @@ public class RecompensasController(AppDbContext db, NotificacaoService notificac
         if (perfil.Moedas < recompensa.Preco)
             return BadRequest("Moedas insuficientes.");
 
-        // Valida requisito de atributo (soma do estado por-perfil das ativações)
+        // Valida requisito de atributo (pontos persistidos)
         if (recompensa.AtributoId.HasValue && recompensa.PontosNecessarios > 0)
         {
-            var xpBons = await db.PerfilBonsHabitos
-                .Where(a => a.PerfilId == perfilId && a.Ativo && a.BomHabito!.AtributoId == recompensa.AtributoId)
-                .SumAsync(a => a.BomHabito!.Xp * a.Streak);
-            var xpMiss = await db.PerfilMissoes
-                .Where(a => a.PerfilId == perfilId && a.Ativo && a.Concluida && a.Missao!.AtributoId == recompensa.AtributoId)
-                .SumAsync(a => a.Missao!.RecompensaXp);
-
-            int pontosAtributo = (xpBons + xpMiss) / 10;
+            var pontosAtributo = await db.PontosAtributos
+                .Where(p => p.PerfilId == perfilId && p.AtributoId == recompensa.AtributoId)
+                .Select(p => p.Total)
+                .FirstOrDefaultAsync();
             if (pontosAtributo < recompensa.PontosNecessarios)
                 return BadRequest($"Atributo insuficiente. Você tem {pontosAtributo} pts, precisa de {recompensa.PontosNecessarios}.");
         }
