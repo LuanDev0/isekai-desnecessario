@@ -416,7 +416,14 @@ $muted:   #8b949e;
   &.warn { color: $orange; }
 }
 
-// ── Perfil Principal ───────────────────────────────────
+// ── Perfil Principal (dentro da seção Perfil) ──────────
+.principal-divider {
+  display: flex; align-items: center; gap: 8px;
+  margin: 20px 0 14px;
+  &::before, &::after { content: ''; flex: 1; height: 1px; background: $border; }
+}
+.principal-divider-label { font-size: 0.75rem; font-weight: 700; color: #ffd700; white-space: nowrap; }
+
 .principal-desc { font-size: 0.82rem; color: $muted; margin: 0 0 14px; }
 .principal-lista { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .principal-item {
