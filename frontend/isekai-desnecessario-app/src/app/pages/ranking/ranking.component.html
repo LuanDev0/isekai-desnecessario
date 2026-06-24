@@ -2,43 +2,123 @@
 
   <h1 class="page-title">{{ 'ranking.titulo' | translate }}</h1>
 
-  <div *ngIf="carregando" class="vazio">{{ 'ranking.carregando' | translate }}</div>
-
-  <div *ngIf="!carregando && perfis.length === 0" class="vazio">
-    {{ 'ranking.vazio' | translate }}
+  <!-- Abas principais -->
+  <div class="abas">
+    <button class="aba" [class.ativa]="abaAtiva === 'nivel'" (click)="selecionarAba('nivel')">
+      ⚔️ Nível
+    </button>
+    <button class="aba" [class.ativa]="abaAtiva === 'atributos'" (click)="selecionarAba('atributos')">
+      ✨ Atributos
+    </button>
   </div>
 
-  <ul *ngIf="!carregando && perfis.length > 0" class="lista">
-    <li
-      *ngFor="let p of perfis; let i = index"
-      class="item"
-      [class.eu]="p.id === meuPerfilId"
-      [class.top3]="i < 3"
-    >
-      <span class="posicao">{{ posicaoIcon(i) }}</span>
+  <!-- ── ABA NÍVEL ─────────────────────────────────────── -->
+  <ng-container *ngIf="abaAtiva === 'nivel'">
+    <div *ngIf="carregandoNivel" class="vazio">{{ 'ranking.carregando' | translate }}</div>
 
-      <div class="avatar">
-        <img *ngIf="fotoUrl(p)" [src]="fotoUrl(p)" [alt]="p.nome" />
-        <span *ngIf="!fotoUrl(p)" class="avatar-inicial">{{ p.nome.charAt(0) }}</span>
-      </div>
+    <div *ngIf="!carregandoNivel && perfisNivel.length === 0" class="vazio">
+      {{ 'ranking.vazio' | translate }}
+    </div>
 
-      <div class="info">
-        <span class="nome">{{ p.nome }}</span>
-        <span class="titulo-perfil">{{ p.titulo }}</span>
-      </div>
+    <ul *ngIf="!carregandoNivel && perfisNivel.length > 0" class="lista">
+      <li
+        *ngFor="let p of perfisNivel; let i = index"
+        class="item"
+        [class.eu]="p.id === meuPerfilId"
+        [class.top3]="i < 3"
+      >
+        <span class="posicao">{{ posicaoIcon(i) }}</span>
 
-      <div class="stats">
-        <span class="rank-badge" [style.color]="rankColor(p.rank)" [style.border-color]="rankColor(p.rank)">
-          {{ p.rank }}
-        </span>
-        <span class="nivel">Nv.{{ p.nivel }}</span>
-        <span class="xp">{{ p.xp | number }} XP</span>
-      </div>
-    </li>
-  </ul>
+        <div class="avatar">
+          <img *ngIf="fotoUrl(p.fotoUrl)" [src]="fotoUrl(p.fotoUrl)" [alt]="p.nome" />
+          <span *ngIf="!fotoUrl(p.fotoUrl)" class="avatar-inicial">{{ p.nome.charAt(0) }}</span>
+        </div>
 
-  <p *ngIf="!carregando && minhaPos >= 0" class="minha-pos">
-    {{ 'ranking.suaPos' | translate }} #{{ minhaPos + 1 }}
-  </p>
+        <div class="info">
+          <span class="nome">{{ p.nome }}</span>
+          <span class="titulo-perfil">{{ p.titulo }}</span>
+        </div>
+
+        <div class="stats">
+          <span class="rank-badge" [style.color]="rankColor(p.rank)" [style.border-color]="rankColor(p.rank)">
+            {{ p.rank }}
+          </span>
+          <span class="nivel">Nv.{{ p.nivel }}</span>
+          <span class="xp">{{ p.xp | number }} XP</span>
+        </div>
+      </li>
+    </ul>
+
+    <p *ngIf="!carregandoNivel && minhaPosNivel >= 0" class="minha-pos">
+      {{ 'ranking.suaPos' | translate }} #{{ minhaPosNivel + 1 }}
+    </p>
+  </ng-container>
+
+  <!-- ── ABA ATRIBUTOS ─────────────────────────────────── -->
+  <ng-container *ngIf="abaAtiva === 'atributos'">
+
+    <!-- Sub-abas -->
+    <div class="sub-abas">
+      <button
+        class="sub-aba"
+        [class.ativa]="subAba === null"
+        [style.--cor]="'#ffd700'"
+        (click)="selecionarSubAba(null)"
+      >
+        ⭐ Total
+      </button>
+      <button
+        *ngFor="let a of atributos"
+        class="sub-aba"
+        [class.ativa]="subAba === a.id"
+        [style.--cor]="a.cor"
+        (click)="selecionarSubAba(a.id)"
+      >
+        {{ a.emoji }} {{ a.nome }}
+      </button>
+    </div>
+
+    <div *ngIf="carregandoAtrib" class="vazio">{{ 'ranking.carregando' | translate }}</div>
+
+    <div *ngIf="!carregandoAtrib && subAbaCarregada && listaAtribAtiva.length === 0" class="vazio">
+      Nenhum herói tem pontos neste atributo ainda.
+    </div>
+
+    <ul *ngIf="!carregandoAtrib && listaAtribAtiva.length > 0" class="lista">
+      <li
+        *ngFor="let p of listaAtribAtiva; let i = index"
+        class="item"
+        [class.eu]="p.id === meuPerfilId"
+        [class.top3]="i < 3"
+      >
+        <span class="posicao">{{ posicaoIcon(i) }}</span>
+
+        <div class="avatar">
+          <img *ngIf="fotoUrl(p.fotoUrl)" [src]="fotoUrl(p.fotoUrl)" [alt]="p.nome" />
+          <span *ngIf="!fotoUrl(p.fotoUrl)" class="avatar-inicial">{{ p.nome.charAt(0) }}</span>
+        </div>
+
+        <div class="info">
+          <span class="nome">{{ p.nome }}</span>
+          <span class="titulo-perfil">{{ p.titulo }}</span>
+        </div>
+
+        <div class="stats">
+          <span class="rank-badge" [style.color]="rankColor(p.rank)" [style.border-color]="rankColor(p.rank)">
+            {{ p.rank }}
+          </span>
+          <span class="nivel">Nv.{{ p.nivel }}</span>
+          <span class="pts" [style.color]="atributoCor(subAba)">
+            {{ p.totalPontos }} pts
+          </span>
+        </div>
+      </li>
+    </ul>
+
+    <p *ngIf="!carregandoAtrib && minhaPosAtrib >= 0" class="minha-pos">
+      {{ 'ranking.suaPos' | translate }} #{{ minhaPosAtrib + 1 }}
+    </p>
+
+  </ng-container>
 
 </div>

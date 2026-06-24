@@ -30,7 +30,8 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | GET | `/perfil/{id}` | Busca um perfil (valida que pertence ao usuário logado) |
-| GET | `/perfil/ranking?top=N` | Top-N perfis por XP — **só perfis `Principal=true`** (padrão: 50, máx: 100) |
+| GET | `/perfil/ranking?top=N` | Top-N perfis ordenados por Nível → XP — **só perfis `Principal=true`** (padrão: 50, máx: 100) |
+| GET | `/perfil/ranking/atributos?atributoId=X&top=N` | Top-N por pontos de atributo — `atributoId` omitido = ranking total (soma de todos); com `atributoId` = ranking do atributo específico (exclui quem tem 0 pts) |
 | GET | `/perfil/meus` | Lista os perfis **da conta autenticada** (migra automaticamente o mais antigo como principal se nenhum tiver `Principal=true`) |
 | GET | `/perfil/orfaos` | Lista perfis **sem dono** (convidados), para reivindicar após login |
 | POST | `/perfil` | Cria perfil na conta logada (limite de **3 por conta**; primeiro perfil já nasce como `Principal=true`) |

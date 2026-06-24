@@ -4,10 +4,12 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { PerfilRanking } from '../../models/models';
+import { PerfilRanking, PerfilRankingAtributo, Atributo } from '../../models/models';
 import { environment } from '../../../environments/environment';
 
 const API_BASE = environment.apiUrl.replace('/api', '');
+
+type AbaAtiva = 'nivel' | 'atributos';
 
 @Component({
   selector: 'app-ranking',
@@ -21,25 +23,72 @@ export class RankingComponent implements OnInit {
   private profile = inject(ProfileService);
   private router  = inject(Router);
 
-  perfis:    PerfilRanking[] = [];
-  carregando = true;
   meuPerfilId: number | null = null;
+  abaAtiva: AbaAtiva = 'nivel';
+  subAba: number | null = null; // null = Total, number = atributoId
+
+  // Aba Nível
+  perfisNivel: PerfilRanking[] = [];
+  carregandoNivel = true;
+
+  // Aba Atributos
+  atributos: Atributo[] = [];
+  rankingAtributos: Map<string, PerfilRankingAtributo[]> = new Map();
+  carregandoAtrib = false;
 
   ngOnInit() {
     const savedId = this.profile.getSavedId();
     if (!savedId) { this.router.navigate(['/cadastro']); return; }
     this.meuPerfilId = savedId;
+
     this.api.getRanking().subscribe({
-      next: p => { this.perfis = p; this.carregando = false; },
-      error: () => { this.carregando = false; },
+      next: p => { this.perfisNivel = p; this.carregandoNivel = false; },
+      error: () => { this.carregandoNivel = false; },
+    });
+    this.api.getAtributos().subscribe({ next: a => this.atributos = a });
+  }
+
+  selecionarAba(aba: AbaAtiva) {
+    this.abaAtiva = aba;
+    if (aba === 'atributos' && !this.rankingAtributos.has('total')) {
+      this.carregarSubAba(null);
+    }
+  }
+
+  selecionarSubAba(atributoId: number | null) {
+    this.subAba = atributoId;
+    const key = atributoId == null ? 'total' : String(atributoId);
+    if (!this.rankingAtributos.has(key)) {
+      this.carregarSubAba(atributoId);
+    }
+  }
+
+  private carregarSubAba(atributoId: number | null) {
+    const key = atributoId == null ? 'total' : String(atributoId);
+    this.carregandoAtrib = true;
+    this.api.getRankingAtributos(atributoId ?? undefined).subscribe({
+      next: lista => {
+        this.rankingAtributos.set(key, lista);
+        this.carregandoAtrib = false;
+      },
+      error: () => { this.carregandoAtrib = false; },
     });
   }
 
-  fotoUrl(perfil: PerfilRanking): string | null {
-    const url = perfil.fotoUrl;
-    if (!url) return null;
-    if (url.startsWith('data:')) return url;
-    if (url.startsWith('/')) return `${API_BASE}${url}`;
+  get listaAtribAtiva(): PerfilRankingAtributo[] {
+    const key = this.subAba == null ? 'total' : String(this.subAba);
+    return this.rankingAtributos.get(key) ?? [];
+  }
+
+  get subAbaCarregada(): boolean {
+    const key = this.subAba == null ? 'total' : String(this.subAba);
+    return this.rankingAtributos.has(key);
+  }
+
+  fotoUrl(fotoUrl: string | null): string | null {
+    if (!fotoUrl) return null;
+    if (fotoUrl.startsWith('data:')) return fotoUrl;
+    if (fotoUrl.startsWith('/')) return `${API_BASE}${fotoUrl}`;
     return null;
   }
 
@@ -60,7 +109,26 @@ export class RankingComponent implements OnInit {
     return `${i + 1}`;
   }
 
-  get minhaPos(): number {
-    return this.perfis.findIndex(p => p.id === this.meuPerfilId);
+  get minhaPosNivel(): number {
+    return this.perfisNivel.findIndex(p => p.id === this.meuPerfilId);
+  }
+
+  get minhaPosAtrib(): number {
+    return this.listaAtribAtiva.findIndex(p => p.id === this.meuPerfilId);
+  }
+
+  atributoNome(id: number | null): string {
+    if (id == null) return '';
+    return this.atributos.find(a => a.id === id)?.nome ?? '';
+  }
+
+  atributoEmoji(id: number | null): string {
+    if (id == null) return '⭐';
+    return this.atributos.find(a => a.id === id)?.emoji ?? '';
+  }
+
+  atributoCor(id: number | null): string {
+    if (id == null) return '#ffd700';
+    return this.atributos.find(a => a.id === id)?.cor ?? '#8b949e';
   }
 }

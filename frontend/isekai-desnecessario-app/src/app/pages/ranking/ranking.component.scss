@@ -38,6 +38,63 @@ $blue:   #58a6ff;
   font-size: 0.9rem;
 }
 
+// ── Abas principais ─────────────────────────────────────
+.abas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.aba {
+  flex: 1;
+  padding: 10px 0;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 10px;
+  color: $muted;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &.ativa {
+    border-color: $purple;
+    color: $purple;
+    background: rgba(188, 140, 255, 0.08);
+  }
+}
+
+// ── Sub-abas ────────────────────────────────────────────
+.sub-abas {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.sub-aba {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 20px;
+  color: $muted;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+
+  &.ativa {
+    border-color: var(--cor, #{$gold});
+    color: var(--cor, #{$gold});
+    background: color-mix(in srgb, var(--cor, #{$gold}) 10%, transparent);
+  }
+}
+
 // ── Lista ───────────────────────────────────────────────
 .lista {
   list-style: none;
@@ -149,6 +206,11 @@ $blue:   #58a6ff;
   font-size: 0.75rem;
   font-weight: 600;
   color: $blue;
+}
+
+.pts {
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 // ── Minha posição ───────────────────────────────────────
