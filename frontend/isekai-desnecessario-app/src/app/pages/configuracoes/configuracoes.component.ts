@@ -7,13 +7,14 @@ import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { Atributo, BomHabito, Classe, HabitoCatalogo, MauHabito, Missao, MissaoCatalogo, Pendente, Perfil, Recompensa, RecompensaCatalogo } from '../../models/models';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-configuracoes',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, IconComponent],
   templateUrl: './configuracoes.component.html',
   styleUrl: './configuracoes.component.scss',
 })

@@ -75,7 +75,8 @@
           <span class="req-label" [class.cumprido]="requisitoCumprido(r)" [class.pendente]="!requisitoCumprido(r)">
             {{ nomeAtributo(r.atributoId) }}
             {{ pontosAtributo(r.atributoId) }}/{{ r.pontosNecessarios }} pts
-            {{ requisitoCumprido(r) ? '✓' : '🔒' }}
+            <ng-container *ngIf="requisitoCumprido(r)">✓</ng-container>
+            <app-icon *ngIf="!requisitoCumprido(r)" name="cadeado" [size]="14"></app-icon>
           </span>
         </div>
       </div>

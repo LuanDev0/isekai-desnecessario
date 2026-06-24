@@ -21,7 +21,7 @@
               <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
               <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <div class="foto-overlay-config"><span>📷</span></div>
+            <div class="foto-overlay-config"><app-icon name="camera" [size]="22"></app-icon></div>
           </div>
           <input #fotoInputConfig type="file" accept="image/jpeg,image/png,image/webp,image/gif"
                  style="display:none" (change)="onFotoSelecionadaConfig($event)" />
@@ -141,7 +141,7 @@
             <div class="item-info">
               <span class="item-nome">{{ item.habito }}</span>
               <span class="item-meta">+{{ item.xp }} XP · {{ item.frequencia }}
-                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+                <ng-container *ngIf="item.classeIds.length"> · <app-icon name="cadeado" [size]="12"></app-icon> {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
               </span>
             </div>
             <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoBom(item)">
@@ -165,7 +165,7 @@
           <ng-container *ngFor="let h of bonsHabitos">
             <li class="item-row" *ngIf="editandoBomId !== h.id">
               <div class="item-info">
-                <span class="item-nome">{{ h.habito }} <span class="escopo-tag" [class.proprio]="h.escopo === 'Proprio'">{{ h.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span></span>
+                <span class="item-nome">{{ h.habito }} <span class="escopo-tag" [class.proprio]="h.escopo === 'Proprio'"><ng-container *ngIf="h.escopo === 'Proprio'"><app-icon name="cadeado" [size]="12"></app-icon> Privado</ng-container><ng-container *ngIf="h.escopo !== 'Proprio'"><app-icon name="mapa" [size]="12"></app-icon> Global</ng-container></span></span>
                 <span class="item-meta">+{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
               </div>
               <div class="item-actions">
@@ -293,7 +293,7 @@
             <div class="item-info">
               <span class="item-nome">{{ item.habito }}</span>
               <span class="item-meta red">-{{ item.xp }} XP · {{ item.frequencia }}
-                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+                <ng-container *ngIf="item.classeIds.length"> · <app-icon name="cadeado" [size]="12"></app-icon> {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
               </span>
             </div>
             <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoMau(item)">
@@ -317,7 +317,7 @@
           <ng-container *ngFor="let h of mausHabitos">
             <li class="item-row" *ngIf="editandoMauId !== h.id">
               <div class="item-info">
-                <span class="item-nome">{{ h.habito }} <span class="escopo-tag" [class.proprio]="h.escopo === 'Proprio'">{{ h.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span></span>
+                <span class="item-nome">{{ h.habito }} <span class="escopo-tag" [class.proprio]="h.escopo === 'Proprio'"><ng-container *ngIf="h.escopo === 'Proprio'"><app-icon name="cadeado" [size]="12"></app-icon> Privado</ng-container><ng-container *ngIf="h.escopo !== 'Proprio'"><app-icon name="mapa" [size]="12"></app-icon> Global</ng-container></span></span>
                 <span class="item-meta red">-{{ h.xp }} XP · {{ h.frequencia }}<ng-container *ngIf="h.atributoId"> · {{ nomeAtributo(h.atributoId) }}</ng-container></span>
               </div>
               <div class="item-actions">
@@ -445,7 +445,7 @@
             <div class="item-info">
               <span class="item-nome">{{ item.titulo }}</span>
               <span class="item-meta">{{ nomeTipo(item.tipoId) }} · +{{ item.recompensaXp }} XP · +{{ item.recompensaMoedas }} {{ 'config.moedas' | translate }}
-                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+                <ng-container *ngIf="item.classeIds.length"> · <app-icon name="cadeado" [size]="12"></app-icon> {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
               </span>
             </div>
             <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoMiss(item)">
@@ -469,7 +469,7 @@
           <ng-container *ngFor="let m of missoes">
             <li class="item-row" *ngIf="editandoMissId !== m.id">
               <div class="item-info">
-                <span class="item-nome">{{ m.titulo }} <span class="escopo-tag" [class.proprio]="m.escopo === 'Proprio'">{{ m.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span></span>
+                <span class="item-nome">{{ m.titulo }} <span class="escopo-tag" [class.proprio]="m.escopo === 'Proprio'"><ng-container *ngIf="m.escopo === 'Proprio'"><app-icon name="cadeado" [size]="12"></app-icon> Privado</ng-container><ng-container *ngIf="m.escopo !== 'Proprio'"><app-icon name="mapa" [size]="12"></app-icon> Global</ng-container></span></span>
                 <span class="item-meta">{{ nomeTipo(m.tipoId) }} · +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} {{ 'config.moedas' | translate }}</span>
               </div>
               <div class="item-actions">
@@ -633,7 +633,7 @@
             <div class="item-info">
               <span class="item-nome">{{ item.emoji }} {{ item.nome }}</span>
               <span class="item-meta">{{ item.preco }} {{ 'config.moedas' | translate }}{{ item.descricao ? ' · ' + item.descricao : '' }}
-                <ng-container *ngIf="item.classeIds.length"> · 🔒 {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
+                <ng-container *ngIf="item.classeIds.length"> · <app-icon name="cadeado" [size]="12"></app-icon> {{ 'config.exclusivoClasse' | translate }} {{ classesLabel(item.classeIds) }}</ng-container>
               </span>
             </div>
             <button class="btn-cat" [class.on]="item.ativo" [disabled]="item.bloqueado" (click)="toggleAtivoRecomp(item)">
@@ -660,7 +660,7 @@
                 <span class="item-nome">
                   {{ r.nome }}
                   <span class="badge-inativa" *ngIf="!r.ativa">{{ 'config.inativa' | translate }}</span>
-                  <span class="escopo-tag" [class.proprio]="r.escopo === 'Proprio'">{{ r.escopo === 'Proprio' ? '🔒 Privado' : '🌐 Global' }}</span>
+                  <span class="escopo-tag" [class.proprio]="r.escopo === 'Proprio'"><ng-container *ngIf="r.escopo === 'Proprio'"><app-icon name="cadeado" [size]="12"></app-icon> Privado</ng-container><ng-container *ngIf="r.escopo !== 'Proprio'"><app-icon name="mapa" [size]="12"></app-icon> Global</ng-container></span>
                 </span>
                 <span class="item-meta">{{ r.preco }} {{ 'config.moedas' | translate }}{{ r.descricao ? ' · ' + r.descricao : '' }}</span>
               </div>
@@ -791,7 +791,7 @@
   <section class="card">
     <div class="secao-header" (click)="secaoAssinatura = !secaoAssinatura">
       <h2 class="card-title">
-        <span class="secao-icon assin-icon">👑</span>
+        <span class="secao-icon assin-icon"><app-icon name="coroa" [size]="22"></app-icon></span>
         {{ 'config.secAssinatura' | translate }}
       </h2>
       <svg class="chevron" [class.open]="secaoAssinatura" viewBox="0 0 24 24" fill="none">
@@ -803,7 +803,8 @@
       <!-- Status atual -->
       <div class="assin-status" [class.vip]="auth.role() === 'VIP' || auth.isAdmin()">
         <span class="assin-badge">
-          {{ (auth.role() === 'VIP' || auth.isAdmin()) ? '👑 VIP' : '🆓 Gratuito' }}
+          <ng-container *ngIf="auth.role() === 'VIP' || auth.isAdmin()"><app-icon name="coroa" [size]="16"></app-icon> VIP</ng-container>
+          <ng-container *ngIf="!(auth.role() === 'VIP' || auth.isAdmin())">🆓 Gratuito</ng-container>
         </span>
         <span class="assin-status-label">
           {{ (auth.role() === 'VIP' || auth.isAdmin()) ? ('config.assinAtivo' | translate) : ('config.assinInativo' | translate) }}
@@ -820,7 +821,7 @@
 
       <!-- Botão -->
       <ng-container *ngIf="!(auth.role() === 'VIP' || auth.isAdmin())">
-        <button class="btn-vip">👑 {{ 'config.assinAssinar' | translate }}</button>
+        <button class="btn-vip"><app-icon name="coroa" [size]="16"></app-icon> {{ 'config.assinAssinar' | translate }}</button>
         <p class="assin-hint">{{ 'config.assinEmBreve' | translate }}</p>
       </ng-container>
       <ng-container *ngIf="auth.role() === 'VIP'">

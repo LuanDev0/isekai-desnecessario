@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { PerfilRanking, PerfilRankingAtributo, Atributo } from '../../models/models';
 import { environment } from '../../../environments/environment';
 
@@ -14,7 +15,7 @@ type AbaAtiva = 'nivel' | 'atributos';
 @Component({
   selector: 'app-ranking',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, IconComponent],
   templateUrl: './ranking.component.html',
   styleUrl: './ranking.component.scss',
 })

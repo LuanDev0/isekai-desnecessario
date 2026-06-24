@@ -20,13 +20,13 @@
   </div>
 
   <div class="painel-vazio" *ngIf="notificacoes.length === 0">
-    <span>🔔</span>
+    <app-icon name="sino" [size]="32"></app-icon>
     <p>{{ 'notificacoes.vazio' | translate }}</p>
   </div>
 
   <ul class="painel-lista" *ngIf="notificacoes.length > 0">
     <li class="noti" *ngFor="let n of notificacoes" [class.nao-lida]="!n.lida" (click)="marcarLida(n)">
-      <span class="noti-emoji">{{ emojiTipo(n.tipo) }}</span>
+      <span class="noti-emoji"><app-icon [name]="iconTipo(n.tipo)" [size]="20"></app-icon></span>
       <div class="noti-corpo">
         <p class="noti-msg">{{ n.mensagem }}</p>
         <span class="noti-quando">{{ quando(n.criadaEm) }}</span>

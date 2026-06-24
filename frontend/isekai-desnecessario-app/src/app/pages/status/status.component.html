@@ -38,17 +38,17 @@
 
     <div class="quick-stats">
       <div class="qs-card">
-        <span class="qs-icon">⚔️</span>
+        <span class="qs-icon"><app-icon name="espada" [size]="28"></app-icon></span>
         <span class="qs-value">{{ perfil.nivel }}</span>
         <span class="qs-label">{{ 'status.nivel' | translate }}</span>
       </div>
       <div class="qs-card">
-        <span class="qs-icon">🏆</span>
+        <span class="qs-icon"><app-icon name="trofeu" [size]="28"></app-icon></span>
         <span class="qs-value" [style.color]="rankCor">{{ rankLabel }}</span>
         <span class="qs-label">{{ 'status.rank' | translate }}</span>
       </div>
       <div class="qs-card">
-        <span class="qs-icon">💰</span>
+        <span class="qs-icon"><app-icon name="moedas" [size]="28"></app-icon></span>
         <span class="qs-value gold">{{ perfil.moedas }}</span>
         <span class="qs-label">{{ 'status.moedas' | translate }}</span>
       </div>
@@ -96,7 +96,7 @@
 
       <div class="radar-layout" *ngIf="vistaRadar">
         <div class="mini-cards-col-wrap">
-          <span class="mc-titulo">⚔️ {{ 'status.atributos' | translate }}</span>
+          <span class="mc-titulo"><app-icon name="espada" [size]="18"></app-icon> {{ 'status.atributos' | translate }}</span>
           <div class="mini-cards-grid">
           <div class="mini-card"
                *ngFor="let a of atributosDisplay"

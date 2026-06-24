@@ -277,7 +277,7 @@
               <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/>
             </svg>
-            <div class="foto-overlay"><span>📷</span></div>
+            <div class="foto-overlay"><app-icon name="camera" [size]="22"></app-icon></div>
           </div>
           <input #fotoInput type="file" accept="image/jpeg,image/png,image/webp,image/gif"
                  style="display:none" (change)="onFotoSelecionada($event)" />
