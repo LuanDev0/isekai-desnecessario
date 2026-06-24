@@ -197,6 +197,11 @@ export class ApiService {
     return this.http.get<JornadaSemana[]>(`${BASE}/missoes/jornada?perfilId=${perfilId}`);
   }
 
+  // ── Pontos de Atributo (persistidos) ─────────────────
+  getPontosAtributos(perfilId: number) {
+    return this.http.get<{ atributoId: number; total: number }[]>(`${BASE}/pontosatributos?perfilId=${perfilId}`);
+  }
+
   // ── Snapshots de Atributos ───────────────────────────
   getSnapshotAnterior(perfilId: number) {
     return this.http.get<{ atributoId: number; pontos: number; data: string }[]>(`${BASE}/snapshots/anterior?perfilId=${perfilId}`);

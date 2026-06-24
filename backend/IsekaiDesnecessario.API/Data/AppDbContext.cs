@@ -27,6 +27,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Experimento>    Experimentos    => Set<Experimento>();
     public DbSet<ExperimentoDia> ExperimentosDia => Set<ExperimentoDia>();
     public DbSet<Notificacao>    Notificacoes    => Set<Notificacao>();
+    public DbSet<PontosAtributo> PontosAtributos => Set<PontosAtributo>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -169,6 +170,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(a => a.Recompensa).WithMany(d => d.Ativacoes)
                 .HasForeignKey(a => a.RecompensaId).OnDelete(DeleteBehavior.Cascade);
             e.HasIndex(a => new { a.PerfilId, a.RecompensaId }).IsUnique();
+        });
+
+        modelBuilder.Entity<PontosAtributo>(e =>
+        {
+            e.HasKey(p => new { p.PerfilId, p.AtributoId });
+            e.HasOne(p => p.Perfil).WithMany().HasForeignKey(p => p.PerfilId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(p => p.Atributo).WithMany().HasForeignKey(p => p.AtributoId).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Atributo>().HasData(

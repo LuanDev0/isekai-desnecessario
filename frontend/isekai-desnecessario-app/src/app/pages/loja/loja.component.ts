@@ -27,6 +27,7 @@ export class LojaComponent implements OnInit {
   missoes:     Missao[]       = [];
   resgatando:  number | null  = null;
   feedbacks:   Record<number, 'ok' | 'erro' | 'sem-moedas' | 'atributo'> = {};
+  pontosAtributos: { atributoId: number; total: number }[] = [];
 
   // Lootbox
   lootboxDisponivel = false;
@@ -53,6 +54,7 @@ export class LojaComponent implements OnInit {
     this.api.getAtributos().subscribe({ next: a => this.atributos = a });
     this.api.getBonsHabitos(id).subscribe({ next: h => this.bonsHabitos = h });
     this.api.getMissoes(id).subscribe({ next: m => this.missoes = m });
+    this.api.getPontosAtributos(id).subscribe({ next: p => this.pontosAtributos = p });
     this.api.getLootboxStatus(id).subscribe({ next: s => {
       this.lootboxDisponivel = s.disponivel;
       this.lootboxXpHoje     = s.xpHoje;
@@ -61,9 +63,7 @@ export class LojaComponent implements OnInit {
   }
 
   pontosAtributo(atributoId: number): number {
-    const bons   = this.bonsHabitos.filter(h => h.atributoId === atributoId);
-    const miss   = this.missoes.filter(m => m.atributoId === atributoId && m.concluida);
-    return Math.floor((bons.reduce((a, h) => a + h.xp * h.streak, 0) + miss.reduce((a, m) => a + m.recompensaXp, 0)) / 10);
+    return this.pontosAtributos.find(p => p.atributoId === atributoId)?.total ?? 0;
   }
 
   nomeAtributo(id: number | null | undefined): string {

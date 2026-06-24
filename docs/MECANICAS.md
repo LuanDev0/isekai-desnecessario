@@ -56,10 +56,12 @@ Representam as áreas da vida. Cada bom hábito, mau hábito, missão e recompen
 
 **Pontos de um atributo** (usado em sugestões e requisitos de recompensa):
 
-```
-pontos = ( Σ (bomHabito.Xp × bomHabito.Streak)  +  Σ missaoConcluida.RecompensaXp ) / 10
-```
-(considerando apenas itens com aquele `AtributoId`).
+Os pontos são **persistidos** na tabela `PontosAtributos` a cada conclusão — imutáveis em relação a mudanças futuras de XP.
+
+- Completar **bom hábito** com `AtributoId` → `+Xp / 10` pontos no atributo.
+- Completar **missão** (ou secundária vinculada) com `AtributoId` → `+RecompensaXp / 10` pontos no atributo.
+
+> Perfis criados antes da v0.14.0 começam com 0 pontos — sem retroativo.
 
 ---
 

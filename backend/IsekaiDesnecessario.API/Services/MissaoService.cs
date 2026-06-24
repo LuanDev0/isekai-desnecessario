@@ -4,7 +4,7 @@ using IsekaiDesnecessario.API.Models;
 
 namespace IsekaiDesnecessario.API.Services;
 
-public class MissaoService(AppDbContext db, XpService xpService, ILogger<MissaoService> logger)
+public class MissaoService(AppDbContext db, XpService xpService, PontosAtributoService pontosService, ILogger<MissaoService> logger)
 {
     // Conclui a ativação da missão e as secundárias vinculadas (deste perfil);
     // credita XP e moedas e registra tudo no diário. Retorna o perfil atualizado.
@@ -41,8 +41,12 @@ public class MissaoService(AppDbContext db, XpService xpService, ILogger<MissaoS
         await db.SaveChangesAsync();
 
         await xpService.AdicionarXpAsync(ativacao.PerfilId, def?.RecompensaXp ?? 0);
+        await pontosService.IncrementarAsync(ativacao.PerfilId, def?.AtributoId, def?.RecompensaXp ?? 0);
         foreach (var v in vinculadas)
+        {
             await xpService.AdicionarXpAsync(ativacao.PerfilId, v.Missao?.RecompensaXp ?? 0);
+            await pontosService.IncrementarAsync(ativacao.PerfilId, v.Missao?.AtributoId, v.Missao?.RecompensaXp ?? 0);
+        }
 
         var perfil = await db.Perfis.FindAsync(ativacao.PerfilId);
         if (perfil is not null)
