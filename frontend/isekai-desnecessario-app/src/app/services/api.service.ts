@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, HabitoCatalogo, ItemInventario, JornadaSemana, MauHabito, Missao, MissaoCatalogo, Notificacao, Pendente, Perfil, PerfilRanking, Recompensa, RecompensaCatalogo } from '../models/models';
+import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, HabitoCatalogo, ItemInventario, JornadaSemana, MauHabito, Missao, MissaoCatalogo, Notificacao, Pendente, Perfil, PerfilRanking, PerfilRankingAtributo, Recompensa, RecompensaCatalogo } from '../models/models';
 
 // Campos extras de catálogo no payload de criação (Partes 3-5).
 type ExtrasCatalogo = { classeIds?: number[]; proprio?: boolean; travaDias?: number };
@@ -14,6 +14,11 @@ export class ApiService {
 
   getRanking(top = 50) {
     return this.http.get<PerfilRanking[]>(`${BASE}/perfil/ranking?top=${top}`);
+  }
+
+  getRankingAtributos(atributoId?: number, top = 50) {
+    const q = atributoId != null ? `&atributoId=${atributoId}` : '';
+    return this.http.get<PerfilRankingAtributo[]>(`${BASE}/perfil/ranking/atributos?top=${top}${q}`);
   }
 
   definirPerfilPrincipal(id: number) {

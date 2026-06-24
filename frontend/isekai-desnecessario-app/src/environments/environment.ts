@@ -3,5 +3,5 @@ export const environment = {
   apiUrl: 'http://localhost:5008/api',
   googleClientId: '730600507732-hh6r77d7a3aasnhcds1ghua6d0vf6nh7.apps.googleusercontent.com',
   googleAndroidClientId: '730600507732-h3jjpfsmhtitrj4scei0g87pshmv2mef.apps.googleusercontent.com',
-  version: '0.14.0',
+  version: '0.15.0',
 };

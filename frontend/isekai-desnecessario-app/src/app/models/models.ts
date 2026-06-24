@@ -225,6 +225,17 @@ export interface PerfilRanking {
   classeId: number | null;
 }
 
+export interface PerfilRankingAtributo {
+  id:          number;
+  nome:        string;
+  nivel:       number;
+  rank:        string;
+  titulo:      string;
+  fotoUrl:     string | null;
+  classeId:    number | null;
+  totalPontos: number;
+}
+
 // Notificação in-app (sininho). Tipo: 'pendente' | 'rejeitado' | 'modificado'.
 export interface Notificacao {
   id: number;

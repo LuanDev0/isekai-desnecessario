@@ -22,7 +22,7 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
         var perfis = await db.Perfis
             .AsNoTracking()
             .Where(p => p.Principal)
-            .OrderByDescending(p => p.Xp)
+            .OrderByDescending(p => p.Nivel).ThenByDescending(p => p.Xp)
             .Take(limite)
             .Select(p => new {
                 p.Id,
@@ -36,6 +36,45 @@ public class PerfilController(AppDbContext db, XpService xpService, LootboxServi
             })
             .ToListAsync();
         return Ok(perfis);
+    }
+
+    [HttpGet("ranking/atributos")]
+    public async Task<IActionResult> GetRankingAtributos([FromQuery] int? atributoId, [FromQuery] int top = 50)
+    {
+        var limite = Math.Clamp(top, 1, 100);
+
+        if (atributoId.HasValue)
+        {
+            var lista = await db.PontosAtributos
+                .AsNoTracking()
+                .Where(p => p.AtributoId == atributoId && p.Total > 0 && p.Perfil!.Principal)
+                .OrderByDescending(p => p.Total)
+                .Take(limite)
+                .Select(p => new {
+                    p.Perfil!.Id, p.Perfil.Nome, p.Perfil.Nivel, p.Perfil.Rank,
+                    p.Perfil.Titulo, p.Perfil.FotoUrl, p.Perfil.ClasseId,
+                    TotalPontos = p.Total,
+                })
+                .ToListAsync();
+            return Ok(lista);
+        }
+        else
+        {
+            var lista = await (
+                from pts in db.PontosAtributos.AsNoTracking()
+                where pts.Perfil!.Principal
+                group pts by new { pts.PerfilId, pts.Perfil!.Id, pts.Perfil.Nome, pts.Perfil.Nivel, pts.Perfil.Rank, pts.Perfil.Titulo, pts.Perfil.FotoUrl, pts.Perfil.ClasseId }
+                into g
+                where g.Sum(p => p.Total) > 0
+                orderby g.Sum(p => p.Total) descending
+                select new {
+                    g.Key.Id, g.Key.Nome, g.Key.Nivel, g.Key.Rank,
+                    g.Key.Titulo, g.Key.FotoUrl, g.Key.ClasseId,
+                    TotalPontos = g.Sum(p => p.Total),
+                }
+            ).Take(limite).ToListAsync();
+            return Ok(lista);
+        }
     }
 
     [HttpGet("{id}")]

@@ -18,7 +18,7 @@ App standalone (sem NgModules), componentes com `inject()` e signals. Estado mí
 | `/configuracoes` | `ConfiguracoesComponent` | Configurações (Perfil, hábitos, missões, recompensas, perfil principal, assinatura) |
 | `/laboratorio` | `LaboratorioComponent` | Experimentos (hábitos em teste) |
 | `/mundo` | `MundoComponent` | Mapa de ranks / mundo |
-| `/ranking` | `RankingComponent` | Ranking global (top-50 perfis principais por XP) |
+| `/ranking` | `RankingComponent` | Ranking global — aba **Nível** (top-50 por Nível→XP) e aba **Atributos** (sub-abas: Total + 6 atributos, carregamento lazy) |
 
 **Guards (`services/auth.guard.ts`):** todas as rotas internas usam `canActivate: [authGuard]` — sem JWT, redireciona para `/cadastro`. A rota `/cadastro` usa `guestGuard` — quem já está logado **e** tem perfil ativo é mandado para `/`.
 
