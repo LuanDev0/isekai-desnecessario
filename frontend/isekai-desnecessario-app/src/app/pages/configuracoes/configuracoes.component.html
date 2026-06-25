@@ -4,7 +4,7 @@
   <!-- ── PERFIL ─────────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="toggleSecaoPerfil()">
-      <h2 class="card-title">{{ 'config.secPerfil' | translate }}</h2>
+      <h2 class="card-title"><span class="secao-icon ic-perfil"><app-icon name="perfil" [size]="16"></app-icon></span> {{ 'config.secPerfil' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoPerfil" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -93,6 +93,7 @@
   <section class="card" *ngIf="auth.isAdmin()">
     <div class="secao-header" (click)="secaoAprov = !secaoAprov">
       <h2 class="card-title">
+        <span class="secao-icon ic-aprov"><app-icon name="pergaminho" [size]="16"></app-icon></span>
         {{ 'config.secAprovacoes' | translate }}
         <span class="badge quest" *ngIf="pendentes.length">{{ pendentes.length }}</span>
       </h2>
@@ -121,7 +122,7 @@
   <!-- ── BOM HÁBITO ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoBons = !secaoBons">
-      <h2 class="card-title"><span class="badge good">+XP</span> {{ 'config.secBons' | translate }}</h2>
+      <h2 class="card-title"><span class="secao-icon ic-bons"><app-icon name="check" [size]="16"></app-icon></span> {{ 'config.secBons' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoBons" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -273,7 +274,7 @@
   <!-- ── MAU HÁBITO ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoMaus = !secaoMaus">
-      <h2 class="card-title"><span class="badge bad">-XP</span> {{ 'config.secMaus' | translate }}</h2>
+      <h2 class="card-title"><span class="secao-icon ic-maus"><app-icon name="rejeitado" [size]="16"></app-icon></span> {{ 'config.secMaus' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoMaus" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -425,7 +426,7 @@
   <!-- ── MISSÕES ─────────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoMiss = !secaoMiss">
-      <h2 class="card-title"><app-icon name="espada" [size]="16"></app-icon> {{ 'config.secMissoes' | translate }}</h2>
+      <h2 class="card-title"><span class="secao-icon ic-missoes"><app-icon name="espada" [size]="16"></app-icon></span> {{ 'config.secMissoes' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoMiss" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -613,7 +614,7 @@
   <!-- ── RECOMPENSAS ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoRecomp = !secaoRecomp">
-      <h2 class="card-title"><app-icon name="moedas" [size]="16"></app-icon> {{ 'config.secRecomp' | translate }}</h2>
+      <h2 class="card-title"><span class="secao-icon ic-recomp"><app-icon name="moedas" [size]="16"></app-icon></span> {{ 'config.secRecomp' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoRecomp" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -791,7 +792,7 @@
   <section class="card">
     <div class="secao-header" (click)="secaoAssinatura = !secaoAssinatura">
       <h2 class="card-title">
-        <span class="secao-icon assin-icon"><app-icon name="coroa" [size]="22"></app-icon></span>
+        <span class="secao-icon ic-assin"><app-icon name="coroa" [size]="16"></app-icon></span>
         {{ 'config.secAssinatura' | translate }}
       </h2>
       <svg class="chevron" [class.open]="secaoAssinatura" viewBox="0 0 24 24" fill="none">
@@ -833,7 +834,7 @@
   <!-- ── DANGER ZONE ─────────────────────────────── -->
   <section class="card danger-zone">
     <div class="secao-header" (click)="secaoDanger = !secaoDanger">
-      <h2 class="card-title danger"><app-icon name="aviso" [size]="18"></app-icon> {{ 'config.dangerZone' | translate }}</h2>
+      <h2 class="card-title danger"><span class="secao-icon ic-danger"><app-icon name="aviso" [size]="16"></app-icon></span> {{ 'config.dangerZone' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoDanger" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
