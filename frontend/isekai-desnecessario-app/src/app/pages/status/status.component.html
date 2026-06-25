@@ -151,8 +151,12 @@
               [attr.fill]="a.cor"
               stroke="#0d1117" stroke-width="1.5"/>
             <g *ngFor="let a of atributosDisplay; let i = index">
-              <text [attr.x]="labelPos(i).x" [attr.y]="labelPos(i).y - 6"
-                text-anchor="middle" dominant-baseline="middle" font-size="18">{{ a.emoji }}</text>
+              <foreignObject
+                [attr.x]="labelPos(i).x - 12"
+                [attr.y]="labelPos(i).y - 24"
+                width="24" height="24">
+                <app-icon [name]="a.icone" [size]="24"></app-icon>
+              </foreignObject>
               <text [attr.x]="labelPos(i).x" [attr.y]="labelPos(i).y + 11"
                 text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#8b949e">{{ a.nome }}</text>
               <text [attr.x]="labelPos(i).x" [attr.y]="labelPos(i).y + 22"
