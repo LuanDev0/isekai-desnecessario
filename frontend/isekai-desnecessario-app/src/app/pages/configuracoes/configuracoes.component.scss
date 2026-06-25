@@ -62,6 +62,25 @@ $muted:   #8b949e;
   gap: 8px;
 }
 
+.secao-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.ic-perfil   { background: #6B6B8A22; border: 1px solid #6B6B8A44; }
+  &.ic-bons     { background: #12261a;   border: 1px solid #1e3d28; }
+  &.ic-maus     { background: #2d1414;   border: 1px solid #4a2020; }
+  &.ic-missoes  { background: #2a1e0a;   border: 1px solid #4a3510; }
+  &.ic-recomp   { background: #2a1e00;   border: 1px solid #8C6D1F44; }
+  &.ic-assin    { background: #1e1428;   border: 1px solid #3a2850; }
+  &.ic-aprov    { background: #1e1428;   border: 1px solid #3a2850; }
+  &.ic-danger   { background: #2d1414;   border: 1px solid #4a2020; }
+}
+
 .badge {
   font-size: 0.7rem;
   font-weight: 600;
