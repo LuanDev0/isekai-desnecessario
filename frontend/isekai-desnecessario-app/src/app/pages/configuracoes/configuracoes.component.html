@@ -861,7 +861,7 @@
       <p class="danger-desc" [innerHTML]="('config.apagarDesc1' | translate)"></p>
       <p class="danger-desc"><strong>{{ 'config.apagarDesc2' | translate }}</strong></p>
       <ng-container *ngIf="!confirmarApagar">
-        <button class="btn-danger btn-danger-apagar" (click)="confirmarApagar = true">{{ 'config.apagarPerfil' | translate }}</button>
+        <button class="btn-danger btn-danger-apagar" (click)="confirmarApagar = true"><app-icon name="lixeira" [size]="16"></app-icon> {{ 'config.apagarPerfil' | translate }}</button>
       </ng-container>
       <ng-container *ngIf="confirmarApagar">
         <p class="confirm-msg" [innerHTML]="'config.digitarNome' | translate: { nome: nomePerfilAtual }"></p>
