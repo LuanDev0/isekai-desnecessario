@@ -56,8 +56,8 @@
         <p class="item-desc" *ngIf="p.descricao">{{ p.descricao }}</p>
 
         <div class="item-meta">
-          <span *ngIf="aba === 'disponiveis'">🛒 {{ fmtData(p.ultimaCompra) }}</span>
-          <span *ngIf="aba === 'usados' && p.dataUso">✅ {{ fmtData(p.dataUso!) }}</span>
+          <span *ngIf="aba === 'disponiveis'"><app-icon name="carrinho" [size]="14"></app-icon> {{ fmtData(p.ultimaCompra) }}</span>
+          <span *ngIf="aba === 'usados' && p.dataUso"><app-icon name="check" [size]="14"></app-icon> {{ fmtData(p.dataUso!) }}</span>
         </div>
 
         <div class="item-preco">

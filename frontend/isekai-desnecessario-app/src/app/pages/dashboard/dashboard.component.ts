@@ -7,6 +7,7 @@ import { ProfileService } from '../../services/profile.service';
 import { LanguageService, LangCode } from '../../services/language.service';
 import { ProfileSelectorComponent } from '../../components/profile-selector/profile-selector.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { BomHabito, DiarioAcao, MauHabito, Perfil } from '../../models/models';
 
 const API_BASE = environment.apiUrl.replace('/api', '');
@@ -14,7 +15,7 @@ const API_BASE = environment.apiUrl.replace('/api', '');
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DatePipe, ProfileSelectorComponent, TranslatePipe],
+  imports: [CommonModule, DatePipe, ProfileSelectorComponent, TranslatePipe, IconComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

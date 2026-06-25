@@ -53,7 +53,7 @@
         <span class="qs-label">{{ 'status.moedas' | translate }}</span>
       </div>
       <div class="qs-card">
-        <span class="qs-icon">⚡</span>
+        <span class="qs-icon"><app-icon name="raio" [size]="28"></app-icon></span>
         <span class="qs-value blue">{{ perfil.xp }}</span>
         <span class="qs-label">{{ 'status.xpTotal' | translate }}</span>
       </div>
@@ -100,8 +100,8 @@
           <div class="mini-cards-grid">
           <div class="mini-card"
                *ngFor="let a of atributosDisplay"
-               [class.card-top]="badgeCard(a) === '👑'"
-               [class.card-bot]="badgeCard(a) === '💀'"
+               [class.card-top]="badgeCard(a) === 'top'"
+               [class.card-bot]="badgeCard(a) === 'bot'"
                [style.opacity]="mcOpacity(a.valor)">
             <div class="mc-top">
               <span class="mc-emoji">{{ a.emoji }}</span>

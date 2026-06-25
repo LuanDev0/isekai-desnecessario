@@ -150,8 +150,8 @@ export class StatusComponent implements OnInit {
   }
 
   badgeCard(a: AtributoDisplay): string {
-    if (a.id === this.atributoMaior?.id && a.valor > 0) return '👑';
-    if (a.id === this.atributoMenor?.id) return '💀';
+    if (a.id === this.atributoMaior?.id && a.valor > 0) return 'top';
+    if (a.id === this.atributoMenor?.id) return 'bot';
     return '';
   }
 

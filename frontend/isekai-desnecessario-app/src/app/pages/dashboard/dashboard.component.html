@@ -58,7 +58,7 @@
           <button class="pill green" [disabled]="!estaDisponivel(h)" (click)="completar(h)">+</button>
           <div class="habit-info">
             <span class="habit-name">{{ h.habito }}</span>
-            <span class="habit-reset" *ngIf="!estaDisponivel(h)">🕐 {{ proximoReset(h) }}</span>
+            <span class="habit-reset" *ngIf="!estaDisponivel(h)"><app-icon name="timer" [size]="14"></app-icon> {{ proximoReset(h) }}</span>
           </div>
           <span class="habit-xp green">+{{ h.xp }} XP</span>
         </li>
@@ -73,7 +73,7 @@
           <button class="pill red" [disabled]="!estaDisponivel(h)" (click)="registrar(h)">−</button>
           <div class="habit-info">
             <span class="habit-name">{{ h.habito }}</span>
-            <span class="habit-reset" *ngIf="!estaDisponivel(h)">🕐 {{ proximoReset(h) }}</span>
+            <span class="habit-reset" *ngIf="!estaDisponivel(h)"><app-icon name="timer" [size]="14"></app-icon> {{ proximoReset(h) }}</span>
           </div>
           <span class="habit-xp red">-{{ h.xp }} XP</span>
         </li>
@@ -92,7 +92,7 @@
       <!-- Concluído -->
       <ng-container *ngIf="desafioConcluido">
         <div class="desafio-body concluido">
-          <span class="desafio-emoji">✅</span>
+          <span class="desafio-emoji"><app-icon name="check" [size]="28"></app-icon></span>
           <div class="desafio-info">
             <span class="desafio-nome">{{ desafioDoDia?.habito }}</span>
             <span class="desafio-xp">+{{ desafioDoDia?.xp }} XP</span>
@@ -104,7 +104,7 @@
       <!-- Recusado -->
       <ng-container *ngIf="!desafioConcluido && desafioRecusado">
         <div class="desafio-body recusado">
-          <span class="desafio-emoji">😤</span>
+          <span class="desafio-emoji"><app-icon name="rejeitado" [size]="28"></app-icon></span>
           <div class="desafio-info">
             <span class="desafio-nome">{{ 'dashboard.desafioRecusadoTitulo' | translate }}</span>
             <span class="desafio-xp" style="color:#8b949e">{{ 'dashboard.novoDesafioAmanha' | translate }}</span>
@@ -115,7 +115,7 @@
       <!-- Disponível -->
       <ng-container *ngIf="!desafioConcluido && !desafioRecusado && desafioDoDia">
         <div class="desafio-body">
-          <span class="desafio-emoji">🎯</span>
+          <span class="desafio-emoji"><app-icon name="alvo" [size]="28"></app-icon></span>
           <div class="desafio-info">
             <span class="desafio-nome">{{ desafioDoDia!.habito }}</span>
             <span class="desafio-xp">+{{ desafioDoDia!.xp }} XP</span>
