@@ -5,7 +5,7 @@
   <!-- Abas principais -->
   <div class="abas">
     <button class="aba" [class.ativa]="abaAtiva === 'nivel'" (click)="selecionarAba('nivel')">
-      ⚔️ Nível
+      <app-icon name="espada" [size]="16"></app-icon> Nível
     </button>
     <button class="aba" [class.ativa]="abaAtiva === 'atributos'" (click)="selecionarAba('atributos')">
       ✨ Atributos

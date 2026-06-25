@@ -5,6 +5,7 @@ import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { ItemInventario } from '../../models/models';
 
 export type AbaInventario = 'disponiveis' | 'usados';
@@ -23,7 +24,7 @@ export interface Pilha {
 @Component({
   selector: 'app-inventario',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, IconComponent],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.scss',
 })

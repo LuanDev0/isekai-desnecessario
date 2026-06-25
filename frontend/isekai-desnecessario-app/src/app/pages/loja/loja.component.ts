@@ -5,12 +5,13 @@ import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { Perfil, Recompensa, Atributo, BomHabito, Missao } from '../../models/models';
 
 @Component({
   selector: 'app-loja',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, IconComponent],
   templateUrl: './loja.component.html',
   styleUrl: './loja.component.scss',
 })

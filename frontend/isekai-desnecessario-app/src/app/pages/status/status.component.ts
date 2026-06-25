@@ -8,6 +8,7 @@ import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { Atributo, Perfil, BomHabito, MauHabito, Missao, ItemInventario } from '../../models/models';
 
 export interface AtributoDisplay {
@@ -23,7 +24,7 @@ export interface AtributoDisplay {
 @Component({
   selector: 'app-status',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, IconComponent],
   templateUrl: './status.component.html',
   styleUrl: './status.component.scss',
 })

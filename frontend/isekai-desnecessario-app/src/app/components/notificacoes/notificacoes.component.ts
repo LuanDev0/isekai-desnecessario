@@ -5,11 +5,12 @@ import { AuthService } from '../../services/auth.service';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Notificacao } from '../../models/models';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-notificacoes',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, IconComponent],
   templateUrl: './notificacoes.component.html',
   styleUrl: './notificacoes.component.scss',
 })
@@ -58,12 +59,12 @@ export class NotificacoesComponent implements OnInit {
     this.api.marcarTodasNotificacoesLidas().subscribe({ error: () => this.carregar() });
   }
 
-  emojiTipo(tipo: string): string {
+  iconTipo(tipo: string): string {
     switch (tipo) {
-      case 'pendente':   return '📥';
-      case 'rejeitado':  return '🚫';
-      case 'modificado': return '✏️';
-      default:           return '🔔';
+      case 'pendente':   return 'entrada';
+      case 'rejeitado':  return 'rejeitado';
+      case 'modificado': return 'editado';
+      default:           return 'sino';
     }
   }
 

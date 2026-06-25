@@ -31,7 +31,10 @@
   </div>
 
   <div class="vazio" *ngIf="pilhas.length === 0">
-    <span class="vazio-icon">{{ aba === 'disponiveis' ? '🎒' : '✅' }}</span>
+    <span class="vazio-icon">
+      <app-icon *ngIf="aba === 'disponiveis'" name="mochila" [size]="40"></app-icon>
+      <app-icon *ngIf="aba === 'usados'" name="check" [size]="40"></app-icon>
+    </span>
     <p *ngIf="aba === 'disponiveis'">{{ 'inventario.vazioDisponiveis' | translate }}<br><small>{{ 'inventario.compraLoja' | translate }}</small></p>
     <p *ngIf="aba === 'usados'">{{ 'inventario.vazioUsados' | translate }}</p>
   </div>
