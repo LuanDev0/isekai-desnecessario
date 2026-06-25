@@ -234,15 +234,6 @@ import { NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 
         <!-- ══ PACK 4 — EXTRAS ═══════════════════════════════════════ -->
 
-        <ng-container *ngSwitchCase="'presente'">
-          <rect x="10" y="26" width="28" height="16" rx="2" fill="#8B5E3C18" stroke="#8B5E3C" stroke-width="2"/>
-          <rect x="8" y="20" width="32" height="8" rx="2" fill="#8B5E3C22" stroke="#8B5E3C" stroke-width="2"/>
-          <line x1="24" y1="20" x2="24" y2="42" stroke="#C8A84B" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="8" y1="24" x2="40" y2="24" stroke="#C8A84B" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M24 20 Q18 13 15 17 Q17 22 24 20 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M24 20 Q30 13 33 17 Q31 22 24 20 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="1.5" stroke-linejoin="round"/>
-        </ng-container>
-
         <ng-container *ngSwitchCase="'raio'">
           <path d="M29 6 L15 26 L23 26 L19 42 L33 22 L25 22 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="2" stroke-linejoin="round"/>
         </ng-container>

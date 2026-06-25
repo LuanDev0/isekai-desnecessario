@@ -88,7 +88,7 @@
 
     <!-- Desafio do dia -->
     <section class="card desafio-card">
-      <h2 class="card-title gold">{{ 'dashboard.desafioDoDia' | translate }}</h2>
+      <h2 class="card-title gold"><app-icon name="raio" [size]="18"></app-icon> {{ 'dashboard.desafioDoDia' | translate }}</h2>
       <!-- Concluído -->
       <ng-container *ngIf="desafioConcluido">
         <div class="desafio-body concluido">
@@ -135,7 +135,7 @@
 
     <!-- Diário de conquistas -->
     <section class="card diario-card">
-      <h2 class="card-title purple">{{ 'dashboard.diarioConquistas' | translate }}</h2>
+      <h2 class="card-title purple"><app-icon name="pergaminho" [size]="18"></app-icon> {{ 'dashboard.diarioConquistas' | translate }}</h2>
       <ul class="diario-list" *ngIf="diario.length > 0">
         <li *ngFor="let a of diario" class="diario-item" [class]="'diario-item tipo-' + a.tipo">
           <span class="diario-emoji">{{ a.emoji }}</span>
