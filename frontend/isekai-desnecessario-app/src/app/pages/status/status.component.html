@@ -80,7 +80,9 @@
           <div class="attr-header">
             <app-icon [name]="a.icone" [size]="22"></app-icon>
             <span class="attr-nome">{{ a.nome }}</span>
-            <span class="attr-badge" *ngIf="badgeCard(a)">{{ badgeCard(a) }}</span>
+            <span class="attr-badge" *ngIf="badgeCard(a)">
+              <app-icon [name]="badgeCard(a) === 'top' ? 'coroa' : 'rejeitado'" [size]="14"></app-icon>
+            </span>
             <span class="attr-habitos" *ngIf="a.habitos > 0">({{ a.habitos }} hábito{{ a.habitos > 1 ? 's' : '' }})</span>
             <span class="attr-valor" [style.color]="a.cor">{{ a.valor }}</span>
           </div>
@@ -105,7 +107,9 @@
                [style.opacity]="mcOpacity(a.valor)">
             <div class="mc-top">
               <app-icon [name]="a.icone" [size]="20"></app-icon>
-              <span class="mc-badge" *ngIf="badgeCard(a)">{{ badgeCard(a) }}</span>
+              <span class="mc-badge" *ngIf="badgeCard(a)">
+                <app-icon [name]="badgeCard(a) === 'top' ? 'coroa' : 'rejeitado'" [size]="12"></app-icon>
+              </span>
             </div>
             <span class="mc-valor" [style.color]="a.cor" [style.font-size]="mcValorSize(a.valor)">{{ a.valor }}</span>
             <span class="mc-nome">{{ a.nome }}</span>
