@@ -100,6 +100,7 @@ export interface Atributo {
   id: number;
   nome: string;
   emoji: string;
+  icone: string;
   descricao: string;
   cor: string;
 }

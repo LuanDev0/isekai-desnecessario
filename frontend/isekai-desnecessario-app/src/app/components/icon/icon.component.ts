@@ -286,6 +286,68 @@ import { NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
           <path d="M8 30 L8.8 33 L12 33.5 L8.8 34 L8 37 L7.2 34 L4 33.5 L7.2 33 Z" fill="#C8A84B55" stroke="#C8A84B" stroke-width="1" stroke-linejoin="round"/>
         </ng-container>
 
+        <!-- ══ PACK 5 — ATRIBUTOS ════════════════════════════════════ -->
+
+        <ng-container *ngSwitchCase="'inteligencia'">
+          <circle cx="24" cy="24" r="4" fill="#58a6ff44" stroke="#58a6ff" stroke-width="2"/>
+          <circle cx="12" cy="14" r="3" fill="#58a6ff22" stroke="#58a6ff" stroke-width="1.8"/>
+          <circle cx="36" cy="14" r="3" fill="#58a6ff22" stroke="#58a6ff" stroke-width="1.8"/>
+          <circle cx="10" cy="32" r="3" fill="#58a6ff22" stroke="#58a6ff" stroke-width="1.8"/>
+          <circle cx="38" cy="32" r="3" fill="#58a6ff22" stroke="#58a6ff" stroke-width="1.8"/>
+          <circle cx="24" cy="40" r="3" fill="#58a6ff22" stroke="#58a6ff" stroke-width="1.8"/>
+          <line x1="24" y1="20" x2="12" y2="17" stroke="#58a6ff" stroke-width="1.2"/>
+          <line x1="24" y1="20" x2="36" y2="17" stroke="#58a6ff" stroke-width="1.2"/>
+          <line x1="24" y1="28" x2="10" y2="29" stroke="#58a6ff" stroke-width="1.2"/>
+          <line x1="24" y1="28" x2="38" y2="29" stroke="#58a6ff" stroke-width="1.2"/>
+          <line x1="24" y1="28" x2="24" y2="37" stroke="#58a6ff" stroke-width="1.2"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'sabedoria'">
+          <path d="M24 14 Q18 10 8 12 L8 36 Q18 34 24 38 Q30 34 40 36 L40 12 Q30 10 24 14Z" fill="#bc8cff18" stroke="#bc8cff" stroke-width="1.8" stroke-linejoin="round"/>
+          <line x1="24" y1="14" x2="24" y2="38" stroke="#bc8cff" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="12" y1="18" x2="21" y2="17" stroke="#bc8cff88" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="12" y1="23" x2="21" y2="22" stroke="#bc8cff88" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="12" y1="28" x2="21" y2="27" stroke="#bc8cff88" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="27" y1="17" x2="36" y2="18" stroke="#bc8cff88" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="27" y1="22" x2="36" y2="23" stroke="#bc8cff88" stroke-width="1.2" stroke-linecap="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'fisico'">
+          <line x1="10" y1="22" x2="38" y2="22" stroke="#3fb950" stroke-width="2" stroke-linecap="round"/>
+          <rect x="6" y="16" width="6" height="12" rx="3" fill="#3fb95022" stroke="#3fb950" stroke-width="1.8"/>
+          <rect x="36" y="16" width="6" height="12" rx="3" fill="#3fb95022" stroke="#3fb950" stroke-width="1.8"/>
+          <circle cx="24" cy="10" r="3.5" fill="#3fb95022" stroke="#3fb950" stroke-width="1.8"/>
+          <path d="M24 13 L24 22" stroke="#3fb950" stroke-width="2" stroke-linecap="round"/>
+          <path d="M24 22 L16 34 M24 22 L32 34" stroke="#3fb950" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M24 16 L18 22 M24 16 L30 22" stroke="#3fb950" stroke-width="1.8" stroke-linecap="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'disciplina'">
+          <circle cx="24" cy="24" r="14" fill="#f7816618" stroke="#f78166" stroke-width="2"/>
+          <circle cx="24" cy="24" r="2" fill="#f78166"/>
+          <line x1="24" y1="24" x2="24" y2="13" stroke="#f78166" stroke-width="2" stroke-linecap="round"/>
+          <line x1="24" y1="24" x2="31" y2="28" stroke="#f78166" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="24" y1="10" x2="24" y2="12" stroke="#f78166" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="24" y1="36" x2="24" y2="38" stroke="#f78166" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="10" y1="24" x2="12" y2="24" stroke="#f78166" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="36" y1="24" x2="38" y2="24" stroke="#f78166" stroke-width="1.5" stroke-linecap="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'foco'">
+          <circle cx="24" cy="24" r="14" fill="#ffd70018" stroke="#ffd700" stroke-width="2"/>
+          <circle cx="24" cy="24" r="8" fill="#ffd70022" stroke="#ffd700" stroke-width="1.8"/>
+          <circle cx="24" cy="24" r="3" fill="#ffd700"/>
+          <line x1="24" y1="8" x2="24" y2="12" stroke="#ffd700" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="24" y1="36" x2="24" y2="40" stroke="#ffd700" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="8" y1="24" x2="12" y2="24" stroke="#ffd700" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="36" y1="24" x2="40" y2="24" stroke="#ffd700" stroke-width="1.5" stroke-linecap="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'vitalidade'">
+          <path d="M24 36 C24 36 10 27 10 18 C10 13 14 10 18 10 C21 10 23 12 24 13 C25 12 27 10 30 10 C34 10 38 13 38 18 C38 27 24 36 24 36Z" fill="#f8514922" stroke="#f85149" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M16 22 L20 18 L23 24 L26 16 L29 22 L32 22" stroke="#f85149" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </ng-container>
+
         <!-- fallback -->
         <ng-container *ngSwitchDefault>
           <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>

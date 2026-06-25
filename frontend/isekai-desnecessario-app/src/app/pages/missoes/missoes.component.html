@@ -111,7 +111,7 @@
     </div>
     <div class="sugestao-card">
       <div class="sug-atributo">
-        <span class="sug-emoji">{{ atributoMaisFraco!.emoji }}</span>
+        <app-icon [name]="atributoMaisFraco!.icone" [size]="28"></app-icon>
         <div class="sug-info">
           <span class="sug-label">{{ 'missoes.atributoFraco' | translate }}</span>
           <span class="sug-nome" [style.color]="atributoMaisFraco!.cor">{{ atributoMaisFraco!.nome }}</span>

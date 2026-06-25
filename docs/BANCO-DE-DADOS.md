@@ -118,14 +118,14 @@ Catálogo (definições — global ou próprio; sem PerfilId):
 | 6 | Clérigo | Clériga | ✨ | 6 — Vitalidade |
 
 ### Atributo — seed fixo (6)
-| Id | Nome | Emoji | Cor | Descrição |
-|----|------|-------|-----|-----------|
-| 1 | Inteligência | 🧠 | `#58a6ff` | Estudar, fazer cursos, resolver exercícios |
-| 2 | Sabedoria | 📚 | `#bc8cff` | Ler livros, podcasts, reflexão |
-| 3 | Físico | 💪 | `#3fb950` | Treinar, academia, exercícios físicos |
-| 4 | Disciplina | ⚙️ | `#f78166` | Tarefas domésticas, rotina, pontualidade |
-| 5 | Foco | 🎯 | `#ffd700` | Pomodoro, sem celular, deep work |
-| 6 | Vitalidade | ❤️ | `#f85149` | Sono, hidratação, dieta, pausas |
+| Id | Nome | Emoji | Icone | Cor | Descrição |
+|----|------|-------|-------|-----|-----------|
+| 1 | Inteligência | 🧠 | `inteligencia` | `#58a6ff` | Estudar, fazer cursos, resolver exercícios |
+| 2 | Sabedoria | 📚 | `sabedoria` | `#bc8cff` | Ler livros, podcasts, reflexão |
+| 3 | Físico | 💪 | `fisico` | `#3fb950` | Treinar, academia, exercícios físicos |
+| 4 | Disciplina | ⚙️ | `disciplina` | `#f78166` | Tarefas domésticas, rotina, pontualidade |
+| 5 | Foco | 🎯 | `foco` | `#ffd700` | Pomodoro, sem celular, deep work |
+| 6 | Vitalidade | ❤️ | `vitalidade` | `#f85149` | Sono, hidratação, dieta, pausas |
 
 > **Campos de catálogo** (presentes em **BomHabito, MauHabito, Missao e Recompensa**): `Escopo`
 > (`Global`/`Proprio`, texto, default `Global`), `Status` (`Aprovado`/`Pendente`/`Rejeitado`, texto,
