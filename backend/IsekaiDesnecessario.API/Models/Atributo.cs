@@ -7,6 +7,7 @@ public class Atributo
     public int    Id      { get; set; }
     public string Nome    { get; set; } = string.Empty;
     public string Emoji   { get; set; } = string.Empty;
+    public string Icone   { get; set; } = string.Empty;
     public string Descricao { get; set; } = string.Empty;
     public string Cor     { get; set; } = "#58a6ff";
 

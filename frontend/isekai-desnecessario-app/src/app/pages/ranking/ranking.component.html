@@ -74,7 +74,7 @@
         [style.--cor]="a.cor"
         (click)="selecionarSubAba(a.id)"
       >
-        {{ a.emoji }} {{ a.nome }}
+        <app-icon [name]="a.icone" [size]="16"></app-icon> {{ a.nome }}
       </button>
     </div>
 

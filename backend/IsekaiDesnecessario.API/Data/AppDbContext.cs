@@ -180,12 +180,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         });
 
         modelBuilder.Entity<Atributo>().HasData(
-            new Atributo { Id = 1, Nome = "Inteligência", Emoji = "🧠", Descricao = "Estudar, fazer cursos, resolver exercícios", Cor = "#58a6ff" },
-            new Atributo { Id = 2, Nome = "Sabedoria",    Emoji = "📚", Descricao = "Ler livros, podcasts, reflexão",             Cor = "#bc8cff" },
-            new Atributo { Id = 3, Nome = "Físico",       Emoji = "💪", Descricao = "Treinar, academia, exercícios físicos",      Cor = "#3fb950" },
-            new Atributo { Id = 4, Nome = "Disciplina",   Emoji = "⚙️", Descricao = "Tarefas domésticas, rotina, pontualidade",  Cor = "#f78166" },
-            new Atributo { Id = 5, Nome = "Foco",         Emoji = "🎯", Descricao = "Pomodoro, sem celular, deep work",          Cor = "#ffd700" },
-            new Atributo { Id = 6, Nome = "Vitalidade",   Emoji = "❤️", Descricao = "Sono, hidratação, dieta, pausas",          Cor = "#f85149" }
+            new Atributo { Id = 1, Nome = "Inteligência", Emoji = "🧠", Icone = "inteligencia", Descricao = "Estudar, fazer cursos, resolver exercícios", Cor = "#58a6ff" },
+            new Atributo { Id = 2, Nome = "Sabedoria",    Emoji = "📚", Icone = "sabedoria",    Descricao = "Ler livros, podcasts, reflexão",             Cor = "#bc8cff" },
+            new Atributo { Id = 3, Nome = "Físico",       Emoji = "💪", Icone = "fisico",       Descricao = "Treinar, academia, exercícios físicos",      Cor = "#3fb950" },
+            new Atributo { Id = 4, Nome = "Disciplina",   Emoji = "⚙️", Icone = "disciplina",   Descricao = "Tarefas domésticas, rotina, pontualidade",  Cor = "#f78166" },
+            new Atributo { Id = 5, Nome = "Foco",         Emoji = "🎯", Icone = "foco",         Descricao = "Pomodoro, sem celular, deep work",          Cor = "#ffd700" },
+            new Atributo { Id = 6, Nome = "Vitalidade",   Emoji = "❤️", Icone = "vitalidade",   Descricao = "Sono, hidratação, dieta, pausas",          Cor = "#f85149" }
         );
     }
 }
