@@ -613,7 +613,7 @@
   <!-- ── RECOMPENSAS ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoRecomp = !secaoRecomp">
-      <h2 class="card-title"><span class="badge" style="background:#3d2a00;color:#ffd700">$</span> {{ 'config.secRecomp' | translate }}</h2>
+      <h2 class="card-title"><app-icon name="moedas" [size]="16"></app-icon> {{ 'config.secRecomp' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoRecomp" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>

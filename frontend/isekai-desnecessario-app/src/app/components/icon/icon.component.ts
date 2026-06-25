@@ -108,18 +108,17 @@ import { NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
         </ng-container>
 
         <ng-container *ngSwitchCase="'moedas'">
-          <ellipse cx="26" cy="30" rx="10" ry="4" fill="#A07828" stroke="#6B4F10" stroke-width="1.5"/>
-          <rect x="16" y="22" width="20" height="8" fill="#A07828"/>
-          <line x1="16" y1="22" x2="16" y2="30" stroke="#6B4F10" stroke-width="1.5"/>
-          <line x1="36" y1="22" x2="36" y2="30" stroke="#6B4F10" stroke-width="1.5"/>
-          <ellipse cx="26" cy="22" rx="10" ry="4" fill="#A07828" stroke="#6B4F10" stroke-width="1.5"/>
-          <ellipse cx="22" cy="26" rx="10" ry="4" fill="#C8A84B" stroke="#6B4F10" stroke-width="1.8"/>
-          <rect x="12" y="18" width="20" height="8" fill="#B8903A"/>
-          <line x1="12" y1="18" x2="12" y2="26" stroke="#6B4F10" stroke-width="1.8"/>
-          <line x1="32" y1="18" x2="32" y2="26" stroke="#6B4F10" stroke-width="1.8"/>
-          <ellipse cx="22" cy="18" rx="10" ry="4" fill="#C8A84B" stroke="#6B4F10" stroke-width="1.8"/>
-          <text x="22" y="22" text-anchor="middle" font-size="7" fill="#6B4F10" font-family="sans-serif" font-weight="600">XP</text>
-          <path d="M14 16 Q18 15 24 16" stroke="#FAD97A" stroke-width="1" stroke-linecap="round" fill="none"/>
+          <ellipse cx="22" cy="30" rx="10" ry="4" fill="#C8A84B22" stroke="#8C6D1F" stroke-width="1.8"/>
+          <rect x="12" y="22" width="20" height="8" fill="#C8A84B18"/>
+          <line x1="12" y1="22" x2="12" y2="30" stroke="#8C6D1F" stroke-width="1.8"/>
+          <line x1="32" y1="22" x2="32" y2="30" stroke="#8C6D1F" stroke-width="1.8"/>
+          <ellipse cx="22" cy="22" rx="10" ry="4" fill="#C8A84B33" stroke="#8C6D1F" stroke-width="1.8"/>
+          <ellipse cx="24" cy="18" rx="10" ry="4" fill="#C8A84B22" stroke="#8C6D1F" stroke-width="1.8"/>
+          <rect x="14" y="10" width="20" height="8" fill="#C8A84B18"/>
+          <line x1="14" y1="10" x2="14" y2="18" stroke="#8C6D1F" stroke-width="1.8"/>
+          <line x1="34" y1="10" x2="34" y2="18" stroke="#8C6D1F" stroke-width="1.8"/>
+          <ellipse cx="24" cy="10" rx="10" ry="4" fill="#C8A84B44" stroke="#8C6D1F" stroke-width="1.8"/>
+          <path d="M16 8 Q20 7 26 8" stroke="#FAD97A" stroke-width="1" stroke-linecap="round" fill="none"/>
         </ng-container>
 
         <ng-container *ngSwitchCase="'entrada'">
