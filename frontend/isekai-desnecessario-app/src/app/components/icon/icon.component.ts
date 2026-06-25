@@ -232,6 +232,64 @@ import { NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
           <line x1="28" y1="20" x2="28" y2="36" stroke="#C0392B66" stroke-width="1.3" stroke-linecap="round"/>
         </ng-container>
 
+        <!-- ══ PACK 4 — EXTRAS ═══════════════════════════════════════ -->
+
+        <ng-container *ngSwitchCase="'presente'">
+          <rect x="10" y="26" width="28" height="16" rx="2" fill="#8B5E3C18" stroke="#8B5E3C" stroke-width="2"/>
+          <rect x="8" y="20" width="32" height="8" rx="2" fill="#8B5E3C22" stroke="#8B5E3C" stroke-width="2"/>
+          <line x1="24" y1="20" x2="24" y2="42" stroke="#C8A84B" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="8" y1="24" x2="40" y2="24" stroke="#C8A84B" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M24 20 Q18 13 15 17 Q17 22 24 20 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M24 20 Q30 13 33 17 Q31 22 24 20 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="1.5" stroke-linejoin="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'raio'">
+          <path d="M29 6 L15 26 L23 26 L19 42 L33 22 L25 22 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="2" stroke-linejoin="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'alvo'">
+          <circle cx="24" cy="24" r="18" fill="none" stroke="#C0392B" stroke-width="1.8"/>
+          <circle cx="24" cy="24" r="12" fill="#C0392B18" stroke="#C0392B" stroke-width="1.8"/>
+          <circle cx="24" cy="24" r="6" fill="#C0392B33" stroke="#C0392B" stroke-width="1.8"/>
+          <circle cx="24" cy="24" r="2.5" fill="#C0392B"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'frasco'">
+          <rect x="19" y="6" width="10" height="4" rx="2" fill="#4A7A9A22" stroke="#4A7A9A" stroke-width="1.5"/>
+          <path d="M20 10 L14 28 Q10 42 24 42 Q38 42 34 28 L28 10 Z" fill="#4A7A9A18" stroke="#4A7A9A" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M14 32 Q12 42 24 42 Q36 42 34 32 L28 22 L20 22 Z" fill="#4A7A9A33"/>
+          <circle cx="19" cy="36" r="2" fill="#4A7A9A55"/>
+          <circle cx="26" cy="33" r="1.5" fill="#4A7A9A55"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'estrela'">
+          <path d="M24 8 L27.1 18 L38 18 L29.5 24.2 L32.6 34.2 L24 28 L15.4 34.2 L18.5 24.2 L10 18 L20.9 18 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="2" stroke-linejoin="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'carrinho'">
+          <path d="M6 8 L12 12 L16 28 L38 28 L42 16 L14 16" fill="none" stroke="#6B6B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 16 L16 28" fill="none" stroke="#6B6B8A" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="20" cy="34" r="3.5" fill="none" stroke="#6B6B8A" stroke-width="2"/>
+          <circle cx="34" cy="34" r="3.5" fill="none" stroke="#6B6B8A" stroke-width="2"/>
+          <line x1="22" y1="20" x2="21" y2="28" stroke="#6B6B8A44" stroke-width="1" stroke-linecap="round"/>
+          <line x1="29" y1="18" x2="27" y2="28" stroke="#6B6B8A44" stroke-width="1" stroke-linecap="round"/>
+          <line x1="36" y1="18" x2="33" y2="28" stroke="#6B6B8A44" stroke-width="1" stroke-linecap="round"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'caixa'">
+          <rect x="10" y="22" width="28" height="18" rx="2" fill="#8B5E3C18" stroke="#8B5E3C" stroke-width="2"/>
+          <path d="M10 22 L13 13 L35 13 L38 22 Z" fill="#8B5E3C22" stroke="#8B5E3C" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="24" y1="13" x2="24" y2="22" stroke="#8B5E3C" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="24" y1="22" x2="24" y2="40" stroke="#C8A84B" stroke-width="2" stroke-linecap="round"/>
+          <line x1="10" y1="30" x2="38" y2="30" stroke="#8B5E3C44" stroke-width="1"/>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'brilho'">
+          <path d="M24 6 L25.8 18 L38 18 L28 25 L31.8 37 L24 30 L16.2 37 L20 25 L10 18 L22.2 18 Z" fill="#C8A84B22" stroke="#C8A84B" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M40 8 L40.8 11.5 L44 12 L40.8 12.5 L40 16 L39.2 12.5 L36 12 L39.2 11.5 Z" fill="#C8A84B55" stroke="#C8A84B" stroke-width="1" stroke-linejoin="round"/>
+          <path d="M8 30 L8.8 33 L12 33.5 L8.8 34 L8 37 L7.2 34 L4 33.5 L7.2 33 Z" fill="#C8A84B55" stroke="#C8A84B" stroke-width="1" stroke-linejoin="round"/>
+        </ng-container>
+
         <!-- fallback -->
         <ng-container *ngSwitchDefault>
           <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>

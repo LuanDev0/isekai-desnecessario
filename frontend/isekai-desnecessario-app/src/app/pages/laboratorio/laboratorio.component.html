@@ -105,7 +105,7 @@
   </section>
 
   <div class="empty-state" *ngIf="!ativos.length && !concluidos.length && !convertidos.length && !mostraForm">
-    <span class="empty-icon">🧪</span>
+    <app-icon name="frasco" [size]="48" class="empty-icon"></app-icon>
     <p>{{ 'lab.vazio' | translate }}</p>
     <p class="empty-sub">{{ 'lab.vazioSub' | translate }}</p>
     <button class="btn-novo" (click)="mostraForm = true">{{ 'lab.iniciar' | translate }}</button>

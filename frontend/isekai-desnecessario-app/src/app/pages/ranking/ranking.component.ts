@@ -104,9 +104,9 @@ export class RankingComponent implements OnInit {
   }
 
   posicaoIcon(i: number): string {
-    if (i === 0) return '🥇';
-    if (i === 1) return '🥈';
-    if (i === 2) return '🥉';
+    if (i === 0) return '#1';
+    if (i === 1) return '#2';
+    if (i === 2) return '#3';
     return `${i + 1}`;
   }
 
@@ -124,7 +124,7 @@ export class RankingComponent implements OnInit {
   }
 
   atributoEmoji(id: number | null): string {
-    if (id == null) return '⭐';
+    if (id == null) return '';
     return this.atributos.find(a => a.id === id)?.emoji ?? '';
   }
 

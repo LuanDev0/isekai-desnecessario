@@ -13,7 +13,7 @@
         (click)="abrirLootbox()"
         [title]="lootboxDisponivel ? ('loja.tituloDisp' | translate) : lootboxJaAbriu ? ('loja.tituloJaAbriu' | translate) : ('loja.tituloLocked' | translate)"
       >
-        <span class="lootbox-icon">{{ lootboxAbrindo ? '✨' : '📦' }}</span>
+        <span class="lootbox-icon"><app-icon [name]="lootboxAbrindo ? 'brilho' : 'caixa'" [size]="32"></app-icon></span>
         <div class="lootbox-info">
           <span class="lootbox-label">
             {{ lootboxAbrindo ? ('loja.abrindo' | translate) : lootboxDisponivel ? ('loja.lootboxDisp' | translate) : lootboxJaAbriu ? ('loja.abertaHoje' | translate) : ('loja.lootbox' | translate) }}
@@ -53,7 +53,7 @@
   </div>
 
   <div class="vazio" *ngIf="recompensas.length === 0">
-    <span class="vazio-icon">🎁</span>
+    <app-icon name="presente" [size]="48" class="vazio-icon"></app-icon>
     <p>{{ 'loja.nenhumaRecomp' | translate }}</p>
     <small>{{ 'loja.vaConfig' | translate }}</small>
   </div>

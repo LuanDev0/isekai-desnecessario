@@ -6,12 +6,13 @@ import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { Experimento } from '../../models/models';
 
 @Component({
   selector: 'app-laboratorio',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, IconComponent],
   templateUrl: './laboratorio.component.html',
   styleUrl: './laboratorio.component.scss',
 })

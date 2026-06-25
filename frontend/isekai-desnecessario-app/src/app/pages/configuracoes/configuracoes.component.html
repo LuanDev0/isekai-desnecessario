@@ -425,7 +425,7 @@
   <!-- ── MISSÕES ─────────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoMiss = !secaoMiss">
-      <h2 class="card-title"><span class="badge quest">⚔</span> {{ 'config.secMissoes' | translate }}</h2>
+      <h2 class="card-title"><app-icon name="espada" [size]="16"></app-icon> {{ 'config.secMissoes' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoMiss" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -804,7 +804,7 @@
       <div class="assin-status" [class.vip]="auth.role() === 'VIP' || auth.isAdmin()">
         <span class="assin-badge">
           <ng-container *ngIf="auth.role() === 'VIP' || auth.isAdmin()"><app-icon name="coroa" [size]="16"></app-icon> VIP</ng-container>
-          <ng-container *ngIf="!(auth.role() === 'VIP' || auth.isAdmin())">🆓 Gratuito</ng-container>
+          <ng-container *ngIf="!(auth.role() === 'VIP' || auth.isAdmin())">Gratuito</ng-container>
         </span>
         <span class="assin-status-label">
           {{ (auth.role() === 'VIP' || auth.isAdmin()) ? ('config.assinAtivo' | translate) : ('config.assinInativo' | translate) }}
@@ -833,7 +833,7 @@
   <!-- ── DANGER ZONE ─────────────────────────────── -->
   <section class="card danger-zone">
     <div class="secao-header" (click)="secaoDanger = !secaoDanger">
-      <h2 class="card-title danger">{{ 'config.dangerZone' | translate }}</h2>
+      <h2 class="card-title danger"><app-icon name="aviso" [size]="18"></app-icon> {{ 'config.dangerZone' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoDanger" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
