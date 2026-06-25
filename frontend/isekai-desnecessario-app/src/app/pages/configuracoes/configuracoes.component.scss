@@ -70,6 +70,9 @@ $muted:   #8b949e;
   height: 28px;
   border-radius: 50%;
   flex-shrink: 0;
+  line-height: 0;
+
+  app-icon, svg { display: block; }
 
   &.ic-perfil   { background: #6B6B8A22; border: 1px solid #6B6B8A44; }
   &.ic-bons     { background: #12261a;   border: 1px solid #1e3d28; }

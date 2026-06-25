@@ -122,7 +122,7 @@
   <!-- ── BOM HÁBITO ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoBons = !secaoBons">
-      <h2 class="card-title"><span class="secao-icon ic-bons"><app-icon name="check" [size]="16"></app-icon></span> {{ 'config.secBons' | translate }}</h2>
+      <h2 class="card-title"><app-icon name="check" [size]="28"></app-icon> {{ 'config.secBons' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoBons" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -274,7 +274,7 @@
   <!-- ── MAU HÁBITO ──────────────────────────────── -->
   <section class="card">
     <div class="secao-header" (click)="secaoMaus = !secaoMaus">
-      <h2 class="card-title"><span class="secao-icon ic-maus"><app-icon name="rejeitado" [size]="16"></app-icon></span> {{ 'config.secMaus' | translate }}</h2>
+      <h2 class="card-title"><app-icon name="rejeitado" [size]="28"></app-icon> {{ 'config.secMaus' | translate }}</h2>
       <svg class="chevron" [class.open]="secaoMaus" viewBox="0 0 24 24" fill="none">
         <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
