@@ -15,6 +15,7 @@ export interface AtributoDisplay {
   id:      number;
   nome:    string;
   emoji:   string;
+  icone:   string;
   valor:   number;
   cor:     string;
   desc:    string;
@@ -112,6 +113,7 @@ export class StatusComponent implements OnInit {
         id:      attr.id,
         nome:    attr.nome,
         emoji:   attr.emoji,
+        icone:   attr.icone,
         valor,
         cor:     attr.cor,
         desc:    attr.descricao,
