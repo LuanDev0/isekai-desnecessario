@@ -234,9 +234,8 @@ import { NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
         <!-- ══ PACK 4 — EXTRAS ═══════════════════════════════════════ -->
 
         <ng-container *ngSwitchCase="'perfil'">
-          <circle cx="24" cy="24" r="18" fill="#6B6B8A18" stroke="#6B6B8A" stroke-width="2"/>
-          <circle cx="24" cy="19" r="6" fill="#6B6B8A22" stroke="#6B6B8A" stroke-width="1.8"/>
-          <path d="M12 36 Q12 28 24 28 Q36 28 36 36" fill="#6B6B8A22" stroke="#6B6B8A" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="24" cy="18" r="8" fill="#6B6B8A22" stroke="#6B6B8A" stroke-width="2"/>
+          <path d="M10 40 Q10 28 24 28 Q38 28 38 40" fill="#6B6B8A18" stroke="#6B6B8A" stroke-width="2" stroke-linecap="round"/>
         </ng-container>
 
         <ng-container *ngSwitchCase="'raio'">
