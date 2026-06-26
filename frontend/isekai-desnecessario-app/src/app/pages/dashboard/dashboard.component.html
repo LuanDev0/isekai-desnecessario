@@ -135,7 +135,10 @@
       <h2 class="card-title purple"><app-icon name="pergaminho" [size]="18"></app-icon> {{ 'dashboard.diarioConquistas' | translate }}</h2>
       <ul class="diario-list" *ngIf="diario.length > 0">
         <li *ngFor="let a of diario" class="diario-item" [class]="'diario-item tipo-' + a.tipo">
-          <span class="diario-emoji">{{ a.emoji }}</span>
+          <span class="diario-emoji">
+            <app-icon *ngIf="iconeDiario(a.tipo)" [name]="iconeDiario(a.tipo)" [size]="16"></app-icon>
+            <span *ngIf="!iconeDiario(a.tipo)">{{ a.emoji }}</span>
+          </span>
           <span class="diario-msg">{{ a.mensagem }}</span>
           <span class="diario-hora">{{ horaAcao(a.data) }}</span>
         </li>
