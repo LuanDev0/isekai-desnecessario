@@ -193,6 +193,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   // ── Formatação hora do diário ────────────────────────
+  iconeDiario(tipo: string): string {
+    const map: Record<string, string> = {
+      habito_bom: 'check',
+      habito_mau: 'rejeitado',
+      missao:     'espada',
+      nivel:      'trofeu',
+      lootbox:    'caixa',
+    };
+    return map[tipo] ?? '';
+  }
+
   horaAcao(data: string): string {
     const d = new Date(data);
     const agora = new Date();
