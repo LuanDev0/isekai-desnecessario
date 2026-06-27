@@ -198,6 +198,26 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
         if (!ativar && Travado(a?.TravadoAte) is { } travaErro) return travaErro;
         if (a is null) db.PerfilMissoes.Add(new() { PerfilId = perfilId, MissaoId = defId, Ativo = ativar });
         else a.Ativo = ativar;
+
+        // Ao ativar uma missão principal, ativar automaticamente as secundárias vinculadas.
+        if (ativar)
+        {
+            var secundarias = await db.Missoes
+                .Where(d => d.MissaoPrincipalId == defId && d.Status == StatusConteudo.Aprovado)
+                .Select(d => d.Id)
+                .AsNoTracking()
+                .ToListAsync();
+            var ativacoesExistentes = await db.PerfilMissoes
+                .Where(x => x.PerfilId == perfilId && secundarias.Contains(x.MissaoId))
+                .ToListAsync();
+            foreach (var secId in secundarias)
+            {
+                var ativacaoSec = ativacoesExistentes.FirstOrDefault(x => x.MissaoId == secId);
+                if (ativacaoSec is null) db.PerfilMissoes.Add(new() { PerfilId = perfilId, MissaoId = secId, Ativo = true });
+                else ativacaoSec.Ativo = true;
+            }
+        }
+
         await db.SaveChangesAsync();
         return Ok();
     }
