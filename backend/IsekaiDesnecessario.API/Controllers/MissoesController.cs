@@ -62,7 +62,8 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
         {
             Titulo = dto.Titulo, TipoId = dto.TipoId, RecompensaXp = dto.RecompensaXp,
             RecompensaMoedas = dto.RecompensaMoedas, AtributoId = dto.AtributoId,
-            DataLimite = dto.DataLimite, MissaoPrincipalId = dto.MissaoPrincipalId,
+            DataLimite = dto.DataLimite.HasValue ? DateTime.SpecifyKind(dto.DataLimite.Value, DateTimeKind.Utc) : null,
+            MissaoPrincipalId = dto.MissaoPrincipalId,
             TravaDias = dto.TravaDias, Escopo = escopo, Status = status, CriadoPorUsuarioId = UsuarioId,
         };
         if (escopo == EscopoConteudo.Global && dto.ClasseIds is { Count: > 0 })
@@ -91,7 +92,7 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
         d.RecompensaXp = missao.RecompensaXp;
         d.RecompensaMoedas = missao.RecompensaMoedas;
         d.AtributoId = missao.AtributoId;
-        d.DataLimite = missao.DataLimite;
+        d.DataLimite = missao.DataLimite.HasValue ? DateTime.SpecifyKind(missao.DataLimite.Value, DateTimeKind.Utc) : null;
         d.MissaoPrincipalId = missao.MissaoPrincipalId;
         await db.SaveChangesAsync();
         await AvisarSeAdminModificouAsync(db, notificacoes, d);
