@@ -137,8 +137,8 @@
         </svg>
       </div>
       <ng-container *ngIf="catAbertoBons">
-        <ul class="item-list" *ngIf="catBons.length > 0">
-          <li class="item-row" *ngFor="let item of catBons" [class.bloqueado]="item.bloqueado">
+        <ul class="item-list item-list--cat" *ngIf="catBons.length > 0">
+          <li class="item-row" *ngFor="let item of catBonsOrdenado" [class.bloqueado]="item.bloqueado">
             <div class="item-info">
               <span class="item-nome">{{ item.habito }}</span>
               <span class="item-meta">+{{ item.xp }} XP · {{ item.frequencia }}
@@ -289,8 +289,8 @@
         </svg>
       </div>
       <ng-container *ngIf="catAbertoMaus">
-        <ul class="item-list" *ngIf="catMaus.length > 0">
-          <li class="item-row" *ngFor="let item of catMaus" [class.bloqueado]="item.bloqueado">
+        <ul class="item-list item-list--cat" *ngIf="catMaus.length > 0">
+          <li class="item-row" *ngFor="let item of catMausOrdenado" [class.bloqueado]="item.bloqueado">
             <div class="item-info">
               <span class="item-nome">{{ item.habito }}</span>
               <span class="item-meta red">-{{ item.xp }} XP · {{ item.frequencia }}
@@ -441,8 +441,8 @@
         </svg>
       </div>
       <ng-container *ngIf="catAbertoMiss">
-        <ul class="item-list" *ngIf="catMiss.length > 0">
-          <li class="item-row" *ngFor="let item of catMiss" [class.bloqueado]="item.bloqueado">
+        <ul class="item-list item-list--cat" *ngIf="catMiss.length > 0">
+          <li class="item-row" *ngFor="let item of catMissOrdenado" [class.bloqueado]="item.bloqueado">
             <div class="item-info">
               <span class="item-nome">{{ item.titulo }}</span>
               <span class="item-meta">{{ nomeTipo(item.tipoId) }} · +{{ item.recompensaXp }} XP · +{{ item.recompensaMoedas }} {{ 'config.moedas' | translate }}
@@ -629,8 +629,8 @@
         </svg>
       </div>
       <ng-container *ngIf="catAbertoRecomp">
-        <ul class="item-list" *ngIf="catRecomp.length > 0">
-          <li class="item-row" *ngFor="let item of catRecomp" [class.bloqueado]="item.bloqueado">
+        <ul class="item-list item-list--cat" *ngIf="catRecomp.length > 0">
+          <li class="item-row" *ngFor="let item of catRecompOrdenado" [class.bloqueado]="item.bloqueado">
             <div class="item-info">
               <span class="item-nome">{{ item.emoji }} {{ item.nome }}</span>
               <span class="item-meta">{{ item.preco }} {{ 'config.moedas' | translate }}{{ item.descricao ? ' · ' + item.descricao : '' }}

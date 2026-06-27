@@ -245,6 +245,19 @@ export class ConfiguracoesComponent implements OnInit {
     return this.auth.podeCatalogoGlobal() ? toggle : true;
   }
 
+  private sortCat<T extends { ativo: boolean; bloqueado: boolean }>(list: T[], name: (i: T) => string): T[] {
+    return [...list].sort((a, b) => {
+      if (a.ativo !== b.ativo)       return a.ativo ? 1 : -1;
+      if (a.bloqueado !== b.bloqueado) return a.bloqueado ? 1 : -1;
+      return name(a).localeCompare(name(b), 'pt');
+    });
+  }
+
+  get catBonsOrdenado()   { return this.sortCat(this.catBons,   i => i.habito); }
+  get catMausOrdenado()   { return this.sortCat(this.catMaus,   i => i.habito); }
+  get catMissOrdenado()   { return this.sortCat(this.catMiss,   i => i.titulo); }
+  get catRecompOrdenado() { return this.sortCat(this.catRecomp, i => i.nome);   }
+
   // Rótulo das classes de um item (para "exclusivo de ..." no catálogo).
   classesLabel(ids: number[]): string {
     return ids
