@@ -4,7 +4,7 @@ Documentação do plano de publicação na Google Play Store via Capacitor.
 
 ---
 
-## Estado atual (v0.5.0)
+## Estado atual (v0.20.0)
 
 | Etapa | Status | Detalhe |
 |-------|--------|---------|

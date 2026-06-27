@@ -67,6 +67,6 @@ Detalhes completos em [ARQUITETURA.md](ARQUITETURA.md).
 - ✅ **Hospedado em produção** — API + banco no Railway; o app aponta para a URL de produção em `environment.prod.ts`.
 - ✅ `TiposMissao` com seed (`Principal`, `Secundária`, `Desafio`) — migration `SeedTiposMissao` aplicada automaticamente no startup.
 - ✅ **Responsividade mobile** — todas as páginas adaptadas: `100svh`, safe-area (`env(safe-area-inset-*)`), grids 4→2 colunas em telas pequenas, `minmax` fluidos, hover só em dispositivos que suportam (v0.3.0). Ver [MOBILE.md](MOBILE.md).
-- 🚧 **Play Store** — empacotamento com Capacitor ainda não iniciado. Login Google exigirá plugin nativo dentro da WebView (ver [MOBILE.md](MOBILE.md)).
+- 🚧 **Play Store** — Capacitor instalado e APK debug gerado (`versionCode 20`, `versionName 0.20.0`). Pendente: keystore de produção, conta Play Store ($25) e política de privacidade. Login Google exigirá plugin nativo dentro da WebView (ver [MOBILE.md](MOBILE.md)).
 
 > **Fonte da verdade:** o código sempre vence esta documentação. Se algo divergir, o comportamento real está nos arquivos `.cs`/`.ts` referenciados em cada seção.
