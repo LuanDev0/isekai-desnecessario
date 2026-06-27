@@ -133,6 +133,16 @@ $muted:   #8b949e;
   margin-bottom: 4px;
 }
 
+.item-list--cat {
+  max-height: 230px;
+  overflow-y: auto;
+  padding-right: 2px;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--border, #30363d); border-radius: 4px; }
+}
+
 .item-row {
   display: flex;
   align-items: center;
