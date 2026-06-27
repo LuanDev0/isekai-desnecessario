@@ -205,7 +205,6 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
             var secundarias = await db.Missoes
                 .Where(d => d.MissaoPrincipalId == defId && d.Status == StatusConteudo.Aprovado)
                 .Select(d => d.Id)
-                .AsNoTracking()
                 .ToListAsync();
             var ativacoesExistentes = await db.PerfilMissoes
                 .Where(x => x.PerfilId == perfilId && secundarias.Contains(x.MissaoId))
