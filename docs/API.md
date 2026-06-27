@@ -119,7 +119,7 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | PUT | `/missoes/{id}` | Edita a definição (só autor ou Admin) |
 | DELETE | `/missoes/{id}` | Exclui a definição (ativações em cascata) |
 | POST | `/missoes/{id}/ativar?perfilId=X` | Ativa no perfil; se for missão principal, ativa automaticamente as secundárias vinculadas aprovadas |
-| POST | `/missoes/{id}/desativar?perfilId=X` | Desativa do perfil |
+| POST | `/missoes/{id}/desativar?perfilId=X` | Desativa do perfil; se for missão principal, desativa automaticamente as secundárias vinculadas |
 | POST | `/missoes/{id}/completar?perfilId=X` | Conclui → **+XP +moedas**; auto-conclui secundárias vinculadas (`MissaoPrincipalId`) |
 | POST | `/missoes/{id}/resetar?perfilId=X` | Marca a ativação como não concluída |
 | GET | `/missoes/jornada?perfilId=X` | Agrega missões concluídas das **últimas 12 semanas** (semana = segunda-feira) → `[{ semana, total, xp, principais }]` |
