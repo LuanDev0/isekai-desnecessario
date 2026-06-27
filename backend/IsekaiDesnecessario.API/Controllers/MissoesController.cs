@@ -200,21 +200,21 @@ public class MissoesController(AppDbContext db, MissaoService missaoService, Not
         if (a is null) db.PerfilMissoes.Add(new() { PerfilId = perfilId, MissaoId = defId, Ativo = ativar });
         else a.Ativo = ativar;
 
-        // Ao ativar uma missão principal, ativar automaticamente as secundárias vinculadas.
-        if (ativar)
+        // Ao ativar/desativar uma missão principal, propagar para as secundárias vinculadas.
+        var secundarias = await db.Missoes
+            .Where(d => d.MissaoPrincipalId == defId && d.Status == StatusConteudo.Aprovado)
+            .Select(d => d.Id)
+            .ToListAsync();
+        if (secundarias.Count > 0)
         {
-            var secundarias = await db.Missoes
-                .Where(d => d.MissaoPrincipalId == defId && d.Status == StatusConteudo.Aprovado)
-                .Select(d => d.Id)
-                .ToListAsync();
             var ativacoesExistentes = await db.PerfilMissoes
                 .Where(x => x.PerfilId == perfilId && secundarias.Contains(x.MissaoId))
                 .ToListAsync();
             foreach (var secId in secundarias)
             {
                 var ativacaoSec = ativacoesExistentes.FirstOrDefault(x => x.MissaoId == secId);
-                if (ativacaoSec is null) db.PerfilMissoes.Add(new() { PerfilId = perfilId, MissaoId = secId, Ativo = true });
-                else ativacaoSec.Ativo = true;
+                if (ativacaoSec is null) { if (ativar) db.PerfilMissoes.Add(new() { PerfilId = perfilId, MissaoId = secId, Ativo = true }); }
+                else ativacaoSec.Ativo = ativar;
             }
         }
 
