@@ -255,7 +255,7 @@ export class ConfiguracoesComponent implements OnInit {
 
   get catBonsOrdenado()   { return this.sortCat(this.catBons,   i => i.habito); }
   get catMausOrdenado()   { return this.sortCat(this.catMaus,   i => i.habito); }
-  get catMissOrdenado()   { return this.sortCat(this.catMiss,   i => i.titulo); }
+  get catMissOrdenado()   { return this.sortCat(this.catMiss.filter(i => !i.missaoPrincipalId), i => i.titulo); }
   get catRecompOrdenado() { return this.sortCat(this.catRecomp, i => i.nome);   }
 
   // Rótulo das classes de um item (para "exclusivo de ..." no catálogo).

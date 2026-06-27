@@ -106,7 +106,9 @@ Motor narrativo: dão **XP e moedas** (única fonte de moedas do jogo).
 | 3 | **Desafio** | missões especiais de alto risco/recompensa |
 
 ### Vínculo principal ↔ secundária
-Uma secundária aponta para uma principal via `MissaoPrincipalId`. **Ao concluir a principal**, todas as secundárias vinculadas ainda abertas são **auto-concluídas** (somando seus XP e moedas).
+Uma secundária aponta para uma principal via `MissaoPrincipalId`. **Ao ativar a principal** no catálogo, todas as secundárias vinculadas aprovadas são **auto-ativadas** junto. **Ao concluir a principal**, todas as secundárias vinculadas ainda abertas são **auto-concluídas** (somando seus XP e moedas).
+
+Secundárias vinculadas não aparecem no catálogo de configurações — são gerenciadas exclusivamente via a principal. Secundárias sem `MissaoPrincipalId` (isoladas) continuam aparecendo normalmente.
 
 ### Conclusão
 `POST /missoes/{id}/completar`:

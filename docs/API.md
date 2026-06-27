@@ -118,7 +118,7 @@ Escopado pela conta do token. `GarantirDonoDoPerfilAsync` impede acesso a perfil
 | POST | `/missoes` | Cria definição + ativa no perfil (papel Admin/Moderador/VIP; senão `403`) |
 | PUT | `/missoes/{id}` | Edita a definição (só autor ou Admin) |
 | DELETE | `/missoes/{id}` | Exclui a definição (ativações em cascata) |
-| POST | `/missoes/{id}/ativar?perfilId=X` | Ativa no perfil |
+| POST | `/missoes/{id}/ativar?perfilId=X` | Ativa no perfil; se for missão principal, ativa automaticamente as secundárias vinculadas aprovadas |
 | POST | `/missoes/{id}/desativar?perfilId=X` | Desativa do perfil |
 | POST | `/missoes/{id}/completar?perfilId=X` | Conclui → **+XP +moedas**; auto-conclui secundárias vinculadas (`MissaoPrincipalId`) |
 | POST | `/missoes/{id}/resetar?perfilId=X` | Marca a ativação como não concluída |
