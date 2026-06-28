@@ -165,9 +165,7 @@ $muted:   #8b949e;
 .item-nome {
   font-size: 0.9rem;
   color: $text;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .item-meta {
@@ -228,6 +226,10 @@ $muted:   #8b949e;
   &.edit-field-xp   { flex: 0 0 min(90px, 28vw); }
   &.edit-field-freq { flex: 0 0 min(120px, 36vw); }
   &.edit-field-attr { flex: 0 0 min(150px, 44vw); }
+
+  @media (max-width: 480px) {
+    &.edit-field-grow { flex: 0 0 100%; }
+  }
 }
 
 .edit-label {
