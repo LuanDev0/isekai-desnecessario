@@ -253,6 +253,7 @@ export const pt = {
     assinB1: 'Criar hábitos personalizados',
     assinB2: 'Criar missões personalizadas',
     assinB3: 'Criar recompensas personalizadas',
+    assinB4: 'Criar um grupo',
     assinAssinar: 'Assinar VIP',
     assinEmBreve: 'Em breve — pagamento ainda não disponível.',
     assinCancelar: 'Cancelar assinatura',
