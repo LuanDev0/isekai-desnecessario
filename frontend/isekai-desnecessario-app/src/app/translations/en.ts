@@ -253,6 +253,7 @@ export const en = {
     assinB1: 'Create custom habits',
     assinB2: 'Create custom quests',
     assinB3: 'Create custom rewards',
+    assinB4: 'Create a group',
     assinAssinar: 'Subscribe to VIP',
     assinEmBreve: 'Coming soon — payment not available yet.',
     assinCancelar: 'Cancel subscription',
