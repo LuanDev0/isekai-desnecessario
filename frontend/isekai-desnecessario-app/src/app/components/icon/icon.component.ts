@@ -347,6 +347,13 @@ import { NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
           <path d="M16 22 L20 18 L23 24 L26 16 L29 22 L32 22" stroke="#f85149" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </ng-container>
 
+        <ng-container *ngSwitchCase="'grupo'">
+          <circle cx="17" cy="18" r="6" fill="#bc8cff22" stroke="#bc8cff" stroke-width="2"/>
+          <path d="M6 40 Q6 28 17 28 Q28 28 28 40" fill="#bc8cff18" stroke="#bc8cff" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="33" cy="16" r="4.5" fill="#bc8cff18" stroke="#bc8cff" stroke-width="1.8"/>
+          <path d="M26 30 Q31 27 38 30 Q42 32 42 40" fill="none" stroke="#bc8cff" stroke-width="1.8" stroke-linecap="round"/>
+        </ng-container>
+
         <!-- fallback -->
         <ng-container *ngSwitchDefault>
           <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>

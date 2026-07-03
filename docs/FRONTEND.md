@@ -60,6 +60,8 @@ Gerencia o **Perfil** (foto, nome, classe, gênero) e os conteúdos do herói. C
 
 **Seção de Aprovações** (só Admin): lista unificada de itens globais pendentes (`/aprovacoes/pendentes`), com botões **Aprovar** e **Rejeitar** por item.
 
+**Seção de Assinatura:** mostra o status VIP (benefícios: hábitos/missões/recompensas próprios) e, **separado por um divisor**, um bloco **Grupos** (badge roxo) com botão "Ver meus grupos" → `/grupos`. Grupos é uma assinatura independente do VIP, cobrada por grupo criado (v0.21.1) — não é um benefício do plano VIP.
+
 ### Laboratório (`/laboratorio`)
 Cria e acompanha **experimentos** (hábitos em teste, default 21 dias). Marca um dia por vez e converte em bom hábito.
 

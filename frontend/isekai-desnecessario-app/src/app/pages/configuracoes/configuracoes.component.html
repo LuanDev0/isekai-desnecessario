@@ -818,7 +818,6 @@
         <li><span class="assin-check">✓</span> {{ 'config.assinB1' | translate }}</li>
         <li><span class="assin-check">✓</span> {{ 'config.assinB2' | translate }}</li>
         <li><span class="assin-check">✓</span> {{ 'config.assinB3' | translate }}</li>
-        <li><span class="assin-check">✓</span> {{ 'config.assinB4' | translate }}</li>
       </ul>
 
       <!-- Botão -->
@@ -829,6 +828,16 @@
       <ng-container *ngIf="auth.role() === 'VIP'">
         <button class="btn-cancelar assin-cancelar">{{ 'config.assinCancelar' | translate }}</button>
       </ng-container>
+
+      <!-- Grupos: assinatura separada do VIP, cobrada por grupo criado -->
+      <div class="assin-divider"></div>
+      <div class="assin-status">
+        <span class="assin-badge grupos"><app-icon name="grupo" [size]="16"></app-icon> {{ 'config.assinGruposBadge' | translate }}</span>
+        <span class="assin-status-label">{{ 'config.assinGruposDesc' | translate }}</span>
+      </div>
+      <button class="btn-vip grupos" (click)="irParaGrupos()">
+        <app-icon name="grupo" [size]="16"></app-icon> {{ 'config.assinGruposIr' | translate }}
+      </button>
     </ng-container>
   </section>
 
