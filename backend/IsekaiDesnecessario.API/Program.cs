@@ -20,6 +20,7 @@ builder.Services.AddScoped<MissaoService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<NotificacaoService>();
 builder.Services.AddScoped<PontosAtributoService>();
+builder.Services.AddScoped<GrupoService>();
 builder.Services.AddHostedService<DiarioLimpezaService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

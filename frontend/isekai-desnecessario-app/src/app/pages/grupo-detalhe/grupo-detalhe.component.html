@@ -1,0 +1,387 @@
+<div class="grupo-page">
+
+  <!-- Erro de acesso (grupo desativado p/ membro, sem permissão etc.) -->
+  <div class="card erro-card" *ngIf="!carregando && !grupo">
+    <p class="erro-msg">{{ erro }}</p>
+    <button class="btn-cancel" (click)="voltar()">‹ {{ 'grupos.titulo' | translate }}</button>
+  </div>
+
+  <ng-container *ngIf="grupo">
+    <!-- Cabeçalho -->
+    <div class="header">
+      <button class="btn-voltar" (click)="voltar()">‹</button>
+      <div class="header-info">
+        <h1 class="page-title">{{ grupo.nome }}</h1>
+        <span class="header-meta">
+          {{ grupo.plano }} · {{ grupo.membros.length }}/{{ grupo.maxMembros }} {{ 'grupos.membros' | translate }}
+          <span class="tag-org" *ngIf="grupo.organizador">👑 {{ 'grupos.organizador' | translate }}</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Saldo do membro -->
+    <div class="saldo-row" *ngIf="grupo.membro">
+      <div class="saldo-chip xp">⚡ {{ grupo.membro.xpGrupo }} <span>{{ 'grupos.xpGrupo' | translate }}</span></div>
+      <div class="saldo-chip moedas">🪙 {{ grupo.membro.moedasGrupo }} <span>{{ 'grupos.moedasGrupo' | translate }}</span></div>
+    </div>
+
+    <!-- Aviso de grupo desativado (organizador) -->
+    <div class="aviso-inativo" *ngIf="!grupo.ativo">
+      {{ 'grupos.grupoDesativadoAviso' | translate }}
+      <button class="btn-reativar" *ngIf="grupo.organizador" (click)="reativar()">{{ 'grupos.reativarGrupo' | translate }}</button>
+    </div>
+
+    <!-- Abas -->
+    <div class="abas">
+      <button class="aba" [class.ativa]="aba === 'feed'" (click)="aba = 'feed'">{{ 'grupos.feed' | translate }}</button>
+      <button class="aba" [class.ativa]="aba === 'ranking'" (click)="aba = 'ranking'">{{ 'grupos.rankingAba' | translate }}</button>
+      <button class="aba" [class.ativa]="aba === 'conteudo'" (click)="aba = 'conteudo'">{{ 'grupos.conteudo' | translate }}</button>
+      <button class="aba" *ngIf="grupo.organizador" [class.ativa]="aba === 'gerenciar'" (click)="aba = 'gerenciar'">{{ 'grupos.gerenciar' | translate }}</button>
+    </div>
+
+    <!-- ════════ FEED ════════ -->
+    <div class="card" *ngIf="aba === 'feed'">
+      <ul class="feed-lista" *ngIf="grupo.feed.length > 0">
+        <li class="feed-row" *ngFor="let f of grupo.feed">
+          <span class="feed-emoji">{{ feedEmoji(f.tipo) }}</span>
+          <span class="feed-msg">{{ f.mensagem }}</span>
+          <span class="feed-quando">{{ quando(f.criadoEm) }}</span>
+        </li>
+      </ul>
+      <p class="empty" *ngIf="grupo.feed.length === 0">{{ 'grupos.feedVazio' | translate }}</p>
+    </div>
+
+    <!-- ════════ RANKING ════════ -->
+    <div class="card" *ngIf="aba === 'ranking'">
+      <ul class="rank-lista">
+        <li class="rank-row" *ngFor="let m of grupo.membros; let i = index" [class.eu]="m.perfilId === perfilId">
+          <span class="rank-pos">{{ posicao(i) }}</span>
+          <div class="rank-avatar">
+            <img *ngIf="fotoUrl(m.fotoUrl)" [src]="fotoUrl(m.fotoUrl)" [alt]="m.nome" />
+            <span *ngIf="!fotoUrl(m.fotoUrl)">{{ m.nome.charAt(0) }}</span>
+          </div>
+          <div class="rank-info">
+            <span class="rank-nome">{{ m.nome }} <span class="mini-org" *ngIf="m.organizador">👑</span></span>
+            <span class="rank-meta">⚡ {{ m.xpGrupo }} XP</span>
+          </div>
+          <button class="btn-remover" *ngIf="grupo.organizador && !m.organizador"
+                  (click)="removerMembro(m.id)" [title]="'grupos.remover' | translate">✕</button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ════════ CONTEÚDO ════════ -->
+    <ng-container *ngIf="aba === 'conteudo'">
+      <!-- Hábitos -->
+      <div class="card">
+        <h2 class="card-title">{{ 'grupos.habitos' | translate }}</h2>
+        <ul class="item-lista" *ngIf="grupo.habitos.length > 0">
+          <li class="item-row" *ngFor="let h of grupo.habitos" [class.indisponivel]="!h.disponivel">
+            <div class="item-info">
+              <span class="item-nome">{{ h.habito }}</span>
+              <span class="item-meta">+{{ h.xp }} XP · {{ h.frequencia }}</span>
+            </div>
+            <button class="btn-acao" *ngIf="grupo.membro" [disabled]="!h.disponivel" (click)="completarHabito(h)">
+              {{ (h.disponivel ? 'grupos.completar' : 'grupos.cooldown') | translate }}
+            </button>
+          </li>
+        </ul>
+        <p class="empty" *ngIf="grupo.habitos.length === 0">{{ 'grupos.semHabitos' | translate }}</p>
+      </div>
+
+      <!-- Missões -->
+      <div class="card">
+        <h2 class="card-title">{{ 'grupos.missoes' | translate }}</h2>
+        <ul class="item-lista" *ngIf="grupo.missoes.length > 0">
+          <li class="item-row" *ngFor="let m of grupo.missoes" [class.indisponivel]="m.concluida || prazoEncerrado(m)">
+            <div class="item-info">
+              <span class="item-nome">{{ m.titulo }}</span>
+              <span class="item-meta">
+                +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} 🪙
+                <ng-container *ngIf="m.dataLimite"> · {{ 'grupos.prazo' | translate }}: {{ dataCurta(m.dataLimite) }}</ng-container>
+                · {{ m.totalConclusoes }}/{{ grupo.membros.length }} ✓
+              </span>
+            </div>
+            <button class="btn-acao" *ngIf="grupo.membro" [disabled]="m.concluida || prazoEncerrado(m)" (click)="completarMissao(m)">
+              {{ (m.concluida ? 'grupos.concluida' : (prazoEncerrado(m) ? 'grupos.prazoEncerrado' : 'grupos.completar')) | translate }}
+            </button>
+          </li>
+        </ul>
+        <p class="empty" *ngIf="grupo.missoes.length === 0">{{ 'grupos.semMissoes' | translate }}</p>
+      </div>
+
+      <!-- Recompensas -->
+      <div class="card">
+        <h2 class="card-title">{{ 'grupos.recompensas' | translate }}</h2>
+        <ul class="item-lista" *ngIf="grupo.recompensas.length > 0">
+          <li class="item-row" *ngFor="let r of grupo.recompensas">
+            <div class="item-info">
+              <span class="item-nome">{{ r.nome }}</span>
+              <span class="item-meta">
+                🪙 {{ r.custo }}
+                <ng-container *ngIf="r.meusResgates > 0"> · {{ r.meusResgates }} {{ 'grupos.resgates' | translate }}</ng-container>
+              </span>
+            </div>
+            <button class="btn-acao" *ngIf="grupo.membro" [disabled]="!podeResgatar(r)" (click)="resgatarRecompensa(r)">
+              {{ 'grupos.resgatar' | translate }}
+            </button>
+          </li>
+        </ul>
+        <p class="empty" *ngIf="grupo.recompensas.length === 0">{{ 'grupos.semRecompensas' | translate }}</p>
+      </div>
+
+      <!-- Sair do grupo (membro não-organizador) -->
+      <button class="btn-sair" *ngIf="grupo.membro && !grupo.organizador" (click)="sair()">
+        {{ 'grupos.sairGrupo' | translate }}
+      </button>
+    </ng-container>
+
+    <!-- ════════ GERENCIAR (organizador) ════════ -->
+    <ng-container *ngIf="aba === 'gerenciar' && grupo.organizador">
+
+      <!-- Convidar -->
+      <div class="card">
+        <h2 class="card-title">{{ 'grupos.convidar' | translate }}</h2>
+        <div class="convite-form">
+          <input type="email" [(ngModel)]="emailConvite" [placeholder]="'grupos.emailConvidado' | translate"
+                 (keyup.enter)="convidar()" />
+          <button class="btn-confirm" (click)="convidar()" [disabled]="!emailConvite.trim()">
+            {{ 'grupos.enviarConvite' | translate }}
+          </button>
+        </div>
+        <p class="feedback" *ngIf="conviteFeedback">{{ conviteFeedback }}</p>
+        <ul class="convite-pendentes" *ngIf="grupo.convites && grupo.convites.length > 0">
+          <li *ngFor="let c of grupo.convites">✉️ {{ c.email }} <span class="feed-quando">{{ quando(c.criadoEm) }}</span></li>
+        </ul>
+      </div>
+
+      <!-- Hábitos -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">{{ 'grupos.habitos' | translate }}</h2>
+          <button class="btn-add" *ngIf="!criandoHabito" (click)="criandoHabito = true">+ {{ 'grupos.novoHabito' | translate }}</button>
+        </div>
+        <div class="edit-box" *ngIf="criandoHabito">
+          <div class="edit-row">
+            <div class="edit-field grow">
+              <label>{{ 'grupos.nomeHabito' | translate }}</label>
+              <input type="text" [(ngModel)]="novoHabito.habito" maxlength="60" />
+            </div>
+            <div class="edit-field xp">
+              <label>{{ 'grupos.xp' | translate }}</label>
+              <input type="number" [(ngModel)]="novoHabito.xp" min="1" max="9999" />
+            </div>
+            <div class="edit-field freq">
+              <label>{{ 'grupos.frequencia' | translate }}</label>
+              <select [(ngModel)]="novoHabito.frequencia">
+                <option *ngFor="let f of frequencias" [value]="f">{{ f }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="edit-btns">
+            <button class="btn-confirm" (click)="criarHabito()" [disabled]="!novoHabito.habito.trim()">{{ 'grupos.criar' | translate }}</button>
+            <button class="btn-cancel" (click)="criandoHabito = false">{{ 'grupos.cancelar' | translate }}</button>
+          </div>
+        </div>
+        <ul class="item-lista">
+          <ng-container *ngFor="let h of grupo.habitos">
+            <li class="item-row" *ngIf="editandoHabitoId !== h.id">
+              <div class="item-info">
+                <span class="item-nome">{{ h.habito }}</span>
+                <span class="item-meta">+{{ h.xp }} XP · {{ h.frequencia }}</span>
+              </div>
+              <div class="item-acoes">
+                <button class="btn-icon" (click)="iniciarEdicaoHabito(h)">✏️</button>
+                <button class="btn-icon del" (click)="excluirHabito(h)">🗑️</button>
+              </div>
+            </li>
+            <li class="edit-box" *ngIf="editandoHabitoId === h.id">
+              <div class="edit-row">
+                <div class="edit-field grow">
+                  <label>{{ 'grupos.nomeHabito' | translate }}</label>
+                  <input type="text" [(ngModel)]="editHabito.habito" maxlength="60" />
+                </div>
+                <div class="edit-field xp">
+                  <label>{{ 'grupos.xp' | translate }}</label>
+                  <input type="number" [(ngModel)]="editHabito.xp" min="1" max="9999" />
+                </div>
+                <div class="edit-field freq">
+                  <label>{{ 'grupos.frequencia' | translate }}</label>
+                  <select [(ngModel)]="editHabito.frequencia">
+                    <option *ngFor="let f of frequencias" [value]="f">{{ f }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="edit-btns">
+                <button class="btn-confirm" (click)="salvarHabito()">{{ 'grupos.salvar' | translate }}</button>
+                <button class="btn-cancel" (click)="editandoHabitoId = null">{{ 'grupos.cancelar' | translate }}</button>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+
+      <!-- Missões -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">{{ 'grupos.missoes' | translate }}</h2>
+          <button class="btn-add" *ngIf="!criandoMissao" (click)="criandoMissao = true">+ {{ 'grupos.novaMissao' | translate }}</button>
+        </div>
+        <div class="edit-box" *ngIf="criandoMissao">
+          <div class="edit-row">
+            <div class="edit-field grow">
+              <label>{{ 'grupos.tituloMissao' | translate }}</label>
+              <input type="text" [(ngModel)]="novaMissao.titulo" maxlength="80" />
+            </div>
+          </div>
+          <div class="edit-row">
+            <div class="edit-field xp">
+              <label>{{ 'grupos.xp' | translate }}</label>
+              <input type="number" [(ngModel)]="novaMissao.recompensaXp" min="0" max="9999" />
+            </div>
+            <div class="edit-field xp">
+              <label>{{ 'grupos.moedas' | translate }}</label>
+              <input type="number" [(ngModel)]="novaMissao.recompensaMoedas" min="0" max="9999" />
+            </div>
+            <div class="edit-field grow">
+              <label>{{ 'grupos.dataLimite' | translate }} <span class="opt">{{ 'grupos.opcional' | translate }}</span></label>
+              <input type="date" [(ngModel)]="novaMissao.dataLimite" />
+            </div>
+          </div>
+          <div class="edit-btns">
+            <button class="btn-confirm" (click)="criarMissao()" [disabled]="!novaMissao.titulo.trim()">{{ 'grupos.criar' | translate }}</button>
+            <button class="btn-cancel" (click)="criandoMissao = false">{{ 'grupos.cancelar' | translate }}</button>
+          </div>
+        </div>
+        <ul class="item-lista">
+          <ng-container *ngFor="let m of grupo.missoes">
+            <li class="item-row" *ngIf="editandoMissaoId !== m.id">
+              <div class="item-info">
+                <span class="item-nome">{{ m.titulo }}</span>
+                <span class="item-meta">
+                  +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} 🪙
+                  <ng-container *ngIf="m.dataLimite"> · {{ dataCurta(m.dataLimite) }}</ng-container>
+                  · {{ m.totalConclusoes }} ✓
+                </span>
+              </div>
+              <div class="item-acoes">
+                <button class="btn-icon" (click)="iniciarEdicaoMissao(m)">✏️</button>
+                <button class="btn-icon del" (click)="excluirMissao(m)">🗑️</button>
+              </div>
+            </li>
+            <li class="edit-box" *ngIf="editandoMissaoId === m.id">
+              <div class="edit-row">
+                <div class="edit-field grow">
+                  <label>{{ 'grupos.tituloMissao' | translate }}</label>
+                  <input type="text" [(ngModel)]="editMissao.titulo" maxlength="80" />
+                </div>
+              </div>
+              <div class="edit-row">
+                <div class="edit-field xp">
+                  <label>{{ 'grupos.xp' | translate }}</label>
+                  <input type="number" [(ngModel)]="editMissao.recompensaXp" min="0" max="9999" />
+                </div>
+                <div class="edit-field xp">
+                  <label>{{ 'grupos.moedas' | translate }}</label>
+                  <input type="number" [(ngModel)]="editMissao.recompensaMoedas" min="0" max="9999" />
+                </div>
+                <div class="edit-field grow">
+                  <label>{{ 'grupos.dataLimite' | translate }} <span class="opt">{{ 'grupos.opcional' | translate }}</span></label>
+                  <input type="date" [(ngModel)]="editMissao.dataLimite" />
+                </div>
+              </div>
+              <div class="edit-btns">
+                <button class="btn-confirm" (click)="salvarMissao()">{{ 'grupos.salvar' | translate }}</button>
+                <button class="btn-cancel" (click)="editandoMissaoId = null">{{ 'grupos.cancelar' | translate }}</button>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+
+      <!-- Recompensas -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">{{ 'grupos.recompensas' | translate }}</h2>
+          <button class="btn-add" *ngIf="!criandoRecompensa" (click)="criandoRecompensa = true">+ {{ 'grupos.novaRecompensa' | translate }}</button>
+        </div>
+        <div class="edit-box" *ngIf="criandoRecompensa">
+          <div class="edit-row">
+            <div class="edit-field grow">
+              <label>{{ 'grupos.nomeRecompensa' | translate }}</label>
+              <input type="text" [(ngModel)]="novaRecompensa.nome" maxlength="60" />
+            </div>
+            <div class="edit-field xp">
+              <label>{{ 'grupos.custo' | translate }}</label>
+              <input type="number" [(ngModel)]="novaRecompensa.custo" min="1" max="99999" />
+            </div>
+          </div>
+          <div class="edit-btns">
+            <button class="btn-confirm" (click)="criarRecompensa()" [disabled]="!novaRecompensa.nome.trim()">{{ 'grupos.criar' | translate }}</button>
+            <button class="btn-cancel" (click)="criandoRecompensa = false">{{ 'grupos.cancelar' | translate }}</button>
+          </div>
+        </div>
+        <ul class="item-lista">
+          <ng-container *ngFor="let r of grupo.recompensas">
+            <li class="item-row" *ngIf="editandoRecompensaId !== r.id">
+              <div class="item-info">
+                <span class="item-nome">{{ r.nome }}</span>
+                <span class="item-meta">🪙 {{ r.custo }}</span>
+              </div>
+              <div class="item-acoes">
+                <button class="btn-icon" (click)="iniciarEdicaoRecompensa(r)">✏️</button>
+                <button class="btn-icon del" (click)="excluirRecompensa(r)">🗑️</button>
+              </div>
+            </li>
+            <li class="edit-box" *ngIf="editandoRecompensaId === r.id">
+              <div class="edit-row">
+                <div class="edit-field grow">
+                  <label>{{ 'grupos.nomeRecompensa' | translate }}</label>
+                  <input type="text" [(ngModel)]="editRecompensa.nome" maxlength="60" />
+                </div>
+                <div class="edit-field xp">
+                  <label>{{ 'grupos.custo' | translate }}</label>
+                  <input type="number" [(ngModel)]="editRecompensa.custo" min="1" max="99999" />
+                </div>
+              </div>
+              <div class="edit-btns">
+                <button class="btn-confirm" (click)="salvarRecompensa()">{{ 'grupos.salvar' | translate }}</button>
+                <button class="btn-cancel" (click)="editandoRecompensaId = null">{{ 'grupos.cancelar' | translate }}</button>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+
+      <!-- Configurações do grupo -->
+      <div class="card">
+        <h2 class="card-title">{{ 'grupos.editarNome' | translate }}</h2>
+        <div class="convite-form" *ngIf="renomeando">
+          <input type="text" [(ngModel)]="novoNome" maxlength="40" />
+          <button class="btn-confirm" (click)="renomear()" [disabled]="!novoNome.trim()">{{ 'grupos.salvar' | translate }}</button>
+          <button class="btn-cancel" (click)="renomeando = false">{{ 'grupos.cancelar' | translate }}</button>
+        </div>
+        <button class="btn-cancel" *ngIf="!renomeando" (click)="renomeando = true; novoNome = grupo.nome">✏️ {{ 'grupos.editarNome' | translate }}</button>
+
+        <ng-container *ngIf="planosUpgrade.length > 0">
+          <h2 class="card-title" style="margin-top:16px">{{ 'grupos.upgradePlano' | translate }}</h2>
+          <p class="billing-aviso">{{ 'grupos.billingAviso' | translate }}</p>
+          <div class="plano-chips">
+            <button class="chip" *ngFor="let p of planosUpgrade" (click)="upgrade(p.plano)">
+              {{ p.plano }} · {{ p.vagas }} {{ 'grupos.vagas' | translate }}
+            </button>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Zona de perigo -->
+      <div class="card danger">
+        <div class="danger-btns">
+          <button class="btn-danger" *ngIf="grupo.ativo" (click)="cancelar()">{{ 'grupos.cancelarAssinatura' | translate }}</button>
+          <button class="btn-confirm" *ngIf="!grupo.ativo" (click)="reativar()">{{ 'grupos.reativarGrupo' | translate }}</button>
+          <button class="btn-danger excluir" (click)="excluir()">{{ 'grupos.excluirGrupo' | translate }}</button>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

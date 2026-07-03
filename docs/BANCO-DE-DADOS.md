@@ -26,6 +26,16 @@ Banco: **`isekai`** (PostgreSQL). Mapeado por EF Core (provider Npgsql) em `Data
 | `PontosAtributos` | PontosAtributos | `PontosAtributo` |
 | `Experimentos` | Experimentos | `Experimento` |
 | `ExperimentosDia` | ExperimentosDia | `ExperimentoDia` |
+| `Grupos` | Grupos | `Grupo` |
+| `GrupoMembros` | GrupoMembros | `GrupoMembro` |
+| `GrupoConvites` | GrupoConvites | `GrupoConvite` |
+| `GrupoHabitos` | GrupoHabitos | `GrupoHabito` |
+| `GrupoMissoes` | GrupoMissoes | `GrupoMissao` |
+| `GrupoRecompensas` | GrupoRecompensas | `GrupoRecompensa` |
+| `GrupoHabitoExecucoes` | GrupoHabitoExecucoes | `GrupoHabitoExecucao` |
+| `GrupoMissaoConclusoes` | GrupoMissaoConclusoes | `GrupoMissaoConclusao` |
+| `GrupoRecompensaResgates` | GrupoRecompensaResgates | `GrupoRecompensaResgate` |
+| `GrupoFeedEventos` | GrupoFeedEventos | `GrupoFeedEvento` |
 
 ---
 
@@ -56,6 +66,17 @@ Catálogo (definições — global ou próprio; sem PerfilId):
     ── Escopo (Global/Proprio) · Status (Aprovado/Pendente/Rejeitado)
     ── N:N ─→ Classe (vínculo multi-classe; vazio = vale p/ todas)
   Missao ── TipoId ─→ TipoMissao · MissaoPrincipalId ─→ Missao (auto-relação)
+
+Grupos (v0.21 — migration AdicionarGrupos; economia separada do perfil):
+  Grupo ── OrganizadorUsuarioId ─→ Usuario (Cascade: apagar a conta apaga o grupo)
+    │      Plano (Starter/Standard/Pro/Max) · MaxMembros · Ativo (cancelamento)
+    ├─1:N─ GrupoMembro ──→ Perfil (único por GrupoId+PerfilId; XpGrupo/MoedasGrupo do membro)
+    │        ├─1:N─ GrupoHabitoExecucao    ──→ GrupoHabito
+    │        ├─1:N─ GrupoMissaoConclusao   ──→ GrupoMissao (única por missão+membro)
+    │        └─1:N─ GrupoRecompensaResgate ──→ GrupoRecompensa
+    ├─1:N─ GrupoConvite ──→ Usuario (destinatário; Status Pendente/Aceito/Recusado)
+    ├─1:N─ GrupoHabito / GrupoMissao / GrupoRecompensa (conteúdo exclusivo, só Organizador cria)
+    └─1:N─ GrupoFeedEvento (timeline denormalizada; índice GrupoId+CriadoEm)
 ```
 
 > **Modelo de catálogo (v0.7):** o conteúdo (hábitos/missões/recompensas) deixou de pertencer

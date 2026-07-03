@@ -1,0 +1,72 @@
+<div class="grupos-page">
+  <h1 class="page-title">{{ 'grupos.titulo' | translate }}</h1>
+  <p class="subtitulo">{{ 'grupos.subtitulo' | translate }}</p>
+
+  <!-- Convites pendentes -->
+  <div class="card convites" *ngIf="convites.length > 0">
+    <h2 class="card-title">{{ 'grupos.convitesPendentes' | translate }}</h2>
+    <ul class="convite-lista">
+      <li class="convite-row" *ngFor="let c of convites">
+        <div class="convite-info">
+          <span class="convite-nome">{{ c.grupoNome }}</span>
+          <span class="convite-meta">{{ c.plano }} · {{ c.totalMembros }}/{{ c.maxMembros }} {{ 'grupos.membros' | translate }}</span>
+        </div>
+        <div class="convite-acoes">
+          <button class="btn-aceitar" (click)="aceitar(c)">{{ 'grupos.aceitar' | translate }}</button>
+          <button class="btn-recusar" (click)="recusar(c)">{{ 'grupos.recusar' | translate }}</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Meus grupos -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">{{ 'grupos.meusGrupos' | translate }}</h2>
+      <button class="btn-criar" *ngIf="!criando" (click)="criando = true">+ {{ 'grupos.criarGrupo' | translate }}</button>
+    </div>
+
+    <!-- Form de criação -->
+    <div class="criar-form" *ngIf="criando">
+      <p class="billing-aviso">{{ 'grupos.billingAviso' | translate }}</p>
+      <div class="field">
+        <label>{{ 'grupos.nomeGrupo' | translate }}</label>
+        <input type="text" [(ngModel)]="novoNome" maxlength="40" placeholder="Ex: Guilda dos Disciplinados" />
+      </div>
+      <div class="field">
+        <label>{{ 'grupos.plano' | translate }}</label>
+        <div class="plano-chips">
+          <button class="chip" *ngFor="let p of planos" [class.sel]="novoPlano === p.plano"
+                  (click)="novoPlano = p.plano">
+            {{ p.plano }} · {{ p.vagas }} {{ 'grupos.vagas' | translate }}
+          </button>
+        </div>
+      </div>
+      <p class="erro" *ngIf="erro">{{ erro }}</p>
+      <div class="criar-btns">
+        <button class="btn-confirm" (click)="criar()" [disabled]="!novoNome.trim()">{{ 'grupos.criar' | translate }}</button>
+        <button class="btn-cancel" (click)="criando = false; erro = ''">{{ 'grupos.cancelar' | translate }}</button>
+      </div>
+    </div>
+
+    <!-- Lista -->
+    <ul class="grupo-lista" *ngIf="grupos.length > 0">
+      <li class="grupo-row" *ngFor="let g of grupos" [class.inativo]="!g.ativo" (click)="abrir(g)">
+        <div class="grupo-info">
+          <span class="grupo-nome">
+            {{ g.nome }}
+            <span class="tag-org" *ngIf="g.organizador">👑 {{ 'grupos.organizador' | translate }}</span>
+            <span class="tag-inativo" *ngIf="!g.ativo">{{ 'grupos.inativo' | translate }}</span>
+          </span>
+          <span class="grupo-meta">
+            {{ g.plano }} · {{ g.totalMembros }}/{{ g.maxMembros }} {{ 'grupos.membros' | translate }}
+            <ng-container *ngIf="g.membro"> · ⚡ {{ g.xpGrupo }} XP · 🪙 {{ g.moedasGrupo }}</ng-container>
+          </span>
+        </div>
+        <span class="grupo-abrir">›</span>
+      </li>
+    </ul>
+
+    <p class="empty" *ngIf="!carregando && grupos.length === 0 && !criando">{{ 'grupos.nenhumGrupo' | translate }}</p>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, HabitoCatalogo, ItemInventario, JornadaSemana, MauHabito, Missao, MissaoCatalogo, Notificacao, Pendente, Perfil, PerfilRanking, PerfilRankingAtributo, Recompensa, RecompensaCatalogo } from '../models/models';
+import { Atributo, BomHabito, Classe, DiarioAcao, Experimento, GrupoDetalhe, GrupoHabito, GrupoMeuSaldo, GrupoMissao, GrupoRecompensa, GrupoResumo, GrupoConvitePendente, HabitoCatalogo, ItemInventario, JornadaSemana, MauHabito, Missao, MissaoCatalogo, Notificacao, Pendente, Perfil, PerfilRanking, PerfilRankingAtributo, PlanoGrupo, Recompensa, RecompensaCatalogo } from '../models/models';
 
 // Campos extras de catálogo no payload de criação (Partes 3-5).
 type ExtrasCatalogo = { classeIds?: number[]; proprio?: boolean; travaDias?: number };
@@ -279,6 +279,90 @@ export class ApiService {
   }
   rejeitarPendente(tipo: string, id: number) {
     return this.http.post(`${BASE}/aprovacoes/${tipo}/${id}/rejeitar`, {});
+  }
+
+  // ── Grupos ───────────────────────────────────────────
+  getGrupos(perfilId: number) {
+    return this.http.get<GrupoResumo[]>(`${BASE}/grupos?perfilId=${perfilId}`);
+  }
+  criarGrupo(nome: string, plano: PlanoGrupo, perfilId: number) {
+    return this.http.post<GrupoResumo>(`${BASE}/grupos`, { nome, plano, perfilId });
+  }
+  getGrupoDetalhe(id: number, perfilId: number) {
+    return this.http.get<GrupoDetalhe>(`${BASE}/grupos/${id}?perfilId=${perfilId}`);
+  }
+  renomearGrupo(id: number, nome: string) {
+    return this.http.put(`${BASE}/grupos/${id}`, { nome });
+  }
+  upgradeGrupo(id: number, plano: PlanoGrupo) {
+    return this.http.post(`${BASE}/grupos/${id}/upgrade`, { plano });
+  }
+  cancelarGrupo(id: number) {
+    return this.http.post(`${BASE}/grupos/${id}/cancelar`, {});
+  }
+  reativarGrupo(id: number) {
+    return this.http.post(`${BASE}/grupos/${id}/reativar`, {});
+  }
+  excluirGrupo(id: number) {
+    return this.http.delete(`${BASE}/grupos/${id}`);
+  }
+  sairDoGrupo(id: number, perfilId: number) {
+    return this.http.post(`${BASE}/grupos/${id}/sair?perfilId=${perfilId}`, {});
+  }
+  removerMembroGrupo(grupoId: number, membroId: number) {
+    return this.http.delete(`${BASE}/grupos/${grupoId}/membros/${membroId}`);
+  }
+
+  // Convites de grupo
+  convidarParaGrupo(grupoId: number, email: string) {
+    return this.http.post(`${BASE}/grupos/${grupoId}/convites`, { email });
+  }
+  getConvitesGrupo() {
+    return this.http.get<GrupoConvitePendente[]>(`${BASE}/grupos/convites`);
+  }
+  aceitarConviteGrupo(conviteId: number, perfilId: number) {
+    return this.http.post(`${BASE}/grupos/convites/${conviteId}/aceitar?perfilId=${perfilId}`, {});
+  }
+  recusarConviteGrupo(conviteId: number) {
+    return this.http.post(`${BASE}/grupos/convites/${conviteId}/recusar`, {});
+  }
+
+  // Conteúdo do grupo (só o Organizador cria/edita/exclui)
+  criarHabitoGrupo(grupoId: number, h: { habito: string; xp: number; frequencia: string }) {
+    return this.http.post<GrupoHabito>(`${BASE}/grupos/${grupoId}/habitos`, h);
+  }
+  editarHabitoGrupo(id: number, h: { habito: string; xp: number; frequencia: string }) {
+    return this.http.put<GrupoHabito>(`${BASE}/grupos/habitos/${id}`, h);
+  }
+  excluirHabitoGrupo(id: number) {
+    return this.http.delete(`${BASE}/grupos/habitos/${id}`);
+  }
+  completarHabitoGrupo(id: number, perfilId: number) {
+    return this.http.post<GrupoMeuSaldo>(`${BASE}/grupos/habitos/${id}/completar?perfilId=${perfilId}`, {});
+  }
+  criarMissaoGrupo(grupoId: number, m: { titulo: string; recompensaXp: number; recompensaMoedas: number; dataLimite?: string | null }) {
+    return this.http.post<GrupoMissao>(`${BASE}/grupos/${grupoId}/missoes`, m);
+  }
+  editarMissaoGrupo(id: number, m: { titulo: string; recompensaXp: number; recompensaMoedas: number; dataLimite?: string | null }) {
+    return this.http.put<GrupoMissao>(`${BASE}/grupos/missoes/${id}`, m);
+  }
+  excluirMissaoGrupo(id: number) {
+    return this.http.delete(`${BASE}/grupos/missoes/${id}`);
+  }
+  completarMissaoGrupo(id: number, perfilId: number) {
+    return this.http.post<GrupoMeuSaldo>(`${BASE}/grupos/missoes/${id}/completar?perfilId=${perfilId}`, {});
+  }
+  criarRecompensaGrupo(grupoId: number, r: { nome: string; custo: number }) {
+    return this.http.post<GrupoRecompensa>(`${BASE}/grupos/${grupoId}/recompensas`, r);
+  }
+  editarRecompensaGrupo(id: number, r: { nome: string; custo: number }) {
+    return this.http.put<GrupoRecompensa>(`${BASE}/grupos/recompensas/${id}`, r);
+  }
+  excluirRecompensaGrupo(id: number) {
+    return this.http.delete(`${BASE}/grupos/recompensas/${id}`);
+  }
+  resgatarRecompensaGrupo(id: number, perfilId: number) {
+    return this.http.post<GrupoMeuSaldo>(`${BASE}/grupos/recompensas/${id}/resgatar?perfilId=${perfilId}`, {});
   }
 
   // ── Notificações (sininho) ───────────────────────────
