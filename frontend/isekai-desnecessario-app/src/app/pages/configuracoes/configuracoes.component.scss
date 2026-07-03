@@ -568,6 +568,28 @@ $muted:   #8b949e;
 
 .assin-cancelar { width: 100%; }
 
+// ── Grupos (assinatura separada, dentro da mesma seção) ──
+.assin-divider {
+  border: none;
+  border-top: 1px solid $border;
+  margin: 16px 0;
+}
+
+.assin-badge.grupos {
+  background: rgba(188, 140, 255, 0.15);
+  border-color: #6e40c9;
+  color: $purple;
+}
+
+.btn-vip.grupos {
+  background: transparent;
+  border: 1px solid $purple;
+  color: $purple;
+  transition: background 0.15s;
+
+  @media (hover: hover) { &:hover { background: rgba(188, 140, 255, 0.1); opacity: 1; } }
+}
+
 // ── Danger Zone ────────────────────────────────────────
 .danger-zone { border-color: #4a2020; }
 

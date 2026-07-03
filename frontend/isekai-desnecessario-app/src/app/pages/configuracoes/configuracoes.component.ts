@@ -27,6 +27,8 @@ export class ConfiguracoesComponent implements OnInit {
 
   get perfilId() { return this.profile.id; }
 
+  irParaGrupos() { this.router.navigate(['/grupos']); }
+
   // Listas — ativos no perfil
   bonsHabitos:  BomHabito[]  = [];
   mausHabitos:  MauHabito[]  = [];
