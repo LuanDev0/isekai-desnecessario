@@ -15,6 +15,7 @@
 | [FRONTEND.md](FRONTEND.md) | Páginas, componentes, serviços e rotas |
 | [SKILLS.md](SKILLS.md) | Boas práticas de código C#/.NET — checklist antes de gerar/alterar código no backend |
 | [MOBILE.md](MOBILE.md) | Plano Play Store, responsividade implementada, Capacitor e Google Sign-In nativo |
+| [GRUPOS.md](GRUPOS.md) | Feature planejada: grupos com economia própria, feed, ranking e billing por plano |
 
 ---
 
