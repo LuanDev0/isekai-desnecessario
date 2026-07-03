@@ -237,7 +237,7 @@ export interface PerfilRankingAtributo {
   totalPontos: number;
 }
 
-// Notificação in-app (sininho). Tipo: 'pendente' | 'rejeitado' | 'modificado'.
+// Notificação in-app (sininho). Tipo: 'pendente' | 'rejeitado' | 'modificado' | 'convite' | 'grupo'.
 export interface Notificacao {
   id: number;
   usuarioId: number;
@@ -245,4 +245,102 @@ export interface Notificacao {
   mensagem: string;
   lida: boolean;
   criadaEm: string;
+}
+
+// ── Grupos (assinatura separada do VIP; economia própria) ──
+export type PlanoGrupo = 'Starter' | 'Standard' | 'Pro' | 'Max';
+
+export interface GrupoResumo {
+  id: number;
+  nome: string;
+  plano: PlanoGrupo;
+  maxMembros: number;
+  ativo: boolean;
+  organizador: boolean;
+  totalMembros: number;
+  membro: boolean;
+  xpGrupo?: number | null;
+  moedasGrupo?: number | null;
+}
+
+export interface GrupoMeuSaldo {
+  xpGrupo: number;
+  moedasGrupo: number;
+}
+
+export interface GrupoMembroInfo {
+  id: number;
+  perfilId: number;
+  nome: string;
+  fotoUrl?: string | null;
+  xpGrupo: number;
+  moedasGrupo: number;
+  organizador: boolean;
+  entrouEm: string;
+}
+
+export interface GrupoHabito {
+  id: number;
+  habito: string;
+  xp: number;
+  frequencia: string;
+  ultimaExecucao?: string | null;
+  disponivel: boolean;
+}
+
+export interface GrupoMissao {
+  id: number;
+  titulo: string;
+  recompensaXp: number;
+  recompensaMoedas: number;
+  dataLimite?: string | null;
+  concluida: boolean;
+  concluidaEm?: string | null;
+  totalConclusoes: number;
+}
+
+export interface GrupoRecompensa {
+  id: number;
+  nome: string;
+  custo: number;
+  meusResgates: number;
+}
+
+export interface GrupoFeedEvento {
+  tipo: string;
+  mensagem: string;
+  criadoEm: string;
+}
+
+export interface GrupoConviteEnviado {
+  id: number;
+  email: string;
+  criadoEm: string;
+}
+
+export interface GrupoConvitePendente {
+  id: number;
+  grupoId: number;
+  grupoNome: string;
+  plano: PlanoGrupo;
+  totalMembros: number;
+  maxMembros: number;
+  criadoEm: string;
+}
+
+export interface GrupoDetalhe {
+  id: number;
+  nome: string;
+  plano: PlanoGrupo;
+  maxMembros: number;
+  ativo: boolean;
+  organizador: boolean;
+  criadoEm: string;
+  membro?: GrupoMeuSaldo | null;
+  membros: GrupoMembroInfo[];
+  habitos: GrupoHabito[];
+  missoes: GrupoMissao[];
+  recompensas: GrupoRecompensa[];
+  feed: GrupoFeedEvento[];
+  convites?: GrupoConviteEnviado[] | null;
 }

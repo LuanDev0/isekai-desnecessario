@@ -1,6 +1,6 @@
 # Grupos — Isekai Desnecessário
 
-> Feature planejada. Nenhum código implementado ainda. Este documento registra a visão e as decisões de design tomadas.
+> **Status (v0.21):** MVP implementado — banco (migration `AdicionarGrupos`), backend (`GruposController` + `GrupoConteudoController` + `GrupoService`) e frontend (`/grupos` e `/grupos/:id`). **Billing pendente** — criação/upgrade liberados como stub até o RevenueCat entrar. Endpoints em [API.md](API.md#grupos--apigrupos-v021), telas em [FRONTEND.md](FRONTEND.md#grupos-grupos-e-gruposid).
 
 ---
 
@@ -71,7 +71,7 @@ Exemplos de eventos exibidos:
 
 ## Convites & Acesso
 
-- Convite por **nome de usuário** (se a feature de Amigos for implementada, integrará naturalmente aqui).
+- Convite por **e-mail da conta** (o e-mail é o identificador único; quando a feature de Amigos existir, o convite por amigo se integra aqui). O destinatário recebe uma notificação no sininho e aceita escolhendo o perfil (o app usa o perfil ativo).
 - Grupo com capacidade cheia rejeita novos convites automaticamente.
 - Membro pode sair a qualquer momento.
 - Organizador pode remover membros manualmente.
@@ -93,38 +93,40 @@ Quando o Organizador cancela ou o pagamento falha:
 
 ---
 
-## Roadmap de implementação (quando chegar a hora)
+## Roadmap de implementação
 
-1. **Banco de dados**
-   - Tabela `Grupos` (id, nome, organizadorId, plano, maxMembros, criadoEm)
-   - Tabela `GrupoMembros` (grupoId, perfilId, entradaEm)
-   - Tabela `HabitosGrupo`, `MissoesGrupo`, `RecompensasGrupo`
-   - Tabela `XpGrupo` e `MoedaGrupo` por membro por grupo
-   - Tabela `FeedGrupo` (eventos)
+1. **Banco de dados** ✅ *(migration `AdicionarGrupos`)*
+   - `Grupos` (nome, organizadorUsuarioId, plano, maxMembros, ativo, criadoEm)
+   - `GrupoMembros` (grupoId, perfilId únicos; **xpGrupo/moedasGrupo do membro vivem aqui**)
+   - `GrupoHabitos`, `GrupoMissoes`, `GrupoRecompensas` (conteúdo exclusivo)
+   - `GrupoHabitoExecucoes`, `GrupoMissaoConclusoes`, `GrupoRecompensaResgates` (estado por membro)
+   - `GrupoConvites` (por conta/e-mail; Pendente/Aceito/Recusado)
+   - `GrupoFeedEventos` (timeline denormalizada)
 
-2. **Backend**
-   - CRUD de grupos (criar, upgrade de plano, encerrar)
-   - Endpoints de convite (convidar por username, aceitar, recusar)
-   - CRUD de conteúdo do grupo (só Organizador)
-   - Endpoints de completar hábito/missão do grupo (qualquer membro)
-   - Feed do grupo
-   - Ranking interno
-   - Webhook do RevenueCat para ativar/desativar acesso
+2. **Backend** ✅
+   - CRUD de grupos (criar, renomear, upgrade só para plano maior, cancelar/reativar, excluir)
+   - Convites por e-mail (convidar, aceitar, recusar) com notificação no sininho
+   - CRUD de conteúdo do grupo (só Organizador — roles globais não têm privilégio)
+   - Completar hábito (cooldown por frequência) / missão (1× por membro, prazo) / resgatar recompensa
+   - Feed do grupo + ranking interno (por XP do grupo)
+   - Notificações de cancelamento/reativação/exclusão/remoção
+   - 🚧 Webhook do RevenueCat para ativar/desativar acesso
 
-3. **Frontend**
-   - Tela de listagem de grupos do usuário
-   - Tela interna do grupo (feed, ranking, conteúdo, membros)
-   - Fluxo de compra / upgrade de plano
-   - Notificações de cancelamento
+3. **Frontend** ✅
+   - `/grupos` — listagem, convites pendentes e criação
+   - `/grupos/:id` — abas Feed, Ranking, Conteúdo e Gerenciar (organizador)
+   - Item **Grupos** na navbar
 
-4. **Billing**
+4. **Billing** 🚧
    - Configurar produtos no RevenueCat (4 planos)
    - Integrar Google Play Billing + Stripe Web via RevenueCat
+   - Pontos de cobrança já mapeados: `POST /grupos` (criação) e `POST /grupos/{id}/upgrade`
 
 ---
 
 ## O que ainda está em aberto
 
 - Preços de cada plano.
+- Billing real (RevenueCat) — hoje a criação/upgrade é liberada (stub de beta).
 - Feature de **Amigos** (mencionada como futura — convite por amigo se encaixa aqui quando estiver pronta).
-- Período de graça após cancelamento (quanto tempo o conteúdo fica preservado).
+- Período de graça após cancelamento (hoje o conteúdo fica preservado indefinidamente enquanto o grupo existir; excluir o grupo apaga tudo).

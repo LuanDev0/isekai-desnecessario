@@ -178,6 +178,49 @@ Sininho in-app. Destinatário é a conta logada.
 
 ---
 
+## Grupos — `/api/grupos` *(v0.21)*
+
+Assinatura **separada do VIP**, paga pelo **Organizador** (a conta que cria o grupo). Membros entram com um Perfil. XP/moedas são **do grupo** (`GrupoMembro`) — nunca vão para o perfil. Billing ainda não integrado: criação/upgrade liberados (stub). Regras em [GRUPOS.md](GRUPOS.md).
+
+**Papéis:** só o Organizador cria/edita/exclui conteúdo e gerencia membros — VIP/Admin/Moderador **não** têm privilégio dentro do grupo.
+
+### Grupo, membros e convites (`GruposController`)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/grupos?perfilId=X` | Grupos onde o perfil é membro + os que a conta organiza (resumo com saldo) |
+| POST | `/grupos` | Cria grupo `{ nome, plano, perfilId }` — planos: Starter(5) · Standard(10) · Pro(30) · Max(50); o perfil criador já entra como membro |
+| GET | `/grupos/{id}?perfilId=X` | Detalhe completo: membros (ranking por XP), hábitos/missões/recompensas com estado do membro, feed (30 últimos) e convites pendentes (só organizador) |
+| PUT | `/grupos/{id}` | Renomeia `{ nome }` *(organizador)* |
+| POST | `/grupos/{id}/upgrade` | Migra para plano **maior** `{ plano }` *(organizador)* |
+| POST | `/grupos/{id}/cancelar` | Desativa (`Ativo=false`): membros perdem acesso na hora e são **notificados** *(organizador)* |
+| POST | `/grupos/{id}/reativar` | Reativa e notifica os membros *(organizador)* |
+| DELETE | `/grupos/{id}` | Exclui o grupo (tudo cai em cascata; membros notificados) *(organizador)* |
+| POST | `/grupos/{id}/convites` | Convida uma conta por **e-mail** `{ email }` — recusa se lotado, já membro ou já convidado; dispara notificação *(organizador)* |
+| GET | `/grupos/convites` | Convites **pendentes** da conta logada |
+| POST | `/grupos/convites/{id}/aceitar?perfilId=X` | Aceita (revalida capacidade) — o perfil entra e o feed registra |
+| POST | `/grupos/convites/{id}/recusar` | Recusa o convite |
+| POST | `/grupos/{id}/sair?perfilId=X` | Membro sai (perde XP/moedas do grupo); organizador **não** pode sair |
+| DELETE | `/grupos/{id}/membros/{membroId}` | Remove membro (notificado) *(organizador)* |
+
+### Conteúdo do grupo (`GrupoConteudoController`)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/grupos/{grupoId}/habitos` | Cria hábito `{ habito, xp, frequencia }` — freq: Diário/Semanal/Mensal/Livre *(organizador)* |
+| PUT/DELETE | `/grupos/habitos/{id}` | Edita/exclui *(organizador)* |
+| POST | `/grupos/habitos/{id}/completar?perfilId=X` | Completa (respeita cooldown da frequência) → `+XP` de grupo; feed |
+| POST | `/grupos/{grupoId}/missoes` | Cria missão `{ titulo, recompensaXp, recompensaMoedas, dataLimite? }` *(organizador)* |
+| PUT/DELETE | `/grupos/missoes/{id}` | Edita/exclui *(organizador)* |
+| POST | `/grupos/missoes/{id}/completar?perfilId=X` | Conclui (1× por membro; recusa após `dataLimite`) → `+XP +moedas` de grupo; feed |
+| POST | `/grupos/{grupoId}/recompensas` | Cria recompensa `{ nome, custo }` *(organizador)* |
+| PUT/DELETE | `/grupos/recompensas/{id}` | Edita/exclui *(organizador)* |
+| POST | `/grupos/recompensas/{id}/resgatar?perfilId=X` | Resgata (desconta moedas do grupo); feed |
+
+Todas as ações de membro exigem grupo **ativo** e devolvem o saldo atualizado `{ xpGrupo, moedasGrupo }`.
+
+---
+
 ## Atributos — `/api/atributos`
 
 | Método | Rota | Descrição |

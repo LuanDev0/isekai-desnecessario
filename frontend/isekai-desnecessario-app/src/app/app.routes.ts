@@ -10,6 +10,8 @@ import { StatusComponent } from './pages/status/status.component';
 import { LaboratorioComponent } from './pages/laboratorio/laboratorio.component';
 import { MundoComponent } from './pages/mundo/mundo.component';
 import { RankingComponent } from './pages/ranking/ranking.component';
+import { GruposComponent } from './pages/grupos/grupos.component';
+import { GrupoDetalheComponent } from './pages/grupo-detalhe/grupo-detalhe.component';
 import { authGuard, guestGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -24,4 +26,6 @@ export const routes: Routes = [
   { path: 'laboratorio',   component: LaboratorioComponent,   canActivate: [authGuard] },
   { path: 'mundo',         component: MundoComponent,         canActivate: [authGuard] },
   { path: 'ranking',       component: RankingComponent,       canActivate: [authGuard] },
+  { path: 'grupos',        component: GruposComponent,        canActivate: [authGuard] },
+  { path: 'grupos/:id',    component: GrupoDetalheComponent,  canActivate: [authGuard] },
 ];

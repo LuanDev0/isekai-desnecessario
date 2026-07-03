@@ -15,7 +15,7 @@
 | [FRONTEND.md](FRONTEND.md) | Páginas, componentes, serviços e rotas |
 | [SKILLS.md](SKILLS.md) | Boas práticas de código C#/.NET — checklist antes de gerar/alterar código no backend |
 | [MOBILE.md](MOBILE.md) | Plano Play Store, responsividade implementada, Capacitor e Google Sign-In nativo |
-| [GRUPOS.md](GRUPOS.md) | Feature planejada: grupos com economia própria, feed, ranking e billing por plano |
+| [GRUPOS.md](GRUPOS.md) | Grupos: assinatura por Organizador, economia própria, feed e ranking (billing pendente) |
 
 ---
 
@@ -69,5 +69,6 @@ Detalhes completos em [ARQUITETURA.md](ARQUITETURA.md).
 - ✅ `TiposMissao` com seed (`Principal`, `Secundária`, `Desafio`) — migration `SeedTiposMissao` aplicada automaticamente no startup.
 - ✅ **Responsividade mobile** — todas as páginas adaptadas: `100svh`, safe-area (`env(safe-area-inset-*)`), grids 4→2 colunas em telas pequenas, `minmax` fluidos, hover só em dispositivos que suportam (v0.3.0). Ver [MOBILE.md](MOBILE.md).
 - 🚧 **Play Store** — Capacitor instalado e APK debug gerado (`versionCode 20`, `versionName 0.20.0`). Pendente: keystore de produção, conta Play Store ($25) e política de privacidade. Login Google exigirá plugin nativo dentro da WebView (ver [MOBILE.md](MOBILE.md)).
+- 🚧 **Grupos (v0.21)** — MVP completo: assinatura separada do VIP paga pelo Organizador, planos por tamanho (5/10/30/50), conteúdo exclusivo, economia própria (XP/moedas do grupo), feed, ranking interno e convites por e-mail. **Billing pendente** (criação liberada como stub). Ver [GRUPOS.md](GRUPOS.md).
 
 > **Fonte da verdade:** o código sempre vence esta documentação. Se algo divergir, o comportamento real está nos arquivos `.cs`/`.ts` referenciados em cada seção.

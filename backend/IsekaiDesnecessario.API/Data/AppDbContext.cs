@@ -28,6 +28,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ExperimentoDia> ExperimentosDia => Set<ExperimentoDia>();
     public DbSet<Notificacao>    Notificacoes    => Set<Notificacao>();
     public DbSet<PontosAtributo> PontosAtributos => Set<PontosAtributo>();
+    // ── Grupos (assinatura separada do VIP; economia própria) ──
+    public DbSet<Grupo>                  Grupos                  => Set<Grupo>();
+    public DbSet<GrupoMembro>            GrupoMembros            => Set<GrupoMembro>();
+    public DbSet<GrupoConvite>           GrupoConvites           => Set<GrupoConvite>();
+    public DbSet<GrupoHabito>            GrupoHabitos            => Set<GrupoHabito>();
+    public DbSet<GrupoMissao>            GrupoMissoes            => Set<GrupoMissao>();
+    public DbSet<GrupoRecompensa>        GrupoRecompensas        => Set<GrupoRecompensa>();
+    public DbSet<GrupoHabitoExecucao>    GrupoHabitoExecucoes    => Set<GrupoHabitoExecucao>();
+    public DbSet<GrupoMissaoConclusao>   GrupoMissaoConclusoes   => Set<GrupoMissaoConclusao>();
+    public DbSet<GrupoRecompensaResgate> GrupoRecompensaResgates => Set<GrupoRecompensaResgate>();
+    public DbSet<GrupoFeedEvento>        GrupoFeedEventos        => Set<GrupoFeedEvento>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -177,6 +188,79 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasKey(p => new { p.PerfilId, p.AtributoId });
             e.HasOne(p => p.Perfil).WithMany().HasForeignKey(p => p.PerfilId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(p => p.Atributo).WithMany().HasForeignKey(p => p.AtributoId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── Grupos ────────────────────────────────────────
+        // Apagar a conta do Organizador apaga o grupo inteiro (membros perdem acesso).
+        modelBuilder.Entity<Grupo>()
+            .HasOne(g => g.Organizador).WithMany()
+            .HasForeignKey(g => g.OrganizadorUsuarioId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Grupo>()
+            .Property(g => g.Plano).HasMaxLength(20);
+
+        // Um perfil participa de um grupo uma única vez; apagar perfil ou grupo apaga a participação.
+        modelBuilder.Entity<GrupoMembro>(e =>
+        {
+            e.HasOne(m => m.Grupo).WithMany(g => g.Membros)
+                .HasForeignKey(m => m.GrupoId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(m => m.Perfil).WithMany()
+                .HasForeignKey(m => m.PerfilId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(m => new { m.GrupoId, m.PerfilId }).IsUnique();
+        });
+
+        modelBuilder.Entity<GrupoConvite>(e =>
+        {
+            e.HasOne(c => c.Grupo).WithMany(g => g.Convites)
+                .HasForeignKey(c => c.GrupoId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(c => c.Usuario).WithMany()
+                .HasForeignKey(c => c.UsuarioId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(c => c.Status).HasMaxLength(20);
+            e.HasIndex(c => new { c.UsuarioId, c.Status });
+        });
+
+        modelBuilder.Entity<GrupoHabito>()
+            .HasOne(h => h.Grupo).WithMany(g => g.Habitos)
+            .HasForeignKey(h => h.GrupoId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GrupoMissao>()
+            .HasOne(m => m.Grupo).WithMany(g => g.Missoes)
+            .HasForeignKey(m => m.GrupoId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GrupoRecompensa>()
+            .HasOne(r => r.Grupo).WithMany(g => g.Recompensas)
+            .HasForeignKey(r => r.GrupoId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<GrupoHabitoExecucao>(e =>
+        {
+            e.HasOne(x => x.GrupoHabito).WithMany(h => h.Execucoes)
+                .HasForeignKey(x => x.GrupoHabitoId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.GrupoMembro).WithMany()
+                .HasForeignKey(x => x.GrupoMembroId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => new { x.GrupoHabitoId, x.GrupoMembroId });
+        });
+
+        // Cada membro conclui uma missão do grupo uma única vez.
+        modelBuilder.Entity<GrupoMissaoConclusao>(e =>
+        {
+            e.HasOne(x => x.GrupoMissao).WithMany(m => m.Conclusoes)
+                .HasForeignKey(x => x.GrupoMissaoId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.GrupoMembro).WithMany()
+                .HasForeignKey(x => x.GrupoMembroId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => new { x.GrupoMissaoId, x.GrupoMembroId }).IsUnique();
+        });
+
+        modelBuilder.Entity<GrupoRecompensaResgate>(e =>
+        {
+            e.HasOne(x => x.GrupoRecompensa).WithMany(r => r.Resgates)
+                .HasForeignKey(x => x.GrupoRecompensaId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.GrupoMembro).WithMany()
+                .HasForeignKey(x => x.GrupoMembroId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<GrupoFeedEvento>(e =>
+        {
+            e.HasOne(f => f.Grupo).WithMany(g => g.Feed)
+                .HasForeignKey(f => f.GrupoId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(f => f.Tipo).HasMaxLength(20);
+            e.HasIndex(f => new { f.GrupoId, f.CriadoEm });
         });
 
         modelBuilder.Entity<Atributo>().HasData(

@@ -19,10 +19,12 @@ App standalone (sem NgModules), componentes com `inject()` e signals. Estado mí
 | `/laboratorio` | `LaboratorioComponent` | Experimentos (hábitos em teste) |
 | `/mundo` | `MundoComponent` | Mapa de ranks / mundo |
 | `/ranking` | `RankingComponent` | Ranking global — aba **Nível** (top-50 por Nível→XP) e aba **Atributos** (sub-abas: Total + 6 atributos, carregamento lazy) |
+| `/grupos` | `GruposComponent` | Lista de grupos da conta, convites pendentes e criação de grupo (plano por chips) |
+| `/grupos/:id` | `GrupoDetalheComponent` | Detalhe do grupo — abas **Feed**, **Ranking**, **Conteúdo** e **Gerenciar** (só organizador) |
 
 **Guards (`services/auth.guard.ts`):** todas as rotas internas usam `canActivate: [authGuard]` — sem JWT, redireciona para `/cadastro`. A rota `/cadastro` usa `guestGuard` — quem já está logado **e** tem perfil ativo é mandado para `/`.
 
-> A **navbar inferior** linka 8 páginas: Início, Missões, Status, Inventário, Loja, Gráfico, Ranking, Config. As páginas **Laboratório** e **Mundo** são rotas acessadas a partir de outras telas (não ficam na navbar).
+> A **navbar inferior** linka 9 páginas: Início, Missões, Status, Inventário, Loja, Gráfico, Ranking, Grupos, Config. As páginas **Laboratório** e **Mundo** são rotas acessadas a partir de outras telas (não ficam na navbar).
 
 ---
 
@@ -63,6 +65,14 @@ Cria e acompanha **experimentos** (hábitos em teste, default 21 dias). Marca um
 
 ### Mundo (`/mundo`)
 Visão do progresso por **rank** (H → SSS), com faixas de nível, cor e ícone de cada rank.
+
+### Grupos (`/grupos` e `/grupos/:id`)
+Feature de grupos (v0.21 — ver [GRUPOS.md](GRUPOS.md)). A lista mostra os grupos da conta (badge 👑 para organizador, tag para grupo desativado), convites pendentes com **Aceitar/Recusar** e o formulário de criação (nome + chips de plano Starter/Standard/Pro/Max). O detalhe tem o saldo do membro (XP/moedas **do grupo**) e 4 abas:
+
+1. **Feed** — timeline do grupo (entradas/saídas, hábitos completados, missões, resgates) com tempo relativo.
+2. **Ranking** — membros ordenados por XP do grupo (🥇🥈🥉); organizador pode remover membros aqui.
+3. **Conteúdo** — hábitos (botão **Completar** com cooldown), missões (1× por membro, respeita prazo) e recompensas (**Resgatar** desconta moedas do grupo). Membro não-organizador tem o botão **Sair do grupo**.
+4. **Gerenciar** *(só organizador)* — convite por e-mail, CRUD de hábitos/missões/recompensas (edição inline), renomear grupo, upgrade de plano e zona de perigo (desativar/reativar/excluir).
 
 ---
 

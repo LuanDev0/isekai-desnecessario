@@ -1,0 +1,329 @@
+$bg:      #0d1117;
+$surface: #161b22;
+$card:    #21262d;
+$border:  #30363d;
+$blue:    #58a6ff;
+$green:   #3fb950;
+$red:     #f85149;
+$orange:  #d29922;
+$purple:  #bc8cff;
+$white:   #e6edf3;
+$text:    #c9d1d9;
+$muted:   #8b949e;
+
+:host {
+  display: block;
+  min-height: 100svh;
+  background: $bg;
+}
+
+.grupos-page {
+  padding: 16px max(16px, env(safe-area-inset-left)) calc(84px + env(safe-area-inset-bottom));
+  padding-right: max(16px, env(safe-area-inset-right));
+  color: $text;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $white;
+  margin: 0 0 4px;
+}
+
+.subtitulo {
+  font-size: 0.85rem;
+  color: $muted;
+  margin: 0 0 16px;
+}
+
+.card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text;
+  margin: 0;
+}
+
+.btn-criar {
+  background: #0c1a2e;
+  color: $blue;
+  border: 1px solid #1a3a5e;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: #102038; }
+}
+
+// ── Convites ───────────────────────────────────────────
+.convites { border-color: #3a2850; }
+
+.convite-lista {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.convite-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.convite-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.convite-nome { font-size: 0.92rem; font-weight: 600; color: $white; word-break: break-word; }
+.convite-meta { font-size: 0.75rem; color: $muted; }
+
+.convite-acoes { display: flex; gap: 6px; flex-shrink: 0; }
+
+.btn-aceitar {
+  background: #12261a;
+  color: $green;
+  border: 1px solid #1e3d28;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { background: #16301f; }
+}
+
+.btn-recusar {
+  background: $surface;
+  color: $muted;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { background: $card; color: $red; }
+}
+
+// ── Form de criação ────────────────────────────────────
+.criar-form {
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.billing-aviso {
+  font-size: 0.75rem;
+  color: $orange;
+  background: #1a1200;
+  border: 1px solid #3d2e00;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin: 0 0 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  min-width: 0;
+
+  label {
+    font-size: 0.73rem;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: $text;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: $blue; }
+  }
+}
+
+.plano-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid $border;
+  background: $surface;
+  color: $text;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { border-color: #484f58; }
+  &.sel {
+    border-color: $blue;
+    background: #0c1a2e;
+    color: $blue;
+  }
+}
+
+.erro {
+  font-size: 0.8rem;
+  color: $red;
+  margin: 0 0 8px;
+}
+
+.criar-btns { display: flex; gap: 8px; }
+
+.btn-confirm {
+  background: #0c1a2e;
+  color: $blue;
+  border: 1px solid #1a3a5e;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) { background: #102038; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btn-cancel {
+  background: $surface;
+  color: $muted;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: $card; }
+}
+
+// ── Lista de grupos ────────────────────────────────────
+.grupo-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.grupo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  @media (hover: hover) {
+    &:hover { border-color: $blue; }
+  }
+
+  &.inativo { opacity: 0.55; }
+}
+
+.grupo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.grupo-nome {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $white;
+  word-break: break-word;
+}
+
+.tag-org {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 10px;
+  padding: 1px 8px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.tag-inativo {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: $orange;
+  background: #3d2e00;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+  text-transform: uppercase;
+}
+
+.grupo-meta { font-size: 0.76rem; color: $muted; }
+
+.grupo-abrir {
+  font-size: 1.4rem;
+  color: $muted;
+  flex-shrink: 0;
+}
+
+.empty {
+  font-size: 0.85rem;
+  color: $muted;
+  padding: 8px 2px;
+  margin: 0;
+}
