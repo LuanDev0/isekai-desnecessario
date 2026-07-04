@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { GrupoConvitePendente, GrupoResumo, PlanoGrupo } from '../../models/models';
 
 // Planos disponíveis (tamanho de cada um vem do backend — espelhado aqui para a UI).
@@ -18,7 +19,7 @@ const PLANOS: { plano: PlanoGrupo; vagas: number }[] = [
 @Component({
   selector: 'app-grupos',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, IconComponent],
   templateUrl: './grupos.component.html',
   styleUrl: './grupos.component.scss',
 })

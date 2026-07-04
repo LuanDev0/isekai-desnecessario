@@ -60,7 +60,7 @@
           </span>
           <span class="grupo-meta">
             {{ g.plano }} · {{ g.totalMembros }}/{{ g.maxMembros }} {{ 'grupos.membros' | translate }}
-            <ng-container *ngIf="g.membro"> · ⚡ {{ g.xpGrupo }} XP · 🪙 {{ g.moedasGrupo }}</ng-container>
+            <ng-container *ngIf="g.membro"> · ⚡ {{ g.xpGrupo }} XP · <app-icon name="moedas" [size]="12"></app-icon> {{ g.moedasGrupo }}</ng-container>
           </span>
         </div>
         <span class="grupo-abrir">›</span>

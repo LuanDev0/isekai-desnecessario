@@ -6,6 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { ProfileService } from '../../services/profile.service';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../../components/icon/icon.component';
 import { GrupoDetalhe, GrupoHabito, GrupoMissao, GrupoRecompensa, PlanoGrupo } from '../../models/models';
 import { environment } from '../../../environments/environment';
 
@@ -16,7 +17,7 @@ type Aba = 'feed' | 'ranking' | 'conteudo' | 'gerenciar';
 @Component({
   selector: 'app-grupo-detalhe',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, IconComponent],
   templateUrl: './grupo-detalhe.component.html',
   styleUrl: './grupo-detalhe.component.scss',
 })

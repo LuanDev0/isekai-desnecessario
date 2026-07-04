@@ -22,7 +22,7 @@
     <!-- Saldo do membro -->
     <div class="saldo-row" *ngIf="grupo.membro">
       <div class="saldo-chip xp">⚡ {{ grupo.membro.xpGrupo }} <span>{{ 'grupos.xpGrupo' | translate }}</span></div>
-      <div class="saldo-chip moedas">🪙 {{ grupo.membro.moedasGrupo }} <span>{{ 'grupos.moedasGrupo' | translate }}</span></div>
+      <div class="saldo-chip moedas"><app-icon name="moedas" [size]="14"></app-icon> {{ grupo.membro.moedasGrupo }} <span>{{ 'grupos.moedasGrupo' | translate }}</span></div>
     </div>
 
     <!-- Aviso de grupo desativado (organizador) -->
@@ -97,7 +97,7 @@
             <div class="item-info">
               <span class="item-nome">{{ m.titulo }}</span>
               <span class="item-meta">
-                +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} 🪙
+                +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} <app-icon name="moedas" [size]="12"></app-icon>
                 <ng-container *ngIf="m.dataLimite"> · {{ 'grupos.prazo' | translate }}: {{ dataCurta(m.dataLimite) }}</ng-container>
                 · {{ m.totalConclusoes }}/{{ grupo.membros.length }} ✓
               </span>
@@ -118,7 +118,7 @@
             <div class="item-info">
               <span class="item-nome">{{ r.nome }}</span>
               <span class="item-meta">
-                🪙 {{ r.custo }}
+                <app-icon name="moedas" [size]="12"></app-icon> {{ r.custo }}
                 <ng-container *ngIf="r.meusResgates > 0"> · {{ r.meusResgates }} {{ 'grupos.resgates' | translate }}</ng-container>
               </span>
             </div>
@@ -259,7 +259,7 @@
               <div class="item-info">
                 <span class="item-nome">{{ m.titulo }}</span>
                 <span class="item-meta">
-                  +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} 🪙
+                  +{{ m.recompensaXp }} XP · +{{ m.recompensaMoedas }} <app-icon name="moedas" [size]="12"></app-icon>
                   <ng-container *ngIf="m.dataLimite"> · {{ dataCurta(m.dataLimite) }}</ng-container>
                   · {{ m.totalConclusoes }} ✓
                 </span>
@@ -326,7 +326,7 @@
             <li class="item-row" *ngIf="editandoRecompensaId !== r.id">
               <div class="item-info">
                 <span class="item-nome">{{ r.nome }}</span>
-                <span class="item-meta">🪙 {{ r.custo }}</span>
+                <span class="item-meta"><app-icon name="moedas" [size]="12"></app-icon> {{ r.custo }}</span>
               </div>
               <div class="item-acoes">
                 <button class="btn-icon" (click)="iniciarEdicaoRecompensa(r)">✏️</button>
